@@ -1116,6 +1116,7 @@ Please complete when ready:
 - Added `./nexus.ps1 release`.
 - Added `Open Cloud Dry Run` to the shared quality gate, so local checks, CI, and Build Health verify the release path without a real key.
 - Added `tools/secret_scan.luau` to the shared quality gate. It scans Nexus and vault Git history for common real credential patterns while allowing intentional placeholders/fixtures.
+- Added `tools/test_release_contract.luau` to the shared quality gate. It verifies dry-run defaults, fixture/live separation, placeholder-key rejection, artifact validation, launcher forwarding, checklist requirements, and Open Cloud secret hygiene.
 
 ### Dry-Run Evidence
 
@@ -1145,25 +1146,33 @@ Endpoint: https://apis.roblox.com/universes/v1/1234567890/places/9876543210/vers
 Live request was not sent.
 ```
 
+Release contract self-test:
+
+```powershell
+lune run tools/test_release_contract.luau
+Release contract tests passed
+```
+
 ### Shared Gate Evidence After WO-9
 
 ```powershell
 $env:ROKIT_PROBE='1'; lune run tools/quality_gate.luau
 [PASS] Wally Install (0.71s, exit 0)
-[PASS] StyLua (0.06s, exit 0)
+[PASS] StyLua (0.07s, exit 0)
 [PASS] Selene (0.09s, exit 0)
 [PASS] Sourcemap (0.09s, exit 0)
 [PASS] Rojo Bridge Tests (0.03s, exit 0)
 [PASS] Migration Tests (0.03s, exit 0)
-[PASS] Vault Scaffold Tests (0.06s, exit 0)
+[PASS] Vault Scaffold Tests (0.07s, exit 0)
 [PASS] Asset Manifest Tests (0.03s, exit 0)
 [PASS] Command Surface Tests (0.03s, exit 0)
 [PASS] Net Contract Tests (0.03s, exit 0)
 [PASS] CI Contract Tests (0.03s, exit 0)
 [PASS] Command Center Contract Tests (0.03s, exit 0)
-[PASS] Secret Scan (0.36s, exit 0)
-[PASS] Analyze (1.99s, exit 0)
-[PASS] Build (0.09s, exit 0)
+[PASS] Release Contract Tests (0.03s, exit 0)
+[PASS] Secret Scan (0.40s, exit 0)
+[PASS] Analyze (2.05s, exit 0)
+[PASS] Build (0.08s, exit 0)
 [PASS] Open Cloud Dry Run (0.03s, exit 0)
 Quality gate PASS
 ```
@@ -1184,6 +1193,7 @@ Command Surface Tests: PASS
 Net Contract Tests: PASS
 CI Contract Tests: PASS
 Command Center Contract Tests: PASS
+Release Contract Tests: PASS
 Secret Scan: PASS
 Analyze: PASS
 Build: PASS
@@ -1288,6 +1298,7 @@ $env:ROKIT_PROBE='1'; lune run tools/quality_gate.luau
 [PASS] Net Contract Tests (0.03s, exit 0)
 [PASS] CI Contract Tests (0.03s, exit 0)
 [PASS] Command Center Contract Tests (0.03s, exit 0)
+[PASS] Release Contract Tests (0.03s, exit 0)
 [PASS] Secret Scan (0.37s, exit 0)
 [PASS] Analyze (2.04s, exit 0)
 [PASS] Build (0.08s, exit 0)
@@ -1311,6 +1322,7 @@ Command Surface Tests: PASS
 Net Contract Tests: PASS
 CI Contract Tests: PASS
 Command Center Contract Tests: PASS
+Release Contract Tests: PASS
 Secret Scan: PASS
 Analyze: PASS
 Build: PASS
@@ -1374,17 +1386,17 @@ NexusAutomationLoop Stopped
 | WO-6 Cmdr | Implemented and analyzed | Cmdr service/controller, commands, generated command docs | G2 Studio playtest for command execution |
 | WO-7 Data/Networking | Implemented and tested locally | ProfileStore wrapper, migration tests, Net contract tests, typed Net, Build Health | G2 Studio playtest for session/runtime behavior |
 | WO-8 CI | Local workflow committed | Shared gate output, CI contract tests, workflow, runbook | G4: `gh auth`, remote repo, branch protection, real CI run |
-| WO-9 Release Path | Dry-run accepted locally | Fixture dry-run, `./nexus.ps1 release --dry-run --fixture`, secret-history scan, release checklist | G5 for live publish only |
+| WO-9 Release Path | Dry-run accepted locally | Fixture dry-run, `./nexus.ps1 release --dry-run --fixture`, release contract tests, secret-history scan, release checklist | G5 for live publish only |
 | WO-10 Hardening | Up/down smoke test passed locally | Task JSON parse, command-center contract tests, dev log writes, Gate Status dashboard embed, `./nexus.ps1 up/status/down`, full gate | G2 Studio connect and G3 dashboard render for cold-boot acceptance |
 
 ## Latest Whole-Repo Verification
 
 ```powershell
 ./nexus.ps1 check
-[PASS] Wally Install (0.70s, exit 0)
+[PASS] Wally Install (0.68s, exit 0)
 [PASS] StyLua (0.06s, exit 0)
-[PASS] Selene (0.09s, exit 0)
-[PASS] Sourcemap (0.09s, exit 0)
+[PASS] Selene (0.08s, exit 0)
+[PASS] Sourcemap (0.08s, exit 0)
 [PASS] Rojo Bridge Tests (0.03s, exit 0)
 [PASS] Migration Tests (0.03s, exit 0)
 [PASS] Vault Scaffold Tests (0.06s, exit 0)
@@ -1393,8 +1405,9 @@ NexusAutomationLoop Stopped
 [PASS] Net Contract Tests (0.03s, exit 0)
 [PASS] CI Contract Tests (0.03s, exit 0)
 [PASS] Command Center Contract Tests (0.03s, exit 0)
-[PASS] Secret Scan (0.39s, exit 0)
-[PASS] Analyze (2.00s, exit 0)
+[PASS] Release Contract Tests (0.03s, exit 0)
+[PASS] Secret Scan (0.38s, exit 0)
+[PASS] Analyze (1.95s, exit 0)
 [PASS] Build (0.08s, exit 0)
 [PASS] Open Cloud Dry Run (0.03s, exit 0)
 Quality gate PASS
