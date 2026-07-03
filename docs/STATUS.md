@@ -4,7 +4,7 @@ Last updated: 2026-07-03
 
 ## Current Phase
 
-WO-0 G1 tool closure now passes locally: Git, Rokit, Rojo, VS Code `code`, GitHub CLI `gh`, Blender CLI, and Obsidian command are all available through refreshed PATH/shims. WO-1 exact local acceptance now passes through `./nexus.ps1 check`. WO-2 now has the sync-rules runbook, sourcemap-aware analyze proof, Rojo-managed `ServerStorage.Maps`, and `./nexus.ps1 studio-bridge` for repeatable local G2 readiness evidence, but live Studio sync remains blocked on **G2 - Studio connect**. WO-3 vault plugin preinstall now passes locally with all eight required Obsidian plugins downloaded and enabled in vault config; `./nexus.ps1 obsidian-rest` now records non-secret bootstrap evidence and will write `secrets/obsidian.env` only after Obsidian generates Local REST settings, but REST/dashboard acceptance remains blocked on **G3 - Obsidian REST key + dashboard proof**. WO-4 automation scripts now pass through exact `./nexus.ps1 loop --once` and include dummy-service/stale-note evidence, but dashboard rendering remains gated. WO-5 asset pipeline now renders real Blender PNG thumbnails for the four seed assets through `./nexus.ps1 thumbnails`. WO-6 Cmdr profile commands now call DataService for inventory grants, schema-backed stat edits, and Owner-confirmed profile resets; `reloadmap` now calls MapService to reload Rojo-managed maps into `Workspace.Map`, but in-Studio command execution remains gated. WO-7 data/networking baseline has direct local proof and server-owned profile mutation helpers, but live ProfileStore session behavior remains Studio-gated. WO-8 CI workflow and shared local/CI gate are created; `./nexus.ps1 github-ci` now records non-secret G4 readiness and can explicitly create/push the private remote after `gh auth login`, but remote GitHub auth/remote setup remains blocked on **G4 - GitHub auth**. WO-9 release-path dry-run now passes through `./nexus.ps1 release --dry-run --fixture`; `./nexus.ps1 open-cloud` records secret-safe G5 readiness, but live publish remains gated on **G5 - Open Cloud key**. WO-10 `up/status/down` now starts and stops watcher jobs cleanly; full cold-boot Studio acceptance remains blocked on G2/G3.
+WO-0 G1 tool closure now passes locally: Git, Rokit, Rojo, VS Code `code`, GitHub CLI `gh`, Blender CLI, and Obsidian command are all available through refreshed PATH/shims. WO-1 exact local acceptance now passes through `./nexus.ps1 check`. WO-2 now has the sync-rules runbook, sourcemap-aware analyze proof, Rojo-managed `ServerStorage.Maps`, and `./nexus.ps1 studio-bridge` for repeatable local G2 readiness evidence, but live Studio sync remains blocked on **G2 - Studio connect**. WO-3 vault plugin preinstall now passes locally with all eight required Obsidian plugins downloaded and enabled in vault config; `./nexus.ps1 obsidian-rest` now records non-secret bootstrap evidence and will write `secrets/obsidian.env` only after Obsidian generates Local REST settings, but REST/dashboard acceptance remains blocked on **G3 - Obsidian REST key + dashboard proof**. WO-4 automation scripts now pass through exact `./nexus.ps1 loop --once` and include dummy-service/stale-note evidence, but dashboard rendering remains gated. WO-5 asset pipeline now renders real Blender PNG thumbnails for the four seed assets through `./nexus.ps1 thumbnails`. WO-6 Cmdr profile commands now call DataService for inventory grants, schema-backed stat edits, and Owner-confirmed profile resets; `reloadmap` now calls MapService to reload Rojo-managed maps into `Workspace.Map`, but in-Studio command execution remains gated. WO-7 data/networking baseline has direct local proof and server-owned profile mutation helpers, but live ProfileStore session behavior remains Studio-gated. WO-8 CI workflow and shared local/CI gate are created; `./nexus.ps1 github-ci` now records non-secret G4 readiness and can explicitly create/push the private remote after `gh auth login`, but remote GitHub auth/remote setup remains blocked on **G4 - GitHub auth**. WO-9 release-path dry-run now passes through `./nexus.ps1 release --dry-run --fixture`; `./nexus.ps1 open-cloud` records secret-safe G5 readiness, but live publish remains gated on **G5 - Open Cloud key**. WO-10 `up/status/down` now starts and stops watcher jobs cleanly, and `./nexus.ps1 cold-boot` records local daily-driver readiness while preserving G2/G3 as human proof; full cold-boot Studio acceptance remains blocked on G2/G3.
 
 G3/G5 gate probes now parse local secret env files and only pass when Obsidian REST and Open Cloud values are present, non-placeholder, and valid enough to use; secret values are never printed.
 
@@ -1611,6 +1611,8 @@ When ready to publish for real:
 - Tightened G3/G5 human-gate probes so Obsidian REST and Open Cloud secret files must contain required non-placeholder keys before passing; values stay hidden.
 - Added `tools/human_gate_acceptance.luau`, `./nexus.ps1 gatecheck`, and a `Nexus: Gate Acceptance Probe` VS Code task.
 - Added `tools/test_human_gate_acceptance.luau` to the shared quality gate. It verifies the on-demand acceptance probe, its self-test mode, and an honest blocked probe path for human-only gates.
+- Added `tools/cold_boot_readiness.luau`, `./nexus.ps1 cold-boot`, the `Nexus: Cold Boot Readiness` VS Code task, and a dashboard embed for `00_Command_Center/Cold Boot Readiness.md`.
+- Added `tools/test_cold_boot_readiness.luau` to the shared quality gate. It verifies the cold-boot readiness note, launcher/task wiring, loop refresh, and G2/G3 proof honesty.
 
 ### Verification Evidence
 
@@ -1633,6 +1635,20 @@ Command-center contract self-test:
 ```powershell
 lune run tools/test_command_center_contract.luau
 Command center contract tests passed
+```
+
+Cold-boot readiness probe:
+
+```powershell
+./nexus.ps1 cold-boot
+Cold boot readiness BLOCKED_ON_G2_G3; wrote C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Cold Boot Readiness.md
+```
+
+Cold-boot readiness contract self-test:
+
+```powershell
+lune run tools/test_cold_boot_readiness.luau
+Cold boot readiness tests passed
 ```
 
 Human gate notes generation:
@@ -1855,7 +1871,7 @@ NexusAutomationLoop Stopped
 | WO-7 Data/Networking | Implemented and tested locally | ProfileStore wrapper, server-owned mutation helpers, migration tests, DataService contract tests, Net contract tests, typed Net, Build Health | G2 Studio playtest for session/runtime behavior |
 | WO-8 CI | Local workflow committed | Shared gate output, CI contract tests, GitHub CI bootstrap proof, workflow, runbook | G4: `gh auth`, remote repo, branch protection, real CI run |
 | WO-9 Release Path | Dry-run accepted locally | Fixture dry-run, `./nexus.ps1 release --dry-run --fixture`, Open Cloud bootstrap proof, release contract tests, secret-history scan, release checklist | G5 for live publish only |
-| WO-10 Hardening | Up/down smoke test passed locally | Task JSON parse, command-center contract tests, human gate checklist/readiness/acceptance/receipt/founder sign-off tests, dev log writes, Gate Status, Human Gate Proof Receipts, and Founder Sign-Off dashboard embeds, `./nexus.ps1 up/status/down`, full gate | G2 Studio connect and G3 dashboard render for cold-boot acceptance |
+| WO-10 Hardening | Up/down smoke test passed locally | Task JSON parse, command-center contract tests, cold-boot readiness tests, human gate checklist/readiness/acceptance/receipt/founder sign-off tests, dev log writes, Gate Status, Human Gate Proof Receipts, Cold Boot Readiness, and Founder Sign-Off dashboard embeds, `./nexus.ps1 up/status/down`, full gate | G2 Studio connect and G3 dashboard render for cold-boot acceptance |
 
 Acceptance Matrix contract self-test:
 
@@ -1868,7 +1884,7 @@ Acceptance matrix contract tests passed
 
 ```powershell
 ./nexus.ps1 check
-[PASS] Wally Install (0.77s, exit 0)
+[PASS] Wally Install (0.82s, exit 0)
 [PASS] StyLua (0.09s, exit 0)
 [PASS] Selene (0.11s, exit 0)
 [PASS] Sourcemap (0.09s, exit 0)
@@ -1878,28 +1894,29 @@ Acceptance matrix contract tests passed
 [PASS] Studio Bridge Bootstrap Tests (0.03s, exit 0)
 [PASS] Migration Tests (0.03s, exit 0)
 [PASS] DataService Contract Tests (0.03s, exit 0)
-[PASS] Vault Scaffold Tests (0.07s, exit 0)
+[PASS] Vault Scaffold Tests (0.06s, exit 0)
 [PASS] Obsidian Plugin Setup Tests (0.03s, exit 0)
 [PASS] Obsidian REST Bootstrap Tests (0.03s, exit 0)
 [PASS] GitHub CI Bootstrap Tests (0.03s, exit 0)
-[PASS] Asset Manifest Tests (0.03s, exit 0)
+[PASS] Asset Manifest Tests (0.04s, exit 0)
 [PASS] Command Surface Tests (0.03s, exit 0)
 [PASS] MapService Contract Tests (0.03s, exit 0)
 [PASS] Net Contract Tests (0.03s, exit 0)
 [PASS] CI Contract Tests (0.03s, exit 0)
 [PASS] Command Center Contract Tests (0.03s, exit 0)
+[PASS] Cold Boot Readiness Tests (0.03s, exit 0)
 [PASS] Human Gate Checklist Tests (0.03s, exit 0)
 [PASS] Human Gate Readiness Tests (0.03s, exit 0)
-[PASS] Human Gate Acceptance Tests (2.20s, exit 0)
-[PASS] Human Gate Receipt Tests (1.14s, exit 0)
-[PASS] Founder Sign-Off Audit Tests (0.09s, exit 0)
-[PASS] Acceptance Matrix Contract Tests (0.04s, exit 0)
+[PASS] Human Gate Acceptance Tests (2.18s, exit 0)
+[PASS] Human Gate Receipt Tests (1.08s, exit 0)
+[PASS] Founder Sign-Off Audit Tests (0.03s, exit 0)
+[PASS] Acceptance Matrix Contract Tests (0.03s, exit 0)
 [PASS] Release Contract Tests (0.03s, exit 0)
 [PASS] Open Cloud Bootstrap Tests (0.03s, exit 0)
-[PASS] Secret Scan (0.65s, exit 0)
-[PASS] Analyze (2.00s, exit 0)
-[PASS] Build (0.08s, exit 0)
-[PASS] Open Cloud Dry Run (0.02s, exit 0)
+[PASS] Secret Scan (0.63s, exit 0)
+[PASS] Analyze (2.01s, exit 0)
+[PASS] Build (0.10s, exit 0)
+[PASS] Open Cloud Dry Run (0.04s, exit 0)
 Quality gate PASS
 ```
 
@@ -1923,6 +1940,7 @@ Wrote human gate checklist to C:/Users/jackw/Roblox/RobloxGameVault/00_Command_C
 Wrote human gate readiness to C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Human Gate Readiness.md
 Wrote human gate proof receipts to C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Human Gate Proof Receipts.md
 Build health PASS; wrote C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Build Health.md
+Cold boot readiness BLOCKED_ON_G2_G3; wrote C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Cold Boot Readiness.md
 Wrote founder sign-off audit to C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Founder Sign-Off Audit.md
 ```
 

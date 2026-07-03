@@ -43,6 +43,7 @@ wally install
 ./nexus.ps1 obsidian-plugins
 ./nexus.ps1 thumbnails
 ./nexus.ps1 check
+./nexus.ps1 cold-boot
 ```
 
 Expected final line:
@@ -79,3 +80,7 @@ Never commit either file. The release dry-run works before `secrets/opencloud.en
 ## Launcher Check
 
 Run `./nexus.ps1 status` after setup. It should print Git status, pinned tool versions, the last build, and the command-center job table.
+
+Run `./nexus.ps1 cold-boot` after the first green check. It should write
+`00_Command_Center/Cold Boot Readiness.md` and preserve G2/G3 as human proof
+until Studio sync and the Obsidian dashboard are actually verified.

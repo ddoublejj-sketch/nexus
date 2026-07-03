@@ -172,6 +172,11 @@ else
 		"![[Founder Sign-Off Audit]]",
 		"Dashboard missing Founder Sign-Off Audit embed"
 	)
+	assertContains(
+		dashboard,
+		"![[Cold Boot Readiness]]",
+		"Dashboard missing Cold Boot Readiness embed"
+	)
 	assertContains(dashboard, "![[Build Health]]", "Dashboard missing Build Health embed")
 	assertContains(dashboard, "![[Stale Sources]]", "Dashboard missing Stale Sources embed")
 
@@ -257,6 +262,16 @@ else
 		"Every WO acceptance command has real pasted output in STATUS.md",
 		"Founder Sign-Off Audit missing Section 10 criteria"
 	)
+
+	local coldBootReadiness = read("00_Command_Center/Cold Boot Readiness.md")
+	assertFrontmatter(coldBootReadiness, "Cold Boot Readiness")
+	assertContains(
+		coldBootReadiness,
+		"This note does not replace G2/G3 proof",
+		"Cold Boot Readiness must not replace human proof"
+	)
+	assertContains(coldBootReadiness, "G2 Studio Connect", "Cold Boot Readiness missing G2")
+	assertContains(coldBootReadiness, "G3 Obsidian Dashboard", "Cold Boot Readiness missing G3")
 
 	local buildHealth = read("00_Command_Center/Build Health.md")
 	assertFrontmatter(buildHealth, "Build Health")

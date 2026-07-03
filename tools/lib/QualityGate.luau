@@ -216,6 +216,14 @@ function QualityGate.runAll(options: RunOptions?): { CommandResult }
 	table.insert(
 		results,
 		QualityGate.runTool(
+			"Cold Boot Readiness Tests",
+			"lune",
+			{ "run", "tools/test_cold_boot_readiness.luau" }
+		)
+	)
+	table.insert(
+		results,
+		QualityGate.runTool(
 			"Human Gate Checklist Tests",
 			"lune",
 			{ "run", "tools/test_human_gate_checklist.luau" }

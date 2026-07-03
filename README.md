@@ -23,6 +23,7 @@ wally install
 ./nexus.ps1 g1
 ./nexus.ps1 receipts
 ./nexus.ps1 audit
+./nexus.ps1 cold-boot
 ./nexus.ps1 up
 ./nexus.ps1 down
 ./nexus.ps1 release --dry-run --fixture

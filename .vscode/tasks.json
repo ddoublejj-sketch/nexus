@@ -122,6 +122,12 @@
       "problemMatcher": []
     },
     {
+      "label": "Nexus: Cold Boot Readiness",
+      "type": "shell",
+      "command": "./nexus.ps1 cold-boot",
+      "problemMatcher": []
+    },
+    {
       "label": "Nexus: Release Dry Run",
       "type": "shell",
       "command": "./nexus.ps1 release --dry-run --fixture",

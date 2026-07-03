@@ -33,6 +33,7 @@ local EXPECTED_TASKS = {
 	["Nexus: GitHub CI Bootstrap"] = "./nexus.ps1 github-ci",
 	["Nexus: Open Cloud Bootstrap"] = "./nexus.ps1 open-cloud",
 	["Nexus: Founder Sign-Off Audit"] = "./nexus.ps1 audit",
+	["Nexus: Cold Boot Readiness"] = "./nexus.ps1 cold-boot",
 	["Nexus: Release Dry Run"] = "./nexus.ps1 release --dry-run --fixture",
 	["Nexus: Loop Once"] = "./nexus.ps1 loop --once",
 }
@@ -53,6 +54,7 @@ local LOOP_SCRIPTS = {
 	"tools/human_gate_checklist.luau",
 	"tools/human_gate_readiness.luau",
 	"tools/human_gate_receipts.luau",
+	"tools/cold_boot_readiness.luau",
 	"tools/founder_signoff_audit.luau",
 	"tools/build_health.luau",
 }
@@ -109,6 +111,7 @@ for _, command in
 		'"github-ci"',
 		'"open-cloud"',
 		'"audit"',
+		'"cold-boot"',
 		'"release"',
 		'"loop"',
 		'"status"',
@@ -152,6 +155,11 @@ assertContains(
 )
 assertContains(launcher, "git status --short", "status must show Git status")
 assertContains(launcher, "rokit list", "status must show pinned tools")
+assertContains(
+	launcher,
+	'Invoke-Tool "lune" @("run", "tools/cold_boot_readiness.luau")',
+	"cold-boot must write readiness evidence"
+)
 
 for _, scriptPath in LOOP_SCRIPTS do
 	assertContains(launcher, scriptPath, "Launcher loop missing " .. scriptPath)
@@ -220,6 +228,7 @@ assertContains(
 	"fresh setup must mention release dry-run"
 )
 assertContains(freshSetup, "Local REST API", "fresh setup must include Obsidian REST plugin")
+assertContains(freshSetup, "./nexus.ps1 cold-boot", "fresh setup must include cold-boot readiness")
 
 assertContains(disasterRecovery, "File > Save to File", "recovery must document Studio save")
 assertContains(

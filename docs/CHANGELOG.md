@@ -47,3 +47,4 @@
 - [WO-5/WO-10] Added repeatable Blender thumbnail rendering, committed PNG thumbnails for seed assets, and refreshed asset-vault notes - 2026-07-03.
 - [WO-6/WO-7] Wired Cmdr profile commands to DataService inventory, stat, and profile-reset helpers - 2026-07-03.
 - [WO-2/WO-6] Added Rojo-managed Default map lane and MapService-backed reloadmap command - 2026-07-03.
+- [WO-10] Added cold-boot readiness probe, dashboard note, launcher/task wiring, and contract test - 2026-07-03.
