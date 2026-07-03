@@ -1,0 +1,194 @@
+--!strict
+
+local fs = require("@lune/fs")
+local process = require("@lune/process")
+
+local VAULT_ROOT = "C:/Users/jackw/Roblox/RobloxGameVault"
+
+local REQUIRED_DIRECTORIES = {
+	"00_Command_Center",
+	"01_Game_Design",
+	"02_Systems",
+	"03_World_And_Maps",
+	"04_Assets",
+	"05_Playtests",
+	"06_Engineering",
+	"80_Archives/StudioSnapshots",
+	"90_Automation/Generated",
+	"90_Automation/Logs/pending",
+	"99_Inbox",
+	"Templates",
+}
+
+local REQUIRED_TEMPLATES = {
+	"Asset.md",
+	"Bug.md",
+	"Decision.md",
+	"Map.md",
+	"Playtest.md",
+	"System.md",
+}
+
+local FRONTMATTER_FIELDS = {
+	"type",
+	"status",
+	"owner",
+	"source_path",
+	"roblox_asset_id",
+	"studio_instance_path",
+	"dependencies",
+	"last_synced",
+	"tags",
+}
+
+local REQUIRED_COMMANDS = {
+	debugtag = true,
+	give = true,
+	profilewipe = true,
+	reloadmap = true,
+	setstat = true,
+	spawn = true,
+	tp = true,
+}
+
+local function assertTrue(condition: boolean, label: string)
+	if not condition then
+		error(label)
+	end
+end
+
+local function pathJoin(...: string): string
+	return table.concat({ ... }, "/")
+end
+
+local function read(relativePath: string): string
+	local path = pathJoin(VAULT_ROOT, relativePath)
+	assertTrue(fs.isFile(path), "Missing vault file: " .. relativePath)
+
+	return fs.readFile(path)
+end
+
+local function assertContains(contents: string, needle: string, label: string)
+	assertTrue(contents:find(needle, 1, true) ~= nil, label)
+end
+
+local function assertFrontmatter(contents: string, label: string)
+	assertTrue(contents:find("---", 1, true) == 1, label .. " missing opening frontmatter")
+
+	for _, field in FRONTMATTER_FIELDS do
+		assertContains(contents, "\n" .. field .. ":", label .. " missing " .. field)
+	end
+end
+
+local function countWorkOrderRows(contents: string): number
+	local count = 0
+	for line in contents:gmatch("[^\r\n]+") do
+		if line:match("^| WO%-%d+") then
+			count += 1
+		end
+	end
+
+	return count
+end
+
+if not fs.isDir(VAULT_ROOT) then
+	print("Vault scaffold tests skipped: vault repo not present")
+else
+	assertTrue(fs.isDir(pathJoin(VAULT_ROOT, ".git")), "Vault must be its own Git repo")
+
+	local gitLog = process.exec("git", {
+		"-C",
+		VAULT_ROOT,
+		"log",
+		"--oneline",
+		"-1",
+	})
+	assertTrue(gitLog.ok and gitLog.stdout ~= "", "Vault repo must have at least one commit")
+
+	for _, relativePath in REQUIRED_DIRECTORIES do
+		assertTrue(
+			fs.isDir(pathJoin(VAULT_ROOT, relativePath)),
+			"Missing vault directory: " .. relativePath
+		)
+	end
+
+	for _, templateName in REQUIRED_TEMPLATES do
+		local contents = read("Templates/" .. templateName)
+		assertFrontmatter(contents, "Template " .. templateName)
+		assertContains(
+			contents,
+			"# <% tp.file.title %>",
+			templateName .. " missing Templater title"
+		)
+	end
+
+	local dashboard = read("00_Command_Center/Dashboard.md")
+	assertFrontmatter(dashboard, "Dashboard")
+	assertContains(dashboard, "## Active Systems", "Dashboard missing Active Systems")
+	assertContains(dashboard, 'FROM "02_Systems"', "Dashboard missing systems Dataview query")
+	assertContains(dashboard, "## Assets By Status", "Dashboard missing Assets By Status")
+	assertContains(dashboard, 'FROM "04_Assets"', "Dashboard missing assets Dataview query")
+	assertContains(dashboard, "## Open Tasks", "Dashboard missing Open Tasks")
+	assertContains(dashboard, "```tasks", "Dashboard missing Tasks query")
+	assertContains(dashboard, "![[Gate Status]]", "Dashboard missing Gate Status embed")
+	assertContains(dashboard, "![[Build Health]]", "Dashboard missing Build Health embed")
+	assertContains(dashboard, "![[Stale Sources]]", "Dashboard missing Stale Sources embed")
+
+	local gateStatus = read("00_Command_Center/Gate Status.md")
+	assertFrontmatter(gateStatus, "Gate Status")
+	for gateNumber = 1, 5 do
+		assertContains(
+			gateStatus,
+			"G" .. tostring(gateNumber),
+			"Gate Status missing G" .. tostring(gateNumber)
+		)
+	end
+	assertTrue(countWorkOrderRows(gateStatus) == 11, "Gate Status must list WO-0 through WO-10")
+
+	local buildHealth = read("00_Command_Center/Build Health.md")
+	assertFrontmatter(buildHealth, "Build Health")
+	assertContains(buildHealth, "Overall: PASS", "Build Health must be passing")
+	assertContains(buildHealth, "Vault Scaffold Tests", "Build Health missing vault verifier row")
+	assertContains(buildHealth, "Asset Manifest Tests", "Build Health missing asset verifier row")
+	assertContains(
+		buildHealth,
+		"Command Surface Tests",
+		"Build Health missing command verifier row"
+	)
+	assertContains(buildHealth, "Net Contract Tests", "Build Health missing Net verifier row")
+	assertContains(buildHealth, "Secret Scan", "Build Health missing secret scan row")
+
+	local sourcemap = read("90_Automation/Generated/Sourcemap.md")
+	assertFrontmatter(sourcemap, "Sourcemap")
+	assertContains(sourcemap, "game.ReplicatedStorage.Shared.Net", "Sourcemap missing Shared.Net")
+	assertContains(
+		sourcemap,
+		"game.ServerScriptService.Server.Services.DataService",
+		"Sourcemap missing DataService"
+	)
+	assertContains(
+		sourcemap,
+		"game.StarterPlayer.StarterPlayerScripts.Client.Controllers.NexusController",
+		"Sourcemap missing NexusController"
+	)
+
+	local staleSources = read("90_Automation/Generated/Stale Sources.md")
+	assertFrontmatter(staleSources, "Stale Sources")
+	assertContains(
+		staleSources,
+		"No stale generated module notes found.",
+		"Stale Sources should be clean"
+	)
+
+	local commands = read("02_Systems/Commands.md")
+	assertFrontmatter(commands, "Commands")
+	for commandName in REQUIRED_COMMANDS do
+		assertContains(
+			commands,
+			"| " .. commandName .. " |",
+			"Commands note missing " .. commandName
+		)
+	end
+
+	print("Vault scaffold tests passed")
+end

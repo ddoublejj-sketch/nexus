@@ -265,6 +265,7 @@ b13f88a Add shared CI quality gate
 - Added fail-soft pending queue behavior for missing or unavailable Obsidian REST writes:
   - pending writes go to `90_Automation/Logs/pending`
   - successful REST pings flush pending writes into Obsidian and copy flushed envelopes to `90_Automation/Logs/sent`
+- Added `tools/test_vault_scaffold.luau` to the shared quality gate. It verifies the vault folder layout, Templater frontmatter schema, dashboard Dataview/Tasks sections, dashboard embeds, gate-status note, build-health note, sourcemap note, stale-source note, and command registry note.
 
 ### Human Gate G3 Request
 
@@ -323,6 +324,13 @@ reason: Missing Obsidian REST config
 ---
 # Ping
 Last ping: 2026-07-03T03:38:29Z
+```
+
+Vault scaffold self-test:
+
+```powershell
+lune run tools/test_vault_scaffold.luau
+Vault scaffold tests passed
 ```
 
 Script style/lint:
@@ -407,6 +415,7 @@ Please complete when ready:
   - `90_Automation/Generated/Asset Manifest.md`
   - `00_Command_Center/Build Health.md`
 - Dashboard now embeds `Stale Sources`.
+- Shared quality gate now includes `Vault Scaffold Tests`, which covers the local vault scaffold and generated command-center notes.
 
 ### Direct-Run Evidence
 
@@ -1208,16 +1217,17 @@ Full gate after WO-10:
 
 ```powershell
 $env:ROKIT_PROBE='1'; lune run tools/quality_gate.luau
-[PASS] Wally Install (0.70s, exit 0)
-[PASS] StyLua (0.05s, exit 0)
+[PASS] Wally Install (0.82s, exit 0)
+[PASS] StyLua (0.06s, exit 0)
 [PASS] Selene (0.09s, exit 0)
 [PASS] Sourcemap (0.09s, exit 0)
 [PASS] Migration Tests (0.03s, exit 0)
-[PASS] Asset Manifest Tests (0.04s, exit 0)
+[PASS] Vault Scaffold Tests (0.07s, exit 0)
+[PASS] Asset Manifest Tests (0.03s, exit 0)
 [PASS] Command Surface Tests (0.03s, exit 0)
 [PASS] Net Contract Tests (0.03s, exit 0)
-[PASS] Secret Scan (0.45s, exit 0)
-[PASS] Analyze (1.99s, exit 0)
+[PASS] Secret Scan (0.37s, exit 0)
+[PASS] Analyze (2.09s, exit 0)
 [PASS] Build (0.08s, exit 0)
 [PASS] Open Cloud Dry Run (0.03s, exit 0)
 Quality gate PASS
@@ -1232,6 +1242,7 @@ StyLua: PASS
 Selene: PASS
 Sourcemap: PASS
 Migration Tests: PASS
+Vault Scaffold Tests: PASS
 Asset Manifest Tests: PASS
 Command Surface Tests: PASS
 Net Contract Tests: PASS
@@ -1292,8 +1303,8 @@ NexusAutomationLoop Stopped
 | WO-0 Tool Gaps | Partial | Audit output under WO-0 | G1: `code`, `gh`, Obsidian, Blender on PATH/install path |
 | WO-1 Bootstrap | Exact local acceptance passed | Repo scaffold, tool pins, `rokit install`, `wally install`, `rojo build`, `rojo sourcemap`, `./nexus.ps1 check` | None locally |
 | WO-2 Studio Bridge | Runbook added, live bridge blocked | Sourcemap-aware analyze output and `docs/runbooks/rojo-sync-rules.md` | G2: Studio plugin connect and live sync proof |
-| WO-3 Vault | Scaffolded, REST blocked | Vault repo, templates, pending queue output | G3: Obsidian install, plugins, Local REST API key, pending flush |
-| WO-4 Automation Loop | Exact local launcher proof passed | Sourcemap, vault sync, dummy/stale-note demo, command registry, gate status, asset manifest, `./nexus.ps1 loop --once`, Build Health outputs | Dashboard render needs G3 |
+| WO-3 Vault | Scaffolded, REST blocked | Vault repo, templates, vault scaffold tests, pending queue output | G3: Obsidian install, plugins, Local REST API key, pending flush |
+| WO-4 Automation Loop | Exact local launcher proof passed | Sourcemap, vault sync, dummy/stale-note demo, command registry, gate status, vault scaffold tests, asset manifest, `./nexus.ps1 loop --once`, Build Health outputs | Dashboard render needs G3 |
 | WO-5 Asset Pipeline | Implemented with seed assets | Manifest, orphan repair, asset manifest tests, vault asset notes | Blender thumbnail rendering still waits on G1 Blender path; dashboard render needs G3 |
 | WO-6 Cmdr | Implemented and analyzed | Cmdr service/controller, commands, generated command docs | G2 Studio playtest for command execution |
 | WO-7 Data/Networking | Implemented and tested locally | ProfileStore wrapper, migration tests, Net contract tests, typed Net, Build Health | G2 Studio playtest for session/runtime behavior |
@@ -1305,16 +1316,17 @@ NexusAutomationLoop Stopped
 
 ```powershell
 ./nexus.ps1 check
-[PASS] Wally Install (0.74s, exit 0)
-[PASS] StyLua (0.05s, exit 0)
-[PASS] Selene (0.08s, exit 0)
-[PASS] Sourcemap (0.08s, exit 0)
+[PASS] Wally Install (0.75s, exit 0)
+[PASS] StyLua (0.06s, exit 0)
+[PASS] Selene (0.09s, exit 0)
+[PASS] Sourcemap (0.09s, exit 0)
 [PASS] Migration Tests (0.03s, exit 0)
+[PASS] Vault Scaffold Tests (0.06s, exit 0)
 [PASS] Asset Manifest Tests (0.03s, exit 0)
 [PASS] Command Surface Tests (0.03s, exit 0)
 [PASS] Net Contract Tests (0.03s, exit 0)
-[PASS] Secret Scan (0.33s, exit 0)
-[PASS] Analyze (2.04s, exit 0)
+[PASS] Secret Scan (0.36s, exit 0)
+[PASS] Analyze (2.01s, exit 0)
 [PASS] Build (0.08s, exit 0)
 [PASS] Open Cloud Dry Run (0.03s, exit 0)
 Quality gate PASS
