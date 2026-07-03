@@ -107,6 +107,10 @@ function QualityGate.runAll(options: RunOptions?): { CommandResult }
 	)
 	table.insert(
 		results,
+		QualityGate.runTool("Command Surface Tests", "lune", { "run", "tools/test_commands.luau" })
+	)
+	table.insert(
+		results,
 		QualityGate.runTool("Analyze", "luau-lsp", {
 			"analyze",
 			"--definitions",

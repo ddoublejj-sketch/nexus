@@ -712,6 +712,12 @@ Build health PASS; wrote C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center
   - `debugtag`
 - `profilewipe` is Owner-tier and also refuses unless the confirm argument is `CONFIRM_WIPE`.
 - Updated `tools/command_registry.luau` so it skips `*Server` implementation modules and documents only command definitions.
+- Added `tools/test_commands.luau` to verify the command surface without Studio:
+  - exactly seven command definition modules
+  - every command has a matching server handler
+  - every command header tier matches its Cmdr group
+  - `profilewipe` is `Owner`/`NexusOwner`
+  - `profilewipeServer` re-checks Owner permission and refuses without `CONFIRM_WIPE`
 
 ### Direct-Run Evidence
 
@@ -745,6 +751,13 @@ Length: 60268 bytes
 ```powershell
 $env:ROKIT_PROBE='1'; lune run tools/command_registry.luau
 Wrote 7 command rows to C:/Users/jackw/Roblox/RobloxGameVault/02_Systems/Commands.md
+```
+
+Command surface tests:
+
+```powershell
+lune run tools/test_commands.luau
+Command surface tests passed
 ```
 
 Commands.md rows:
@@ -1249,14 +1262,15 @@ NexusAutomationLoop Stopped
 
 ```powershell
 ./nexus.ps1 check
-[PASS] Wally Install (0.69s, exit 0)
+[PASS] Wally Install (0.77s, exit 0)
 [PASS] StyLua (0.05s, exit 0)
 [PASS] Selene (0.09s, exit 0)
 [PASS] Sourcemap (0.09s, exit 0)
 [PASS] Migration Tests (0.03s, exit 0)
-[PASS] Analyze (1.98s, exit 0)
+[PASS] Command Surface Tests (0.03s, exit 0)
+[PASS] Analyze (1.99s, exit 0)
 [PASS] Build (0.08s, exit 0)
-[PASS] Open Cloud Dry Run (0.04s, exit 0)
+[PASS] Open Cloud Dry Run (0.03s, exit 0)
 Quality gate PASS
 ```
 
