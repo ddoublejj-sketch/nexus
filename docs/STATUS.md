@@ -1564,6 +1564,7 @@ When ready to publish for real:
 - Added `tools/test_human_gate_checklist.luau` to the shared quality gate. It verifies G1-G5 actions, proof commands, launcher/task wiring, README visibility, dashboard embed, and generated vault note content.
 - Added `tools/human_gate_readiness.luau` and a dashboard embed for `00_Command_Center/Human Gate Readiness.md`.
 - Added `tools/test_human_gate_readiness.luau` to the shared quality gate. It verifies automatic G1-G5 readiness checks, secret-safe output, launcher/loop wiring, dashboard embed, and generated vault note content.
+- Updated the generated Human Gate Checklist and Human Gate Readiness notes so G2-G5 all point to their repeatable bootstrap helpers from one central gate surface.
 - Added `tools/human_gate_acceptance.luau`, `./nexus.ps1 gatecheck`, and a `Nexus: Gate Acceptance Probe` VS Code task.
 - Added `tools/test_human_gate_acceptance.luau` to the shared quality gate. It verifies the on-demand acceptance probe, its self-test mode, and an honest blocked probe path for human-only gates.
 
@@ -1823,10 +1824,10 @@ Acceptance matrix contract tests passed
 
 ```powershell
 ./nexus.ps1 check
-[PASS] Wally Install (0.96s, exit 0)
-[PASS] StyLua (0.08s, exit 0)
+[PASS] Wally Install (1.30s, exit 0)
+[PASS] StyLua (0.09s, exit 0)
 [PASS] Selene (0.11s, exit 0)
-[PASS] Sourcemap (0.09s, exit 0)
+[PASS] Sourcemap (0.08s, exit 0)
 [PASS] Tool Gap Contract Tests (0.03s, exit 0)
 [PASS] G1 Tool Closure Tests (0.03s, exit 0)
 [PASS] Rojo Bridge Tests (0.03s, exit 0)
@@ -1837,22 +1838,22 @@ Acceptance matrix contract tests passed
 [PASS] Obsidian Plugin Setup Tests (0.03s, exit 0)
 [PASS] Obsidian REST Bootstrap Tests (0.03s, exit 0)
 [PASS] GitHub CI Bootstrap Tests (0.03s, exit 0)
-[PASS] Asset Manifest Tests (0.04s, exit 0)
+[PASS] Asset Manifest Tests (0.03s, exit 0)
 [PASS] Command Surface Tests (0.03s, exit 0)
 [PASS] Net Contract Tests (0.03s, exit 0)
 [PASS] CI Contract Tests (0.03s, exit 0)
 [PASS] Command Center Contract Tests (0.03s, exit 0)
 [PASS] Human Gate Checklist Tests (0.03s, exit 0)
 [PASS] Human Gate Readiness Tests (0.03s, exit 0)
-[PASS] Human Gate Acceptance Tests (2.17s, exit 0)
-[PASS] Human Gate Receipt Tests (1.07s, exit 0)
+[PASS] Human Gate Acceptance Tests (2.28s, exit 0)
+[PASS] Human Gate Receipt Tests (1.08s, exit 0)
 [PASS] Founder Sign-Off Audit Tests (0.03s, exit 0)
 [PASS] Acceptance Matrix Contract Tests (0.03s, exit 0)
 [PASS] Release Contract Tests (0.03s, exit 0)
 [PASS] Open Cloud Bootstrap Tests (0.03s, exit 0)
 [PASS] Secret Scan (0.52s, exit 0)
-[PASS] Analyze (2.07s, exit 0)
-[PASS] Build (0.10s, exit 0)
+[PASS] Analyze (2.02s, exit 0)
+[PASS] Build (0.08s, exit 0)
 [PASS] Open Cloud Dry Run (0.03s, exit 0)
 Quality gate PASS
 ```

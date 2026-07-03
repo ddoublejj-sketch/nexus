@@ -48,6 +48,7 @@ local GATES: { Gate } = {
 		human = {
 			"Open the Nexus place in Roblox Studio.",
 			"Run `./nexus.ps1 up` from the Nexus repo.",
+			"Run `./nexus.ps1 studio-bridge` to confirm local bridge readiness.",
 			"Connect the Rojo Studio plugin to the local server.",
 			"Confirm a disk edit appears in Studio within seconds.",
 			"Run the disposable syncback/export test from `docs/runbooks/rojo-sync-rules.md`.",
@@ -61,6 +62,7 @@ local GATES: { Gate } = {
 		proof = {
 			"./nexus.ps1 receipts",
 			"./nexus.ps1 up",
+			"./nexus.ps1 studio-bridge",
 			"luau-lsp analyze --definitions types/globalTypes.d.luau --sourcemap sourcemap.json src",
 			"./nexus.ps1 down",
 			"./nexus.ps1 gatecheck --gate G2",
@@ -73,7 +75,7 @@ local GATES: { Gate } = {
 		human = {
 			"Open `C:\\Users\\jackw\\Roblox\\RobloxGameVault` as an Obsidian vault.",
 			"Confirm the preinstalled plugins load: Local REST API, Obsidian Git, Dataview, Tasks, Kanban, Templater, QuickAdd, and Omnisearch.",
-			"Create `secrets/obsidian.env` with `OBSIDIAN_API_URL` and `OBSIDIAN_API_KEY`.",
+			"Run `./nexus.ps1 obsidian-rest` after Obsidian has generated Local REST settings so the secret file is written without printing the key.",
 		},
 		codex = {
 			"Run `./nexus.ps1 obsidian-plugins` if the local plugin bundle files need to be restored.",
@@ -84,6 +86,8 @@ local GATES: { Gate } = {
 		},
 		proof = {
 			"./nexus.ps1 receipts",
+			"./nexus.ps1 obsidian-plugins",
+			"./nexus.ps1 obsidian-rest",
 			"lune run tools/vault_ping.luau",
 			"./nexus.ps1 loop --once",
 			"git -C C:\\Users\\jackw\\Roblox\\RobloxGameVault status --short",
@@ -96,6 +100,7 @@ local GATES: { Gate } = {
 		state = "Blocked on GitHub authentication and remote repository setup",
 		human = {
 			"Run `gh auth login` and complete the browser/device flow.",
+			"Run `./nexus.ps1 github-ci` after auth to capture readiness without printing remote URLs.",
 			"Approve private repo creation for Nexus and RobloxGameVault.",
 		},
 		codex = {
@@ -107,7 +112,9 @@ local GATES: { Gate } = {
 		proof = {
 			"./nexus.ps1 receipts",
 			"gh auth status",
+			"./nexus.ps1 github-ci",
 			"gh repo create nexus --private --source . --remote origin --push",
+			"./nexus.ps1 github-ci --create-private",
 			"gh pr checks",
 			"./nexus.ps1 gatecheck --gate G4",
 		},
@@ -119,6 +126,7 @@ local GATES: { Gate } = {
 		human = {
 			"Create the smallest-scope Open Cloud key needed to publish the target place.",
 			"Create `secrets/opencloud.env` with key, universe ID, and place ID.",
+			"Run `./nexus.ps1 open-cloud` to capture release readiness without writing key or place values into the vault.",
 		},
 		codex = {
 			"Mark the required marker in `docs/gate-proofs/G5-open-cloud-publish.md` as `PASS` after explicit live publish approval.",
@@ -127,6 +135,7 @@ local GATES: { Gate } = {
 		},
 		proof = {
 			"./nexus.ps1 receipts",
+			"./nexus.ps1 open-cloud",
 			"./nexus.ps1 release --dry-run --fixture",
 			"lune run tools/open_cloud_publish.luau --dry-run",
 			"lune run tools/secret_scan.luau",

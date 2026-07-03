@@ -7,6 +7,7 @@ local VAULT_ROOT = "C:/Users/jackw/Roblox/RobloxGameVault"
 local OUTPUT_PATH = VAULT_ROOT .. "/00_Command_Center/Human Gate Readiness.md"
 local PENDING_ROOT = VAULT_ROOT .. "/90_Automation/Logs/pending"
 local SENT_ROOT = VAULT_ROOT .. "/90_Automation/Logs/sent"
+local COMMAND_CENTER_ROOT = VAULT_ROOT .. "/00_Command_Center"
 
 local REQUIRED_OBSIDIAN_PLUGINS = {
 	"obsidian-local-rest-api",
@@ -199,6 +200,12 @@ local rows: { CheckRow } = {
 		"Studio plugin connected",
 		"Requires Roblox Studio and Rojo plugin confirmation."
 	),
+	fileCheck(
+		"G2",
+		"Studio bridge bootstrap",
+		COMMAND_CENTER_ROOT .. "/Studio Bridge Bootstrap.md",
+		"bootstrap evidence present"
+	),
 	fileCheck("G2", "Rojo sync runbook", "docs/runbooks/rojo-sync-rules.md", "runbook present"),
 	fileCheck(
 		"G2",
@@ -218,6 +225,12 @@ local rows: { CheckRow } = {
 		VAULT_ROOT .. "/00_Command_Center/Dashboard.md",
 		"dashboard present"
 	),
+	fileCheck(
+		"G3",
+		"Obsidian REST bootstrap",
+		COMMAND_CENTER_ROOT .. "/Obsidian REST Bootstrap.md",
+		"bootstrap evidence present"
+	),
 	obsidianPluginSetupCheck(),
 	{
 		gate = "G3",
@@ -226,6 +239,12 @@ local rows: { CheckRow } = {
 		detail = tostring(pendingCount()) .. " pending write(s)",
 	},
 	commandCheck("G4", "gh auth status", "gh", { "auth", "status" }),
+	fileCheck(
+		"G4",
+		"GitHub CI bootstrap",
+		COMMAND_CENTER_ROOT .. "/GitHub CI Bootstrap.md",
+		"bootstrap evidence present"
+	),
 	commandOutputRequired(
 		"G4",
 		"git remote -v",
@@ -240,6 +259,12 @@ local rows: { CheckRow } = {
 		"file exists; values not printed"
 	),
 	fileCheck("G5", "Open Cloud fixture", "tools/fixtures/opencloud.env", "fixture present"),
+	fileCheck(
+		"G5",
+		"Open Cloud bootstrap",
+		COMMAND_CENTER_ROOT .. "/Open Cloud Bootstrap.md",
+		"bootstrap evidence present"
+	),
 	fileCheck("G5", "Build artifact", "build/nexus.rbxl", "build artifact present"),
 	humanCheck(
 		"G5",

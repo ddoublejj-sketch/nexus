@@ -25,8 +25,13 @@ local REQUIRED_PROOF_COMMANDS = {
 	"Get-Command blender -ErrorAction SilentlyContinue",
 	"./nexus.ps1 g1",
 	"./nexus.ps1 up",
+	"./nexus.ps1 studio-bridge",
+	"./nexus.ps1 obsidian-plugins",
+	"./nexus.ps1 obsidian-rest",
 	"lune run tools/vault_ping.luau",
 	"gh auth status",
+	"./nexus.ps1 github-ci",
+	"./nexus.ps1 open-cloud",
 	"./nexus.ps1 gatecheck --gate G1",
 	"./nexus.ps1 release --dry-run --fixture",
 }
