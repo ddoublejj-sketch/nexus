@@ -86,6 +86,12 @@
       "problemMatcher": []
     },
     {
+      "label": "Nexus: Obsidian REST Bootstrap",
+      "type": "shell",
+      "command": "./nexus.ps1 obsidian-rest",
+      "problemMatcher": []
+    },
+    {
       "label": "Nexus: Founder Sign-Off Audit",
       "type": "shell",
       "command": "./nexus.ps1 audit",

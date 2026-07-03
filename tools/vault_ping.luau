@@ -164,6 +164,7 @@ local function flushPending(config: RestConfig): number
 			local pendingPath = PENDING_ROOT .. "/" .. entry
 			local sentPath = SENT_ROOT .. "/" .. entry:gsub("%.pending$", ".sent")
 			if fs.isFile(sentPath) then
+				fs.removeFile(pendingPath)
 				continue
 			end
 
@@ -177,6 +178,7 @@ local function flushPending(config: RestConfig): number
 				end
 
 				fs.writeFile(sentPath, envelope)
+				fs.removeFile(pendingPath)
 				flushed += 1
 			end
 		end

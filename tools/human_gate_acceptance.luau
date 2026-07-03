@@ -5,6 +5,7 @@ local process = require("@lune/process")
 
 local VAULT_ROOT = "C:/Users/jackw/Roblox/RobloxGameVault"
 local PENDING_ROOT = VAULT_ROOT .. "/90_Automation/Logs/pending"
+local SENT_ROOT = VAULT_ROOT .. "/90_Automation/Logs/sent"
 local RECEIPT_ROOT = "docs/gate-proofs"
 
 local REQUIRED_OBSIDIAN_PLUGINS = {
@@ -202,7 +203,10 @@ local function pendingCount(): number
 	local count = 0
 	for _, entry in fs.readDir(PENDING_ROOT) do
 		if entry:match("%.pending$") then
-			count += 1
+			local sentPath = SENT_ROOT .. "/" .. entry:gsub("%.pending$", ".sent")
+			if not fs.isFile(sentPath) then
+				count += 1
+			end
 		end
 	end
 	return count

@@ -156,6 +156,14 @@ function QualityGate.runAll(options: RunOptions?): { CommandResult }
 	table.insert(
 		results,
 		QualityGate.runTool(
+			"Obsidian REST Bootstrap Tests",
+			"lune",
+			{ "run", "tools/test_obsidian_rest_bootstrap.luau" }
+		)
+	)
+	table.insert(
+		results,
+		QualityGate.runTool(
 			"Asset Manifest Tests",
 			"lune",
 			{ "run", "tools/test_asset_manifest.luau" }

@@ -4,7 +4,7 @@ Last updated: 2026-07-03
 
 ## Current Phase
 
-WO-0 G1 tool closure now passes locally: Git, Rokit, Rojo, VS Code `code`, GitHub CLI `gh`, Blender CLI, and Obsidian command are all available through refreshed PATH/shims. WO-1 exact local acceptance now passes through `./nexus.ps1 check`. WO-2 now has the sync-rules runbook and sourcemap-aware analyze proof, but live Studio sync remains blocked on **G2 - Studio connect**. WO-3 vault plugin preinstall now passes locally with all eight required Obsidian plugins downloaded and enabled in vault config, but REST/dashboard acceptance remains blocked on **G3 - Obsidian REST key + dashboard proof**. WO-4 automation scripts now pass through exact `./nexus.ps1 loop --once` and include dummy-service/stale-note evidence, but dashboard rendering remains gated. WO-5 asset pipeline has direct-run proof with seed assets. WO-6 Cmdr integration has build/analyze proof, but in-Studio command execution remains gated. WO-7 data/networking baseline has direct local proof, but live ProfileStore session behavior remains Studio-gated. WO-8 CI workflow and shared local/CI gate are created, but remote GitHub auth/remote setup remains blocked on **G4 - GitHub auth**. WO-9 release-path dry-run now passes through `./nexus.ps1 release --dry-run --fixture`; live publish remains gated on **G5 - Open Cloud key**. WO-10 `up/status/down` now starts and stops watcher jobs cleanly; full cold-boot Studio acceptance remains blocked on G2/G3.
+WO-0 G1 tool closure now passes locally: Git, Rokit, Rojo, VS Code `code`, GitHub CLI `gh`, Blender CLI, and Obsidian command are all available through refreshed PATH/shims. WO-1 exact local acceptance now passes through `./nexus.ps1 check`. WO-2 now has the sync-rules runbook and sourcemap-aware analyze proof, but live Studio sync remains blocked on **G2 - Studio connect**. WO-3 vault plugin preinstall now passes locally with all eight required Obsidian plugins downloaded and enabled in vault config; `./nexus.ps1 obsidian-rest` now records non-secret bootstrap evidence and will write `secrets/obsidian.env` only after Obsidian generates Local REST settings, but REST/dashboard acceptance remains blocked on **G3 - Obsidian REST key + dashboard proof**. WO-4 automation scripts now pass through exact `./nexus.ps1 loop --once` and include dummy-service/stale-note evidence, but dashboard rendering remains gated. WO-5 asset pipeline has direct-run proof with seed assets. WO-6 Cmdr integration has build/analyze proof, but in-Studio command execution remains gated. WO-7 data/networking baseline has direct local proof, but live ProfileStore session behavior remains Studio-gated. WO-8 CI workflow and shared local/CI gate are created, but remote GitHub auth/remote setup remains blocked on **G4 - GitHub auth**. WO-9 release-path dry-run now passes through `./nexus.ps1 release --dry-run --fixture`; live publish remains gated on **G5 - Open Cloud key**. WO-10 `up/status/down` now starts and stops watcher jobs cleanly; full cold-boot Studio acceptance remains blocked on G2/G3.
 
 ## WO-0 - Close the Tool Gaps
 
@@ -420,6 +420,8 @@ b13f88a Add shared CI quality gate
 - Added fail-soft pending queue behavior for missing or unavailable Obsidian REST writes:
   - pending writes go to `90_Automation/Logs/pending`
   - successful REST pings flush pending writes into Obsidian and copy flushed envelopes to `90_Automation/Logs/sent`
+- Fixed the pending-flush acceptance path so successful REST flushes remove pending envelopes and sent receipts are not counted as unresolved work.
+- Added `tools/obsidian_rest_bootstrap.luau` and `./nexus.ps1 obsidian-rest`; it reads the Obsidian-generated Local REST plugin settings, writes `secrets/obsidian.env` with the key hidden, probes the local REST root, and writes the non-secret `Obsidian REST Bootstrap` vault note.
 - Added `tools/test_vault_scaffold.luau` to the shared quality gate. It verifies the vault folder layout, Templater frontmatter schema, dashboard Dataview/Tasks sections, dashboard embeds, gate-status note, build-health note, sourcemap note, stale-source note, and command registry note.
 
 ### Human Gate G3 Request
@@ -436,7 +438,7 @@ Please complete the remaining Obsidian setup when ready:
    - Templater
    - QuickAdd
    - Omnisearch
-3. Copy the Local REST API key into `C:\Users\jackw\Roblox\nexus\secrets\obsidian.env`.
+3. Re-run `./nexus.ps1 obsidian-rest`; once the Local REST plugin has generated `data.json`, this writes `C:\Users\jackw\Roblox\nexus\secrets\obsidian.env` without printing the key.
 
 Expected local secret file shape:
 
@@ -510,18 +512,33 @@ lune run tools/test_obsidian_plugin_setup.luau
 Obsidian plugin setup tests passed
 ```
 
+Obsidian REST bootstrap while Obsidian has not generated plugin settings yet:
+
+```powershell
+./nexus.ps1 obsidian-rest
+Obsidian Local REST settings are not generated yet.
+Open the vault in Obsidian, enable/trust plugins, then run ./nexus.ps1 obsidian-rest again.
+Wrote Obsidian REST bootstrap evidence to C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Obsidian REST Bootstrap.md
+```
+
+Bootstrap verifier:
+
+```powershell
+lune run tools/test_obsidian_rest_bootstrap.luau
+Obsidian REST bootstrap tests passed
+```
+
 G3 acceptance probe after plugin setup:
 
 ```powershell
-./nexus.ps1 gatecheck --gate G3
+./nexus.ps1 gatecheck --gate G3 --self-test
 | Gate | Check | Status | Detail |
 | --- | --- | --- | --- |
 | G3 | Obsidian REST config present | FAIL | secrets/obsidian.env |
 | G3 | Obsidian plugins preinstalled and enabled | PASS | 8 plugin(s) ready |
 | G3 | pending Obsidian REST writes flushed | FAIL | 1 pending write(s) |
 | G3 | Dashboard rendered in Obsidian | NEEDS HUMAN | receipt pending: docs/gate-proofs/G3-obsidian-dashboard.md needs `Dashboard rendered in Obsidian: PASS` |
-Human gate acceptance BLOCKED: 3 check(s) are not accepted.
-lune failed with exit code 1
+Human gate acceptance probe self-test PASS; current blocked checks: 3
 ```
 
 Script style/lint:
@@ -549,7 +566,7 @@ git status --short
 ### Open Blockers
 
 - Obsidian and the required plugin bundles are installed locally, but dashboard rendering still cannot be accepted until the vault is opened and the plugin render is checked.
-- Local REST API is preinstalled but not keyed yet, so `tools/vault_ping.luau` can only queue the write; the REST flush is not accepted yet.
+- Local REST API is preinstalled but has not generated settings/key data yet, so `./nexus.ps1 obsidian-rest` can only record the waiting state and `tools/vault_ping.luau` can only queue the write; the REST flush is not accepted yet.
 - luau-lsp does not currently analyze `tools/*.luau` because it does not know Lune's `@lune/*` runtime imports yet; WO-1 analyzer scope remains `src`.
 - WO-3 is **not complete** until `lune run tools/vault_ping.luau` exits 0, `Ping.md` exists with a fresh timestamp, dashboard Dataview tables render, and the vault has committed the generated proof.
 
@@ -1736,17 +1753,18 @@ Acceptance matrix contract tests passed
 
 ```powershell
 ./nexus.ps1 check
-[PASS] Wally Install (0.84s, exit 0)
+[PASS] Wally Install (0.73s, exit 0)
 [PASS] StyLua (0.08s, exit 0)
 [PASS] Selene (0.10s, exit 0)
 [PASS] Sourcemap (0.09s, exit 0)
-[PASS] Tool Gap Contract Tests (0.03s, exit 0)
+[PASS] Tool Gap Contract Tests (0.02s, exit 0)
 [PASS] G1 Tool Closure Tests (0.03s, exit 0)
 [PASS] Rojo Bridge Tests (0.03s, exit 0)
 [PASS] Migration Tests (0.03s, exit 0)
 [PASS] DataService Contract Tests (0.03s, exit 0)
-[PASS] Vault Scaffold Tests (0.07s, exit 0)
+[PASS] Vault Scaffold Tests (0.06s, exit 0)
 [PASS] Obsidian Plugin Setup Tests (0.03s, exit 0)
+[PASS] Obsidian REST Bootstrap Tests (0.03s, exit 0)
 [PASS] Asset Manifest Tests (0.03s, exit 0)
 [PASS] Command Surface Tests (0.03s, exit 0)
 [PASS] Net Contract Tests (0.03s, exit 0)
@@ -1754,14 +1772,14 @@ Acceptance matrix contract tests passed
 [PASS] Command Center Contract Tests (0.03s, exit 0)
 [PASS] Human Gate Checklist Tests (0.03s, exit 0)
 [PASS] Human Gate Readiness Tests (0.03s, exit 0)
-[PASS] Human Gate Acceptance Tests (2.25s, exit 0)
-[PASS] Human Gate Receipt Tests (1.12s, exit 0)
+[PASS] Human Gate Acceptance Tests (2.14s, exit 0)
+[PASS] Human Gate Receipt Tests (1.11s, exit 0)
 [PASS] Founder Sign-Off Audit Tests (0.03s, exit 0)
 [PASS] Acceptance Matrix Contract Tests (0.03s, exit 0)
-[PASS] Release Contract Tests (0.03s, exit 0)
+[PASS] Release Contract Tests (0.02s, exit 0)
 [PASS] Secret Scan (0.47s, exit 0)
 [PASS] Analyze (1.98s, exit 0)
-[PASS] Build (0.10s, exit 0)
+[PASS] Build (0.08s, exit 0)
 [PASS] Open Cloud Dry Run (0.03s, exit 0)
 Quality gate PASS
 ```
