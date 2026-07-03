@@ -4,7 +4,7 @@ Last updated: 2026-07-03
 
 ## Current Phase
 
-WO-0 G1 tool closure now passes locally: Git, Rokit, Rojo, VS Code `code`, GitHub CLI `gh`, Blender CLI, and Obsidian command are all available through refreshed PATH/shims. WO-1 exact local acceptance now passes through `./nexus.ps1 check`. WO-2 now has the sync-rules runbook, sourcemap-aware analyze proof, and `./nexus.ps1 studio-bridge` for repeatable local G2 readiness evidence, but live Studio sync remains blocked on **G2 - Studio connect**. WO-3 vault plugin preinstall now passes locally with all eight required Obsidian plugins downloaded and enabled in vault config; `./nexus.ps1 obsidian-rest` now records non-secret bootstrap evidence and will write `secrets/obsidian.env` only after Obsidian generates Local REST settings, but REST/dashboard acceptance remains blocked on **G3 - Obsidian REST key + dashboard proof**. WO-4 automation scripts now pass through exact `./nexus.ps1 loop --once` and include dummy-service/stale-note evidence, but dashboard rendering remains gated. WO-5 asset pipeline has direct-run proof with seed assets. WO-6 Cmdr integration has build/analyze proof, but in-Studio command execution remains gated. WO-7 data/networking baseline has direct local proof, but live ProfileStore session behavior remains Studio-gated. WO-8 CI workflow and shared local/CI gate are created; `./nexus.ps1 github-ci` now records non-secret G4 readiness and can explicitly create/push the private remote after `gh auth login`, but remote GitHub auth/remote setup remains blocked on **G4 - GitHub auth**. WO-9 release-path dry-run now passes through `./nexus.ps1 release --dry-run --fixture`; live publish remains gated on **G5 - Open Cloud key**. WO-10 `up/status/down` now starts and stops watcher jobs cleanly; full cold-boot Studio acceptance remains blocked on G2/G3.
+WO-0 G1 tool closure now passes locally: Git, Rokit, Rojo, VS Code `code`, GitHub CLI `gh`, Blender CLI, and Obsidian command are all available through refreshed PATH/shims. WO-1 exact local acceptance now passes through `./nexus.ps1 check`. WO-2 now has the sync-rules runbook, sourcemap-aware analyze proof, and `./nexus.ps1 studio-bridge` for repeatable local G2 readiness evidence, but live Studio sync remains blocked on **G2 - Studio connect**. WO-3 vault plugin preinstall now passes locally with all eight required Obsidian plugins downloaded and enabled in vault config; `./nexus.ps1 obsidian-rest` now records non-secret bootstrap evidence and will write `secrets/obsidian.env` only after Obsidian generates Local REST settings, but REST/dashboard acceptance remains blocked on **G3 - Obsidian REST key + dashboard proof**. WO-4 automation scripts now pass through exact `./nexus.ps1 loop --once` and include dummy-service/stale-note evidence, but dashboard rendering remains gated. WO-5 asset pipeline has direct-run proof with seed assets. WO-6 Cmdr integration has build/analyze proof, but in-Studio command execution remains gated. WO-7 data/networking baseline has direct local proof, but live ProfileStore session behavior remains Studio-gated. WO-8 CI workflow and shared local/CI gate are created; `./nexus.ps1 github-ci` now records non-secret G4 readiness and can explicitly create/push the private remote after `gh auth login`, but remote GitHub auth/remote setup remains blocked on **G4 - GitHub auth**. WO-9 release-path dry-run now passes through `./nexus.ps1 release --dry-run --fixture`; `./nexus.ps1 open-cloud` records secret-safe G5 readiness, but live publish remains gated on **G5 - Open Cloud key**. WO-10 `up/status/down` now starts and stops watcher jobs cleanly; full cold-boot Studio acceptance remains blocked on G2/G3.
 
 ## WO-0 - Close the Tool Gaps
 
@@ -1399,6 +1399,8 @@ Please complete when ready:
 - Added `Open Cloud Dry Run` to the shared quality gate, so local checks, CI, and Build Health verify the release path without a real key.
 - Added `tools/secret_scan.luau` to the shared quality gate. It scans Nexus and vault Git history for common real credential patterns while allowing intentional placeholders/fixtures.
 - Added `tools/test_release_contract.luau` to the shared quality gate. It verifies dry-run defaults, fixture/live separation, placeholder-key rejection, artifact validation, launcher forwarding, checklist requirements, and Open Cloud secret hygiene.
+- Added `tools/open_cloud_bootstrap.luau` and `./nexus.ps1 open-cloud`; it records build artifact, Build Health, fixture, checklist, secret-file, fixture dry-run, real dry-run, and G5 receipt readiness without writing Open Cloud key, universe ID, place ID, endpoint, or dry-run output values into the vault.
+- Added `tools/test_open_cloud_bootstrap.luau` to the shared quality gate. It verifies secret-safe evidence, launcher/task wiring, release-checklist mention, receipt handling, and dashboard embed.
 
 ### Dry-Run Evidence
 
@@ -1433,6 +1435,28 @@ Release contract self-test:
 ```powershell
 lune run tools/test_release_contract.luau
 Release contract tests passed
+```
+
+Open Cloud bootstrap while real Open Cloud config is still missing:
+
+```powershell
+./nexus.ps1 open-cloud
+Build artifact: PASS
+Build Health: PASS
+Fixture config: PASS
+Release checklist: PASS
+Open Cloud secret file: WAITING
+Fixture dry-run: PASS
+Real dry-run: WAITING
+Live approval receipt: NEEDS HUMAN
+Wrote Open Cloud bootstrap evidence to C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Open Cloud Bootstrap.md
+```
+
+Bootstrap verifier:
+
+```powershell
+lune run tools/test_open_cloud_bootstrap.luau
+Open Cloud bootstrap tests passed
 ```
 
 ### Shared Gate Evidence After WO-9
@@ -1785,7 +1809,7 @@ NexusAutomationLoop Stopped
 | WO-6 Cmdr | Implemented and analyzed | Cmdr service/controller, commands, generated command docs | G2 Studio playtest for command execution |
 | WO-7 Data/Networking | Implemented and tested locally | ProfileStore wrapper, migration tests, DataService contract tests, Net contract tests, typed Net, Build Health | G2 Studio playtest for session/runtime behavior |
 | WO-8 CI | Local workflow committed | Shared gate output, CI contract tests, GitHub CI bootstrap proof, workflow, runbook | G4: `gh auth`, remote repo, branch protection, real CI run |
-| WO-9 Release Path | Dry-run accepted locally | Fixture dry-run, `./nexus.ps1 release --dry-run --fixture`, release contract tests, secret-history scan, release checklist | G5 for live publish only |
+| WO-9 Release Path | Dry-run accepted locally | Fixture dry-run, `./nexus.ps1 release --dry-run --fixture`, Open Cloud bootstrap proof, release contract tests, secret-history scan, release checklist | G5 for live publish only |
 | WO-10 Hardening | Up/down smoke test passed locally | Task JSON parse, command-center contract tests, human gate checklist/readiness/acceptance/receipt/founder sign-off tests, dev log writes, Gate Status, Human Gate Proof Receipts, and Founder Sign-Off dashboard embeds, `./nexus.ps1 up/status/down`, full gate | G2 Studio connect and G3 dashboard render for cold-boot acceptance |
 
 Acceptance Matrix contract self-test:
@@ -1799,21 +1823,21 @@ Acceptance matrix contract tests passed
 
 ```powershell
 ./nexus.ps1 check
-[PASS] Wally Install (0.78s, exit 0)
+[PASS] Wally Install (0.96s, exit 0)
 [PASS] StyLua (0.08s, exit 0)
-[PASS] Selene (0.10s, exit 0)
-[PASS] Sourcemap (0.08s, exit 0)
+[PASS] Selene (0.11s, exit 0)
+[PASS] Sourcemap (0.09s, exit 0)
 [PASS] Tool Gap Contract Tests (0.03s, exit 0)
 [PASS] G1 Tool Closure Tests (0.03s, exit 0)
 [PASS] Rojo Bridge Tests (0.03s, exit 0)
 [PASS] Studio Bridge Bootstrap Tests (0.03s, exit 0)
 [PASS] Migration Tests (0.03s, exit 0)
 [PASS] DataService Contract Tests (0.03s, exit 0)
-[PASS] Vault Scaffold Tests (0.07s, exit 0)
+[PASS] Vault Scaffold Tests (0.06s, exit 0)
 [PASS] Obsidian Plugin Setup Tests (0.03s, exit 0)
-[PASS] Obsidian REST Bootstrap Tests (0.05s, exit 0)
+[PASS] Obsidian REST Bootstrap Tests (0.03s, exit 0)
 [PASS] GitHub CI Bootstrap Tests (0.03s, exit 0)
-[PASS] Asset Manifest Tests (0.03s, exit 0)
+[PASS] Asset Manifest Tests (0.04s, exit 0)
 [PASS] Command Surface Tests (0.03s, exit 0)
 [PASS] Net Contract Tests (0.03s, exit 0)
 [PASS] CI Contract Tests (0.03s, exit 0)
@@ -1821,13 +1845,14 @@ Acceptance matrix contract tests passed
 [PASS] Human Gate Checklist Tests (0.03s, exit 0)
 [PASS] Human Gate Readiness Tests (0.03s, exit 0)
 [PASS] Human Gate Acceptance Tests (2.17s, exit 0)
-[PASS] Human Gate Receipt Tests (1.11s, exit 0)
+[PASS] Human Gate Receipt Tests (1.07s, exit 0)
 [PASS] Founder Sign-Off Audit Tests (0.03s, exit 0)
 [PASS] Acceptance Matrix Contract Tests (0.03s, exit 0)
 [PASS] Release Contract Tests (0.03s, exit 0)
-[PASS] Secret Scan (0.51s, exit 0)
-[PASS] Analyze (2.03s, exit 0)
-[PASS] Build (0.08s, exit 0)
+[PASS] Open Cloud Bootstrap Tests (0.03s, exit 0)
+[PASS] Secret Scan (0.52s, exit 0)
+[PASS] Analyze (2.07s, exit 0)
+[PASS] Build (0.10s, exit 0)
 [PASS] Open Cloud Dry Run (0.03s, exit 0)
 Quality gate PASS
 ```

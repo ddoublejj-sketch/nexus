@@ -7,6 +7,7 @@ WO-9 keeps publish one explicit step away. Dry-run is safe to run without an Ope
 ```powershell
 ./nexus.ps1 check
 ./nexus.ps1 health
+./nexus.ps1 open-cloud
 ./nexus.ps1 release --dry-run --fixture
 ```
 
@@ -31,7 +32,8 @@ ROBLOX_UNIVERSE_ID=replace_with_numeric_universe_id
 ROBLOX_PLACE_ID=replace_with_numeric_place_id
 ```
 
-6. Run the live command only after a fixture dry-run passes:
+6. Run `./nexus.ps1 open-cloud` again; it records readiness without writing key, universe, place, endpoint, or dry-run output values into the vault.
+7. Run the live command only after a fixture dry-run passes:
 
 ```powershell
 ./nexus.ps1 release --live

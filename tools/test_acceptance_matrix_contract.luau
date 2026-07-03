@@ -32,6 +32,7 @@ local REQUIRED_GATE_LABELS = {
 	"Founder Sign-Off Audit Tests",
 	"Acceptance Matrix Contract Tests",
 	"Release Contract Tests",
+	"Open Cloud Bootstrap Tests",
 	"Secret Scan",
 	"Analyze",
 	"Build",

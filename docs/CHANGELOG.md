@@ -41,3 +41,4 @@
 - [WO-3/WO-10] Added repeatable Obsidian REST bootstrap, fixed pending flush accounting, and recorded non-secret G3 evidence - 2026-07-03.
 - [WO-8/WO-10] Added repeatable GitHub CI bootstrap evidence for G4 auth, remote, workflow, and branch-protection readiness - 2026-07-03.
 - [WO-2/WO-10] Added repeatable Studio bridge bootstrap evidence for G2 local Rojo readiness, Studio process, and receipt state - 2026-07-03.
+- [WO-9/WO-10] Added repeatable Open Cloud bootstrap evidence for G5 release readiness without exposing key or place values - 2026-07-03.

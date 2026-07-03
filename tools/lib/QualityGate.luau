@@ -263,6 +263,14 @@ function QualityGate.runAll(options: RunOptions?): { CommandResult }
 	)
 	table.insert(
 		results,
+		QualityGate.runTool(
+			"Open Cloud Bootstrap Tests",
+			"lune",
+			{ "run", "tools/test_open_cloud_bootstrap.luau" }
+		)
+	)
+	table.insert(
+		results,
 		QualityGate.runTool("Secret Scan", "lune", { "run", "tools/secret_scan.luau" })
 	)
 	table.insert(

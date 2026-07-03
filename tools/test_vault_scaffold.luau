@@ -164,6 +164,11 @@ else
 	)
 	assertContains(
 		dashboard,
+		"![[Open Cloud Bootstrap]]",
+		"Dashboard missing Open Cloud Bootstrap embed"
+	)
+	assertContains(
+		dashboard,
 		"![[Founder Sign-Off Audit]]",
 		"Dashboard missing Founder Sign-Off Audit embed"
 	)

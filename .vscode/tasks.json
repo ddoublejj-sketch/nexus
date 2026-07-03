@@ -104,6 +104,12 @@
       "problemMatcher": []
     },
     {
+      "label": "Nexus: Open Cloud Bootstrap",
+      "type": "shell",
+      "command": "./nexus.ps1 open-cloud",
+      "problemMatcher": []
+    },
+    {
       "label": "Nexus: Founder Sign-Off Audit",
       "type": "shell",
       "command": "./nexus.ps1 audit",
