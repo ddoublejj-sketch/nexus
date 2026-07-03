@@ -13,6 +13,7 @@ local REQUIRED_GATE_LABELS = {
 	"StyLua",
 	"Selene",
 	"Sourcemap",
+	"Rojo Bridge Tests",
 	"Migration Tests",
 	"Vault Scaffold Tests",
 	"Asset Manifest Tests",

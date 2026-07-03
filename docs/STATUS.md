@@ -369,6 +369,7 @@ git status --short
 - Added `docs/runbooks/rojo-sync-rules.md`.
 - Documented disk-owned source, Studio-owned/snapshot content, the G2 test sequence, and the Studio snapshot location.
 - The runbook marks live round-trip rows as pending G2 instead of pretending Studio confirmation has happened.
+- Added `tools/test_rojo_bridge_contract.luau` to the shared quality gate. It verifies Rojo project mappings, sourcemap/luau-lsp wiring, launcher `serve`/`map` commands, snapshot archive location, and that STATUS/runbook still honestly mark live Studio proof as pending G2.
 
 ### Sourcemap-Aware Analyze Evidence
 
@@ -377,6 +378,13 @@ $env:ROKIT_PROBE='1'; luau-lsp analyze --definitions types/globalTypes.d.luau --
 [INFO] Loading definitions file: @roblox - types/globalTypes.d.luau
 [WARN] client does not allow didChangeWatchedFiles registration - automatic updating on sourcemap changes disabled
 [INFO] Loading Luau configuration from c:\Users\jackw\Roblox\nexus\.luaurc
+```
+
+Rojo bridge contract self-test:
+
+```powershell
+lune run tools/test_rojo_bridge_contract.luau
+Rojo bridge contract tests passed
 ```
 
 ### Human Gate G2 Request
@@ -952,6 +960,7 @@ Wally Install: PASS
 StyLua: PASS
 Selene: PASS
 Sourcemap: PASS
+Rojo Bridge Tests: PASS
 Migration Tests: PASS
 Command Surface Tests: PASS
 Net Contract Tests: PASS
@@ -1002,18 +1011,20 @@ Actual Studio/runtime observation is still pending G2.
 
 ```powershell
 $env:ROKIT_PROBE='1'; lune run tools/quality_gate.luau
-[PASS] Wally Install (0.72s, exit 0)
+[PASS] Wally Install (0.76s, exit 0)
 [PASS] StyLua (0.06s, exit 0)
-[PASS] Selene (0.08s, exit 0)
-[PASS] Sourcemap (0.10s, exit 0)
+[PASS] Selene (0.10s, exit 0)
+[PASS] Sourcemap (0.08s, exit 0)
+[PASS] Rojo Bridge Tests (0.03s, exit 0)
 [PASS] Migration Tests (0.03s, exit 0)
 [PASS] Vault Scaffold Tests (0.06s, exit 0)
 [PASS] Asset Manifest Tests (0.03s, exit 0)
 [PASS] Command Surface Tests (0.03s, exit 0)
 [PASS] Net Contract Tests (0.03s, exit 0)
-[PASS] CI Contract Tests (0.02s, exit 0)
-[PASS] Secret Scan (0.36s, exit 0)
-[PASS] Analyze (1.98s, exit 0)
+[PASS] CI Contract Tests (0.03s, exit 0)
+[PASS] Command Center Contract Tests (0.03s, exit 0)
+[PASS] Secret Scan (0.37s, exit 0)
+[PASS] Analyze (2.04s, exit 0)
 [PASS] Build (0.08s, exit 0)
 [PASS] Open Cloud Dry Run (0.03s, exit 0)
 Quality gate PASS
@@ -1063,6 +1074,7 @@ Wally Install: PASS
 StyLua: PASS
 Selene: PASS
 Sourcemap: PASS
+Rojo Bridge Tests: PASS
 Migration Tests: PASS
 Vault Scaffold Tests: PASS
 Asset Manifest Tests: PASS
@@ -1141,6 +1153,7 @@ $env:ROKIT_PROBE='1'; lune run tools/quality_gate.luau
 [PASS] StyLua (0.06s, exit 0)
 [PASS] Selene (0.09s, exit 0)
 [PASS] Sourcemap (0.09s, exit 0)
+[PASS] Rojo Bridge Tests (0.03s, exit 0)
 [PASS] Migration Tests (0.03s, exit 0)
 [PASS] Vault Scaffold Tests (0.06s, exit 0)
 [PASS] Asset Manifest Tests (0.03s, exit 0)
@@ -1163,6 +1176,7 @@ Wally Install: PASS
 StyLua: PASS
 Selene: PASS
 Sourcemap: PASS
+Rojo Bridge Tests: PASS
 Migration Tests: PASS
 Vault Scaffold Tests: PASS
 Asset Manifest Tests: PASS
@@ -1264,8 +1278,9 @@ Full gate after WO-10:
 $env:ROKIT_PROBE='1'; lune run tools/quality_gate.luau
 [PASS] Wally Install (0.73s, exit 0)
 [PASS] StyLua (0.06s, exit 0)
-[PASS] Selene (0.09s, exit 0)
-[PASS] Sourcemap (0.09s, exit 0)
+[PASS] Selene (0.10s, exit 0)
+[PASS] Sourcemap (0.08s, exit 0)
+[PASS] Rojo Bridge Tests (0.03s, exit 0)
 [PASS] Migration Tests (0.03s, exit 0)
 [PASS] Vault Scaffold Tests (0.06s, exit 0)
 [PASS] Asset Manifest Tests (0.03s, exit 0)
@@ -1273,9 +1288,9 @@ $env:ROKIT_PROBE='1'; lune run tools/quality_gate.luau
 [PASS] Net Contract Tests (0.03s, exit 0)
 [PASS] CI Contract Tests (0.03s, exit 0)
 [PASS] Command Center Contract Tests (0.03s, exit 0)
-[PASS] Secret Scan (0.36s, exit 0)
-[PASS] Analyze (1.99s, exit 0)
-[PASS] Build (0.09s, exit 0)
+[PASS] Secret Scan (0.37s, exit 0)
+[PASS] Analyze (2.04s, exit 0)
+[PASS] Build (0.08s, exit 0)
 [PASS] Open Cloud Dry Run (0.03s, exit 0)
 Quality gate PASS
 ```
@@ -1288,6 +1303,7 @@ Wally Install: PASS
 StyLua: PASS
 Selene: PASS
 Sourcemap: PASS
+Rojo Bridge Tests: PASS
 Migration Tests: PASS
 Vault Scaffold Tests: PASS
 Asset Manifest Tests: PASS
@@ -1351,7 +1367,7 @@ NexusAutomationLoop Stopped
 | --- | --- | --- | --- |
 | WO-0 Tool Gaps | Partial | Audit output under WO-0 | G1: `code`, `gh`, Obsidian, Blender on PATH/install path |
 | WO-1 Bootstrap | Exact local acceptance passed | Repo scaffold, tool pins, `rokit install`, `wally install`, `rojo build`, `rojo sourcemap`, `./nexus.ps1 check` | None locally |
-| WO-2 Studio Bridge | Runbook added, live bridge blocked | Sourcemap-aware analyze output and `docs/runbooks/rojo-sync-rules.md` | G2: Studio plugin connect and live sync proof |
+| WO-2 Studio Bridge | Runbook added, live bridge blocked | Sourcemap-aware analyze output, Rojo bridge tests, and `docs/runbooks/rojo-sync-rules.md` | G2: Studio plugin connect and live sync proof |
 | WO-3 Vault | Scaffolded, REST blocked | Vault repo, templates, vault scaffold tests, pending queue output | G3: Obsidian install, plugins, Local REST API key, pending flush |
 | WO-4 Automation Loop | Exact local launcher proof passed | Sourcemap, vault sync, dummy/stale-note demo, command registry, gate status, vault scaffold tests, asset manifest, `./nexus.ps1 loop --once`, Build Health outputs | Dashboard render needs G3 |
 | WO-5 Asset Pipeline | Implemented with seed assets | Manifest, orphan repair, asset manifest tests, vault asset notes | Blender thumbnail rendering still waits on G1 Blender path; dashboard render needs G3 |
@@ -1365,19 +1381,20 @@ NexusAutomationLoop Stopped
 
 ```powershell
 ./nexus.ps1 check
-[PASS] Wally Install (0.70s, exit 0)
+[PASS] Wally Install (0.79s, exit 0)
 [PASS] StyLua (0.06s, exit 0)
 [PASS] Selene (0.09s, exit 0)
-[PASS] Sourcemap (0.08s, exit 0)
+[PASS] Sourcemap (0.09s, exit 0)
+[PASS] Rojo Bridge Tests (0.03s, exit 0)
 [PASS] Migration Tests (0.03s, exit 0)
 [PASS] Vault Scaffold Tests (0.06s, exit 0)
-[PASS] Asset Manifest Tests (0.04s, exit 0)
+[PASS] Asset Manifest Tests (0.03s, exit 0)
 [PASS] Command Surface Tests (0.03s, exit 0)
 [PASS] Net Contract Tests (0.03s, exit 0)
 [PASS] CI Contract Tests (0.03s, exit 0)
 [PASS] Command Center Contract Tests (0.03s, exit 0)
-[PASS] Secret Scan (0.36s, exit 0)
-[PASS] Analyze (2.04s, exit 0)
+[PASS] Secret Scan (0.38s, exit 0)
+[PASS] Analyze (2.01s, exit 0)
 [PASS] Build (0.08s, exit 0)
 [PASS] Open Cloud Dry Run (0.03s, exit 0)
 Quality gate PASS
