@@ -4,7 +4,7 @@ Last updated: 2026-07-02
 
 ## Current Phase
 
-WO-0 is in progress and blocked on **G1 - GUI installs**. Non-dependent WO-1 repo bootstrap work may continue.
+WO-0 is in progress and blocked on **G1 - GUI installs**. WO-1 bootstrap work is partially complete, but WO-1 cannot be marked complete until the exact `./nexus.ps1 check` acceptance command can run.
 
 ## WO-0 - Close the Tool Gaps
 
@@ -106,3 +106,115 @@ Get-Command blender -ErrorAction SilentlyContinue
 
 - `rojo` is present as a Rokit-managed shim, but it cannot report a version until the Nexus repo has a Rokit project manifest. WO-1 will create that manifest and rerun the check inside the repo.
 - No WO-0 acceptance item is marked complete yet because the full command list has not passed.
+
+## WO-1 - Bootstrap the Nexus Repo
+
+### Shipped So Far
+
+- Created `C:\Users\jackw\Roblox\nexus` as a Git repo.
+- Added `rokit.toml`, `wally.toml`, `selene.toml`, `stylua.toml`, `.luaurc`, `.env.example`, `.gitignore`, and VS Code task/settings files.
+- Added `nexus.ps1` launcher with subcommands: `serve`, `build`, `map`, `check`, `fix`, `sync`, `health`, `status`.
+- Added minimal Roblox scaffold:
+  - `Shared/Config/GameConfig.luau`
+  - `Shared/Net/init.luau`
+  - `Server/Services/NexusService.luau`
+  - `Server/init.server.luau`
+  - `Client/Controllers/NexusController.luau`
+  - `Client/init.client.luau`
+- Added upstream luau-lsp Roblox definitions at `types/globalTypes.d.luau` so standalone analyzer has Roblox API types.
+- Recorded locked decisions and exact tool pins in `docs/architecture/DECISIONS.md`.
+
+### Tool Pins
+
+```toml
+rojo = "rojo-rbx/rojo@7.7.0"
+wally = "UpliftGames/wally@0.3.2"
+lune = "lune-org/lune@0.10.5"
+selene = "Kampfkarren/selene@0.31.0"
+stylua = "JohnnyMorganz/StyLua@2.5.2"
+luau-lsp = "JohnnyMorganz/luau-lsp@1.68.1"
+```
+
+### Acceptance Evidence
+
+```powershell
+rokit install
+<exit 0; no output>
+```
+
+Exact command currently fails in the managed shell because the Rokit shims intermittently fail with `os error 3`:
+
+```powershell
+wally install
+ERROR The system cannot find the path specified. (os error 3)
+```
+
+Same pinned project tool succeeds when the Rokit shim resolves in a PowerShell process with an environment variable set:
+
+```powershell
+$env:ROKIT_PROBE='1'; wally install
+<exit 0; no output>
+```
+
+```powershell
+$env:ROKIT_PROBE='1'; rojo build default.project.json -o build/nexus.rbxl
+Building project 'Nexus'
+Built project to nexus.rbxl
+```
+
+Build artifact:
+
+```text
+C:\Users\jackw\Roblox\nexus\build\nexus.rbxl
+Length: 3089 bytes
+```
+
+```powershell
+$env:ROKIT_PROBE='1'; rojo sourcemap default.project.json -o sourcemap.json
+Created sourcemap at sourcemap.json
+```
+
+Quality gate components:
+
+```powershell
+$env:ROKIT_PROBE='1'; stylua --check src tools
+<exit 0; no output>
+```
+
+```powershell
+$env:ROKIT_PROBE='1'; selene src
+Results:
+0 errors
+0 warnings
+0 parse errors
+```
+
+```powershell
+$env:ROKIT_PROBE='1'; luau-lsp analyze --definitions types/globalTypes.d.luau --sourcemap sourcemap.json src
+[INFO] Loading definitions file: @roblox - types/globalTypes.d.luau
+[WARN] client does not allow didChangeWatchedFiles registration - automatic updating on sourcemap changes disabled
+[INFO] Loading Luau configuration from c:\Users\jackw\Roblox\nexus\.luaurc
+```
+
+Exact launcher command is blocked by Windows script execution policy:
+
+```powershell
+./nexus.ps1 check
+./nexus.ps1 : File C:\Users\jackw\Roblox\nexus\nexus.ps1 cannot be loaded because running scripts is disabled on this system.
+FullyQualifiedErrorId : UnauthorizedAccess
+```
+
+Commit history:
+
+```powershell
+git log --oneline
+3909c51 Add Nexus hello world service scaffold
+d0e69e1 Bootstrap Nexus command center scaffold
+```
+
+### Open Blockers
+
+- **PowerShell execution policy:** `./nexus.ps1` cannot run until the user explicitly approves a user-level policy change such as `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned -Force`, or chooses another approved launcher strategy. A request to change it was rejected by the safety layer because the user has not explicitly approved that exact persistent security change.
+- **Rokit shim behavior in managed shell:** bare `wally`, `rojo`, `stylua`, `selene`, `lune`, and `luau-lsp` commands can fail with `os error 3` in this shell. The pinned binaries are installed and work; `nexus.ps1` resolves them directly once script execution is allowed.
+
+WO-1 is **not complete** until the exact acceptance commands pass, especially `./nexus.ps1 check`.

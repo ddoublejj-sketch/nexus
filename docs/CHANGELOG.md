@@ -1,3 +1,4 @@
 # Changelog
 
-No work order has been completed yet.
+- [WO-1] Created Nexus repo scaffold, tool pins, launcher, editor tasks, and status docs - 2026-07-02.
+- [WO-1] Added hello-world Service/Controller/Config/Net scaffold - 2026-07-02.
