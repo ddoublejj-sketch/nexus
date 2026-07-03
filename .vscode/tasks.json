@@ -42,6 +42,12 @@
       "type": "shell",
       "command": "./nexus.ps1 health",
       "problemMatcher": []
+    },
+    {
+      "label": "Nexus: Loop Once",
+      "type": "shell",
+      "command": "./nexus.ps1 loop --once",
+      "problemMatcher": []
     }
   ]
 }

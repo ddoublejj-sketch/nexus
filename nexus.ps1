@@ -101,6 +101,21 @@ switch ($Command.ToLowerInvariant()) {
 	"health" {
 		Invoke-Tool "lune" @("run", "tools/build_health.luau")
 	}
+	"loop" {
+		do {
+			Invoke-Tool "lune" @("run", "tools/sourcemap_summary.luau")
+			Invoke-Tool "lune" @("run", "tools/vault_sync.luau")
+			Invoke-Tool "lune" @("run", "tools/command_registry.luau")
+			Invoke-Tool "lune" @("run", "tools/asset_manifest.luau")
+			Invoke-Tool "lune" @("run", "tools/build_health.luau")
+
+			if ($Rest -contains "--once") {
+				break
+			}
+
+			Start-Sleep -Seconds 10
+		} while ($true)
+	}
 	"status" {
 		git status --short
 		rokit list
@@ -120,6 +135,6 @@ switch ($Command.ToLowerInvariant()) {
 		}
 	}
 	default {
-		throw "Unknown command '$Command'. Use serve, build, map, check, fix, sync, health, or status."
+		throw "Unknown command '$Command'. Use serve, build, map, check, fix, sync, health, loop, or status."
 	}
 }

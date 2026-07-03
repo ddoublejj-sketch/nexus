@@ -4,7 +4,7 @@ Last updated: 2026-07-03
 
 ## Current Phase
 
-WO-0 is in progress and blocked on **G1 - GUI installs**. WO-1 bootstrap work is partially complete, but WO-1 cannot be marked complete until the exact `./nexus.ps1 check` acceptance command can run. WO-3 vault scaffolding has started and is blocked on **G3 - Obsidian plugins + REST key** for end-to-end REST verification.
+WO-0 is in progress and blocked on **G1 - GUI installs**. WO-1 bootstrap work is partially complete, but WO-1 cannot be marked complete until the exact `./nexus.ps1 check` acceptance command can run. WO-3 vault scaffolding has started and is blocked on **G3 - Obsidian plugins + REST key** for end-to-end REST verification. WO-4 automation scripts have partial direct-run proof, but WO-4 remains incomplete until dependency gates and exact acceptance tests clear.
 
 ## WO-0 - Close the Tool Gaps
 
@@ -314,3 +314,98 @@ git status --short
 - Local REST API is not installed or keyed yet, so `tools/vault_ping.luau` cannot be completed or accepted.
 - luau-lsp does not currently analyze `tools/*.luau` because it does not know Lune's `@lune/*` runtime imports yet; WO-1 analyzer scope remains `src`.
 - WO-3 is **not complete** until `lune run tools/vault_ping.luau` exits 0, `Ping.md` exists with a fresh timestamp, dashboard Dataview tables render, and the vault has committed the generated proof.
+
+## WO-4 - Live Project Indexer
+
+### Shipped So Far
+
+- Replaced placeholder automation scripts with runnable Lune scripts:
+  - `tools/sourcemap_summary.luau`
+  - `tools/vault_sync.luau`
+  - `tools/command_registry.luau`
+  - `tools/build_health.luau`
+  - `tools/asset_manifest.luau` skeleton
+- Added `./nexus.ps1 loop` and VS Code `Nexus: Loop Once` task. The loop sequence refreshes sourcemap summary, module notes, command registry, asset manifest skeleton, and build health.
+- Generated vault notes:
+  - `90_Automation/Generated/Sourcemap.md`
+  - `02_Systems/Generated Modules/...`
+  - `02_Systems/Commands.md`
+  - `90_Automation/Generated/Stale Sources.md`
+  - `90_Automation/Generated/Asset Manifest.md`
+  - `00_Command_Center/Build Health.md`
+- Dashboard now embeds `Stale Sources`.
+
+### Direct-Run Evidence
+
+```powershell
+$env:ROKIT_PROBE='1'; lune run tools/sourcemap_summary.luau
+Wrote 17 sourcemap rows to C:/Users/jackw/Roblox/RobloxGameVault/90_Automation/Generated/Sourcemap.md
+```
+
+```powershell
+$env:ROKIT_PROBE='1'; lune run tools/command_registry.luau
+Wrote 0 command rows to C:/Users/jackw/Roblox/RobloxGameVault/02_Systems/Commands.md
+```
+
+```powershell
+$env:ROKIT_PROBE='1'; lune run tools/vault_sync.luau
+Wrote 5 module notes under C:/Users/jackw/Roblox/RobloxGameVault/02_Systems/Generated Modules and refreshed stale-source report
+```
+
+```powershell
+$env:ROKIT_PROBE='1'; lune run tools/asset_manifest.luau
+Asset manifest skeleton wrote C:/Users/jackw/Roblox/RobloxGameVault/90_Automation/Generated/Asset Manifest.md with 0 manifest rows
+```
+
+```powershell
+$env:ROKIT_PROBE='1'; lune run tools/build_health.luau
+Build health PASS; wrote C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Build Health.md
+```
+
+Quality checks after script work:
+
+```powershell
+$env:ROKIT_PROBE='1'; stylua --check src tools
+<exit 0; no output>
+```
+
+```powershell
+$env:ROKIT_PROBE='1'; selene src tools
+Results:
+0 errors
+0 warnings
+0 parse errors
+```
+
+```powershell
+$env:ROKIT_PROBE='1'; luau-lsp analyze --definitions types/globalTypes.d.luau --sourcemap sourcemap.json src
+[INFO] Loading definitions file: @roblox - types/globalTypes.d.luau
+[WARN] client does not allow didChangeWatchedFiles registration - automatic updating on sourcemap changes disabled
+[INFO] Loading Luau configuration from c:\Users\jackw\Roblox\nexus\.luaurc
+```
+
+Build Health vault note reports:
+
+```text
+Overall: PASS
+StyLua: PASS
+Selene: PASS
+Sourcemap: PASS
+Analyze: PASS
+Build: PASS
+```
+
+Stale source report:
+
+```text
+No stale generated module notes found.
+```
+
+### Open Blockers
+
+- WO-4 depends on WO-2 and WO-3 in the master plan. Those are still gated by Studio/Obsidian setup.
+- `./nexus.ps1 loop --once` cannot be run until the PowerShell execution policy blocker from WO-1 is cleared.
+- The acceptance dummy-service add/rename stale-note demonstration has not been run yet.
+- Dashboard rendering still cannot be visually verified until Obsidian is installed and G3 plugins are enabled.
+
+WO-4 is **not complete** until its exact acceptance tests run and pass.
