@@ -192,6 +192,14 @@ function QualityGate.runAll(options: RunOptions?): { CommandResult }
 	table.insert(
 		results,
 		QualityGate.runTool(
+			"Founder Sign-Off Audit Tests",
+			"lune",
+			{ "run", "tools/test_founder_signoff_audit.luau" }
+		)
+	)
+	table.insert(
+		results,
+		QualityGate.runTool(
 			"Acceptance Matrix Contract Tests",
 			"lune",
 			{ "run", "tools/test_acceptance_matrix_contract.luau" }

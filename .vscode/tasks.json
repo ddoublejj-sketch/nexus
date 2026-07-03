@@ -68,6 +68,12 @@
       "problemMatcher": []
     },
     {
+      "label": "Nexus: Founder Sign-Off Audit",
+      "type": "shell",
+      "command": "./nexus.ps1 audit",
+      "problemMatcher": []
+    },
+    {
       "label": "Nexus: Release Dry Run",
       "type": "shell",
       "command": "./nexus.ps1 release --dry-run --fixture",

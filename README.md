@@ -20,6 +20,7 @@ wally install
 ./nexus.ps1 fix
 ./nexus.ps1 gates
 ./nexus.ps1 gatecheck --self-test
+./nexus.ps1 audit
 ./nexus.ps1 up
 ./nexus.ps1 down
 ./nexus.ps1 release --dry-run --fixture

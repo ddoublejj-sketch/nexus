@@ -141,6 +141,11 @@ else
 		"![[Human Gate Readiness]]",
 		"Dashboard missing Human Gate Readiness embed"
 	)
+	assertContains(
+		dashboard,
+		"![[Founder Sign-Off Audit]]",
+		"Dashboard missing Founder Sign-Off Audit embed"
+	)
 	assertContains(dashboard, "![[Build Health]]", "Dashboard missing Build Health embed")
 	assertContains(dashboard, "![[Stale Sources]]", "Dashboard missing Stale Sources embed")
 
@@ -176,6 +181,19 @@ else
 		humanGateReadiness,
 		"Open Cloud config",
 		"Readiness missing Open Cloud config audit"
+	)
+
+	local founderSignoffAudit = read("00_Command_Center/Founder Sign-Off Audit.md")
+	assertFrontmatter(founderSignoffAudit, "Founder Sign-Off Audit")
+	assertContains(
+		founderSignoffAudit,
+		"Overall: BLOCKED",
+		"Founder Sign-Off Audit must not claim final completion before gates close"
+	)
+	assertContains(
+		founderSignoffAudit,
+		"Every WO acceptance command has real pasted output in STATUS.md",
+		"Founder Sign-Off Audit missing Section 10 criteria"
 	)
 
 	local buildHealth = read("00_Command_Center/Build Health.md")
