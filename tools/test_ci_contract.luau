@@ -15,6 +15,7 @@ local REQUIRED_GATE_LABELS = {
 	"Sourcemap",
 	"Rojo Bridge Tests",
 	"Migration Tests",
+	"DataService Contract Tests",
 	"Vault Scaffold Tests",
 	"Asset Manifest Tests",
 	"Command Surface Tests",

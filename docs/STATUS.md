@@ -857,6 +857,14 @@ Build health PASS; wrote C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center
   - `SystemMessage`
 - `DataService` handles `RequestProfileSnapshot` with a sanitized read-only profile snapshot.
 - Added Lune migration fixture test at `tools/test_migrations.luau`.
+- Added Lune DataService contract test at `tools/test_data_service_contract.luau`, now part of the shared quality gate:
+  - ProfileStore dependency and store name
+  - `ProfileStore.Mock` in Studio
+  - `StartSessionAsync` cancel guard and nil-session kick path
+  - `AddUserId`, `Reconcile`, schema migration, `OnSessionEnd`, and `EndSession`
+  - join/leave wiring and server-owned API surface
+  - sanitized `RequestProfileSnapshot` exposure
+  - Save Data vault note coverage and G2 honesty
 - Added Lune Net contract test at `tools/test_net_contract.luau`, now part of the shared quality gate:
   - declared remotes, kinds, directions, validator counts
   - vault networking note coverage
@@ -895,6 +903,13 @@ Net contract test:
 ```powershell
 lune run tools/test_net_contract.luau
 Net contract tests passed
+```
+
+DataService contract test:
+
+```powershell
+lune run tools/test_data_service_contract.luau
+DataService contract tests passed
 ```
 
 ```powershell
@@ -962,6 +977,7 @@ Selene: PASS
 Sourcemap: PASS
 Rojo Bridge Tests: PASS
 Migration Tests: PASS
+DataService Contract Tests: PASS
 Command Surface Tests: PASS
 Net Contract Tests: PASS
 Secret Scan: PASS
@@ -1017,6 +1033,7 @@ $env:ROKIT_PROBE='1'; lune run tools/quality_gate.luau
 [PASS] Sourcemap (0.08s, exit 0)
 [PASS] Rojo Bridge Tests (0.03s, exit 0)
 [PASS] Migration Tests (0.03s, exit 0)
+[PASS] DataService Contract Tests (0.03s, exit 0)
 [PASS] Vault Scaffold Tests (0.06s, exit 0)
 [PASS] Asset Manifest Tests (0.03s, exit 0)
 [PASS] Command Surface Tests (0.03s, exit 0)
@@ -1076,6 +1093,7 @@ Selene: PASS
 Sourcemap: PASS
 Rojo Bridge Tests: PASS
 Migration Tests: PASS
+DataService Contract Tests: PASS
 Vault Scaffold Tests: PASS
 Asset Manifest Tests: PASS
 Command Surface Tests: PASS
@@ -1163,6 +1181,7 @@ $env:ROKIT_PROBE='1'; lune run tools/quality_gate.luau
 [PASS] Sourcemap (0.09s, exit 0)
 [PASS] Rojo Bridge Tests (0.03s, exit 0)
 [PASS] Migration Tests (0.03s, exit 0)
+[PASS] DataService Contract Tests (0.03s, exit 0)
 [PASS] Vault Scaffold Tests (0.07s, exit 0)
 [PASS] Asset Manifest Tests (0.03s, exit 0)
 [PASS] Command Surface Tests (0.03s, exit 0)
@@ -1187,6 +1206,7 @@ Selene: PASS
 Sourcemap: PASS
 Rojo Bridge Tests: PASS
 Migration Tests: PASS
+DataService Contract Tests: PASS
 Vault Scaffold Tests: PASS
 Asset Manifest Tests: PASS
 Command Surface Tests: PASS
@@ -1292,6 +1312,7 @@ $env:ROKIT_PROBE='1'; lune run tools/quality_gate.luau
 [PASS] Sourcemap (0.08s, exit 0)
 [PASS] Rojo Bridge Tests (0.03s, exit 0)
 [PASS] Migration Tests (0.03s, exit 0)
+[PASS] DataService Contract Tests (0.03s, exit 0)
 [PASS] Vault Scaffold Tests (0.06s, exit 0)
 [PASS] Asset Manifest Tests (0.03s, exit 0)
 [PASS] Command Surface Tests (0.03s, exit 0)
@@ -1316,6 +1337,7 @@ Selene: PASS
 Sourcemap: PASS
 Rojo Bridge Tests: PASS
 Migration Tests: PASS
+DataService Contract Tests: PASS
 Vault Scaffold Tests: PASS
 Asset Manifest Tests: PASS
 Command Surface Tests: PASS
@@ -1384,7 +1406,7 @@ NexusAutomationLoop Stopped
 | WO-4 Automation Loop | Exact local launcher proof passed | Sourcemap, vault sync, dummy/stale-note demo, command registry, gate status, vault scaffold tests, asset manifest, `./nexus.ps1 loop --once`, Build Health outputs | Dashboard render needs G3 |
 | WO-5 Asset Pipeline | Implemented with seed assets | Manifest, orphan repair, asset manifest tests, vault asset notes | Blender thumbnail rendering still waits on G1 Blender path; dashboard render needs G3 |
 | WO-6 Cmdr | Implemented and analyzed | Cmdr service/controller, commands, generated command docs | G2 Studio playtest for command execution |
-| WO-7 Data/Networking | Implemented and tested locally | ProfileStore wrapper, migration tests, Net contract tests, typed Net, Build Health | G2 Studio playtest for session/runtime behavior |
+| WO-7 Data/Networking | Implemented and tested locally | ProfileStore wrapper, migration tests, DataService contract tests, Net contract tests, typed Net, Build Health | G2 Studio playtest for session/runtime behavior |
 | WO-8 CI | Local workflow committed | Shared gate output, CI contract tests, workflow, runbook | G4: `gh auth`, remote repo, branch protection, real CI run |
 | WO-9 Release Path | Dry-run accepted locally | Fixture dry-run, `./nexus.ps1 release --dry-run --fixture`, release contract tests, secret-history scan, release checklist | G5 for live publish only |
 | WO-10 Hardening | Up/down smoke test passed locally | Task JSON parse, command-center contract tests, dev log writes, Gate Status dashboard embed, `./nexus.ps1 up/status/down`, full gate | G2 Studio connect and G3 dashboard render for cold-boot acceptance |
@@ -1393,23 +1415,24 @@ NexusAutomationLoop Stopped
 
 ```powershell
 ./nexus.ps1 check
-[PASS] Wally Install (0.68s, exit 0)
+[PASS] Wally Install (0.78s, exit 0)
 [PASS] StyLua (0.06s, exit 0)
 [PASS] Selene (0.09s, exit 0)
-[PASS] Sourcemap (0.08s, exit 0)
+[PASS] Sourcemap (0.09s, exit 0)
 [PASS] Rojo Bridge Tests (0.03s, exit 0)
 [PASS] Migration Tests (0.03s, exit 0)
+[PASS] DataService Contract Tests (0.03s, exit 0)
 [PASS] Vault Scaffold Tests (0.07s, exit 0)
-[PASS] Asset Manifest Tests (0.04s, exit 0)
+[PASS] Asset Manifest Tests (0.03s, exit 0)
 [PASS] Command Surface Tests (0.03s, exit 0)
-[PASS] Net Contract Tests (0.02s, exit 0)
+[PASS] Net Contract Tests (0.03s, exit 0)
 [PASS] CI Contract Tests (0.03s, exit 0)
 [PASS] Command Center Contract Tests (0.03s, exit 0)
 [PASS] Release Contract Tests (0.03s, exit 0)
-[PASS] Secret Scan (0.39s, exit 0)
-[PASS] Analyze (2.04s, exit 0)
-[PASS] Build (0.08s, exit 0)
-[PASS] Open Cloud Dry Run (0.03s, exit 0)
+[PASS] Secret Scan (0.42s, exit 0)
+[PASS] Analyze (2.12s, exit 0)
+[PASS] Build (0.10s, exit 0)
+[PASS] Open Cloud Dry Run (0.04s, exit 0)
 Quality gate PASS
 ```
 

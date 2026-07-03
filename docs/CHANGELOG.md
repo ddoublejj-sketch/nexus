@@ -27,3 +27,4 @@
 - [WO-10] Added command-center contract self-test for launcher jobs, VS Code tasks/settings, dev log, and setup/recovery runbooks - 2026-07-03.
 - [WO-2] Added Rojo bridge contract self-test for project mappings, sourcemap wiring, launcher commands, and G2 runbook honesty - 2026-07-03.
 - [WO-9] Added release contract self-test for dry-run defaults, live publish guards, fixture safety, artifact checks, and secret hygiene - 2026-07-03.
+- [WO-7] Added DataService contract self-test for ProfileStore dependency, session lifecycle, Studio mock mode, migrations, snapshots, and Save Data docs - 2026-07-03.
