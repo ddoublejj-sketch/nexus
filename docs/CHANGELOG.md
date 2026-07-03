@@ -13,3 +13,4 @@
 - [WO-8] Added shared local/CI quality gate, GitHub Actions workflow, CI runbook, and Build Health integration - 2026-07-03.
 - [WO-9] Added Open Cloud publish dry-run tooling, release checklist, fixture config, and secret-history scan evidence - 2026-07-03.
 - [WO-10] Added up/down launcher jobs, daily dev log automation, VS Code tasks, setup/recovery runbooks, and acceptance matrix - 2026-07-03.
+- [WO-2/WO-4] Added Rojo sync rules runbook and recorded dummy-service stale-note proof - 2026-07-03.

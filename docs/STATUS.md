@@ -4,7 +4,7 @@ Last updated: 2026-07-03
 
 ## Current Phase
 
-WO-0 is in progress and blocked on **G1 - GUI installs**. WO-1 bootstrap work is partially complete, but WO-1 cannot be marked complete until the exact `./nexus.ps1 check` acceptance command can run. WO-3 vault scaffolding has started and is blocked on **G3 - Obsidian plugins + REST key** for end-to-end REST verification. WO-4 automation scripts have partial direct-run proof, but WO-4 remains incomplete until dependency gates and exact acceptance tests clear. WO-5 asset pipeline has direct-run proof with seed assets, but remains downstream of the still-open WO-4 formal acceptance. WO-6 Cmdr integration has build/analyze proof, but in-Studio command execution remains gated. WO-7 data/networking baseline has direct local proof, but live ProfileStore session behavior remains Studio-gated. WO-8 CI workflow and shared local/CI gate are created, but remote GitHub setup is blocked on **G4 - GitHub auth**. WO-9 release-path dry-run tooling is created and locally verified; live publish remains gated on **G5 - Open Cloud key**. WO-10 daily-driver hardening is implemented locally; exact `./nexus.ps1 up/down` and cold-boot Studio acceptance remain blocked by PowerShell policy and G2.
+WO-0 is in progress and blocked on **G1 - GUI installs**. WO-1 bootstrap work is partially complete, but WO-1 cannot be marked complete until the exact `./nexus.ps1 check` acceptance command can run. WO-2 now has the sync-rules runbook and sourcemap-aware analyze proof, but live Studio sync remains blocked on **G2 - Studio connect**. WO-3 vault scaffolding has started and is blocked on **G3 - Obsidian plugins + REST key** for end-to-end REST verification. WO-4 automation scripts have direct-run proof including dummy-service and stale-note evidence, but exact launcher/dashboard acceptance remains gated. WO-5 asset pipeline has direct-run proof with seed assets, but remains downstream of the still-open WO-4 formal acceptance. WO-6 Cmdr integration has build/analyze proof, but in-Studio command execution remains gated. WO-7 data/networking baseline has direct local proof, but live ProfileStore session behavior remains Studio-gated. WO-8 CI workflow and shared local/CI gate are created, but remote GitHub setup is blocked on **G4 - GitHub auth**. WO-9 release-path dry-run tooling is created and locally verified; live publish remains gated on **G5 - Open Cloud key**. WO-10 daily-driver hardening is implemented locally; exact `./nexus.ps1 up/down` and cold-boot Studio acceptance remain blocked by PowerShell policy and G2.
 
 ## WO-0 - Close the Tool Gaps
 
@@ -315,6 +315,38 @@ git status --short
 - luau-lsp does not currently analyze `tools/*.luau` because it does not know Lune's `@lune/*` runtime imports yet; WO-1 analyzer scope remains `src`.
 - WO-3 is **not complete** until `lune run tools/vault_ping.luau` exits 0, `Ping.md` exists with a fresh timestamp, dashboard Dataview tables render, and the vault has committed the generated proof.
 
+## WO-2 - Studio Bridge
+
+### Shipped So Far
+
+- Added `docs/runbooks/rojo-sync-rules.md`.
+- Documented disk-owned source, Studio-owned/snapshot content, the G2 test sequence, and the Studio snapshot location.
+- The runbook marks live round-trip rows as pending G2 instead of pretending Studio confirmation has happened.
+
+### Sourcemap-Aware Analyze Evidence
+
+```powershell
+$env:ROKIT_PROBE='1'; luau-lsp analyze --definitions types/globalTypes.d.luau --sourcemap sourcemap.json src
+[INFO] Loading definitions file: @roblox - types/globalTypes.d.luau
+[WARN] client does not allow didChangeWatchedFiles registration - automatic updating on sourcemap changes disabled
+[INFO] Loading Luau configuration from c:\Users\jackw\Roblox\nexus\.luaurc
+```
+
+### Human Gate G2 Request
+
+Please complete when ready:
+
+1. Open the Nexus place in Roblox Studio.
+2. Start Rojo serve from Nexus.
+3. Click the Rojo Studio plugin and connect to the local server.
+4. Confirm a disk edit appears in Studio within seconds.
+5. Create one disposable Studio object, test what syncback/export preserves, and record the observed result in `docs/runbooks/rojo-sync-rules.md`.
+
+### Open Blockers
+
+- G2 is not complete, so live disk-to-Studio and syncback behavior remains unverified.
+- `./nexus.ps1 serve` cannot be run exactly until the PowerShell execution-policy blocker from WO-1 is cleared.
+
 ## WO-4 - Live Project Indexer
 
 ### Shipped So Far
@@ -396,6 +428,58 @@ Build: PASS
 ```
 
 Stale source report:
+
+```text
+No stale generated module notes found.
+```
+
+### Dummy Service And Stale-Note Demo
+
+Temporary source created:
+
+```text
+src/ServerScriptService/Server/Services/TempIndexerProbeService.luau
+```
+
+First sync:
+
+```powershell
+$env:ROKIT_PROBE='1'; lune run tools/vault_sync.luau
+Wrote 13 module notes under C:/Users/jackw/Roblox/RobloxGameVault/02_Systems/Generated Modules and refreshed stale-source report
+```
+
+Generated note proof:
+
+```text
+source_path: C:\Users\jackw\Roblox\nexus\src\ServerScriptService\Server\Services\TempIndexerProbeService.luau
+studio_instance_path: game.ServerScriptService.Server.Services.TempIndexerProbeService
+Public Functions:
+- TempIndexerProbeService.start
+```
+
+After deleting the temporary source and rerunning sync:
+
+```powershell
+$env:ROKIT_PROBE='1'; lune run tools/vault_sync.luau
+Wrote 12 module notes under C:/Users/jackw/Roblox/RobloxGameVault/02_Systems/Generated Modules and refreshed stale-source report
+```
+
+Stale report proof:
+
+```text
+| Note | Missing Source |
+| --- | --- |
+| `02_Systems/Generated Modules/Services/TempIndexerProbeService.md` | `src/ServerScriptService/Server/Services/TempIndexerProbeService.luau` |
+```
+
+Cleanup sync after removing the disposable generated note:
+
+```powershell
+$env:ROKIT_PROBE='1'; lune run tools/vault_sync.luau
+Wrote 12 module notes under C:/Users/jackw/Roblox/RobloxGameVault/02_Systems/Generated Modules and refreshed stale-source report
+```
+
+Final stale-source state:
 
 ```text
 No stale generated module notes found.
@@ -1040,12 +1124,32 @@ Open Cloud Dry Run: PASS
 | --- | --- | --- | --- |
 | WO-0 Tool Gaps | Partial | Audit output under WO-0 | G1: `winget`, `code`, `gh`, Obsidian, Blender on PATH/install path |
 | WO-1 Bootstrap | Implemented, exact launcher blocked | Repo scaffold, tool pins, direct quality outputs | PowerShell execution policy blocks exact `./nexus.ps1 check` |
-| WO-2 Studio Bridge | Blocked | Rojo project/build exists | G2: Studio plugin connect and live sync proof |
+| WO-2 Studio Bridge | Runbook added, live bridge blocked | Sourcemap-aware analyze output and `docs/runbooks/rojo-sync-rules.md` | G2: Studio plugin connect and live sync proof |
 | WO-3 Vault | Scaffolded, REST blocked | Vault repo, templates, dry-run failure output | G3: Obsidian install, plugins, Local REST API key |
-| WO-4 Automation Loop | Implemented with direct-run proof | Sourcemap, vault sync, command registry, asset manifest, Build Health outputs | Exact `./nexus.ps1 loop --once` blocked by PowerShell policy; dashboard render needs G3 |
+| WO-4 Automation Loop | Implemented with direct-run proof | Sourcemap, vault sync, dummy/stale-note demo, command registry, asset manifest, Build Health outputs | Exact `./nexus.ps1 loop --once` blocked by PowerShell policy; dashboard render needs G3 |
 | WO-5 Asset Pipeline | Implemented with seed assets | Manifest, orphan repair, vault asset notes | Formal acceptance downstream of WO-4/G3 visual checks |
 | WO-6 Cmdr | Implemented and analyzed | Cmdr service/controller, commands, generated command docs | G2 Studio playtest for command execution |
 | WO-7 Data/Networking | Implemented and tested locally | ProfileStore wrapper, migration tests, typed Net, Build Health | G2 Studio playtest for session/runtime behavior |
 | WO-8 CI | Local workflow committed | Shared gate output, workflow, runbook | G4: `gh auth`, remote repo, branch protection, real CI run |
 | WO-9 Release Path | Dry-run accepted locally | Fixture dry-run, secret-history scan, release checklist | G5 for live publish only |
 | WO-10 Hardening | Implemented locally | Parse check, task JSON parse, dev log writes, full gate | PowerShell policy, G2 Studio connect, G3 dashboard render for cold-boot acceptance |
+
+## Latest Whole-Repo Verification
+
+```powershell
+$env:ROKIT_PROBE='1'; lune run tools/quality_gate.luau
+[PASS] Wally Install (0.76s, exit 0)
+[PASS] StyLua (0.05s, exit 0)
+[PASS] Selene (0.08s, exit 0)
+[PASS] Sourcemap (0.09s, exit 0)
+[PASS] Migration Tests (0.03s, exit 0)
+[PASS] Analyze (1.99s, exit 0)
+[PASS] Build (0.08s, exit 0)
+[PASS] Open Cloud Dry Run (0.03s, exit 0)
+Quality gate PASS
+```
+
+```powershell
+$env:ROKIT_PROBE='1'; lune run tools/build_health.luau
+Build health PASS; wrote C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Build Health.md
+```
