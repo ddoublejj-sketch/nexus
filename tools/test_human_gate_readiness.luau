@@ -66,6 +66,10 @@ assertContains(
 	"script must write Human Gate Readiness"
 )
 assertContains(script, "values not printed", "script must not print secret values")
+assertContains(script, "readEnvFile", "script must parse secret env files before readiness PASS")
+assertContains(script, "stripEnvQuotes", "script must accept quoted env values")
+assertContains(script, "looksPlaceholder", "script must reject placeholder secret values")
+assertContains(script, "numericIdOk", "script must validate Open Cloud numeric IDs")
 assertContains(script, "NEEDS HUMAN", "script must preserve human-only checks")
 assertContains(script, "./nexus.ps1 gatecheck --self-test", "script must document probe self-test")
 for _, check in REQUIRED_CHECKS do

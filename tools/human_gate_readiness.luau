@@ -41,6 +41,56 @@ local function oneLine(value: string): string
 	return normalized
 end
 
+local function trim(value: string): string
+	return value:match("^%s*(.-)%s*$") or ""
+end
+
+local function stripEnvQuotes(value: string): string
+	local trimmed = trim(value)
+	if #trimmed >= 2 then
+		local first = trimmed:sub(1, 1)
+		local last = trimmed:sub(-1)
+		if (first == '"' and last == '"') or (first == "'" and last == "'") then
+			return trimmed:sub(2, -2)
+		end
+	end
+
+	return trimmed
+end
+
+local function readEnvFile(path: string): { [string]: string }
+	local values = {}
+
+	if not fs.isFile(path) then
+		return values
+	end
+
+	for line in fs.readFile(path):gmatch("[^\r\n]+") do
+		local stripped = trim(line)
+		if stripped ~= "" and not stripped:match("^#") then
+			local key, value = stripped:match("^([%w_]+)%s*=%s*(.+)$")
+			if key and value then
+				values[key] = stripEnvQuotes(value)
+			end
+		end
+	end
+
+	return values
+end
+
+local function looksPlaceholder(value: string): boolean
+	local lower = value:lower()
+	return lower == ""
+		or lower:find("replace", 1, true) ~= nil
+		or lower:find("fixture", 1, true) ~= nil
+		or lower:find("placeholder", 1, true) ~= nil
+		or lower:find("do_not_use", 1, true) ~= nil
+end
+
+local function numericIdOk(value: string): boolean
+	return value:match("^%d+$") ~= nil and value:match("^0+$") == nil
+end
+
 local function commandCheck(
 	gate: string,
 	label: string,
@@ -106,6 +156,94 @@ local function fileCheck(gate: string, label: string, path: string, presentDetai
 		check = label,
 		status = if present then "PASS" else "MISSING",
 		detail = if present then presentDetail else path,
+	}
+end
+
+local function obsidianRestConfigCheck(): CheckRow
+	local path = "secrets/obsidian.env"
+	if not fs.isFile(path) then
+		return {
+			gate = "G3",
+			check = "Obsidian REST config",
+			status = "MISSING",
+			detail = path,
+		}
+	end
+
+	local values = readEnvFile(path)
+	local apiUrl = values.OBSIDIAN_API_URL or ""
+	local apiKey = values.OBSIDIAN_API_KEY or ""
+
+	if not apiUrl:match("^https?://") then
+		return {
+			gate = "G3",
+			check = "Obsidian REST config",
+			status = "BLOCKED",
+			detail = "OBSIDIAN_API_URL missing or invalid; values not printed",
+		}
+	end
+
+	if looksPlaceholder(apiKey) then
+		return {
+			gate = "G3",
+			check = "Obsidian REST config",
+			status = "BLOCKED",
+			detail = "OBSIDIAN_API_KEY missing or placeholder; values not printed",
+		}
+	end
+
+	return {
+		gate = "G3",
+		check = "Obsidian REST config",
+		status = "PASS",
+		detail = "required keys present; values not printed",
+	}
+end
+
+local function openCloudConfigCheck(): CheckRow
+	local path = "secrets/opencloud.env"
+	if not fs.isFile(path) then
+		return {
+			gate = "G5",
+			check = "Open Cloud config",
+			status = "MISSING",
+			detail = path,
+		}
+	end
+
+	local values = readEnvFile(path)
+	if looksPlaceholder(values.OPEN_CLOUD_API_KEY or "") then
+		return {
+			gate = "G5",
+			check = "Open Cloud config",
+			status = "BLOCKED",
+			detail = "OPEN_CLOUD_API_KEY missing or placeholder; values not printed",
+		}
+	end
+
+	if not numericIdOk(values.ROBLOX_UNIVERSE_ID or "") then
+		return {
+			gate = "G5",
+			check = "Open Cloud config",
+			status = "BLOCKED",
+			detail = "ROBLOX_UNIVERSE_ID missing or invalid; values not printed",
+		}
+	end
+
+	if not numericIdOk(values.ROBLOX_PLACE_ID or "") then
+		return {
+			gate = "G5",
+			check = "Open Cloud config",
+			status = "BLOCKED",
+			detail = "ROBLOX_PLACE_ID missing or invalid; values not printed",
+		}
+	end
+
+	return {
+		gate = "G5",
+		check = "Open Cloud config",
+		status = "PASS",
+		detail = "required keys present; values not printed",
 	}
 end
 
@@ -213,12 +351,7 @@ local rows: { CheckRow } = {
 		VAULT_ROOT .. "/80_Archives/StudioSnapshots",
 		"archive present"
 	),
-	fileCheck(
-		"G3",
-		"Obsidian REST config",
-		"secrets/obsidian.env",
-		"file exists; values not printed"
-	),
+	obsidianRestConfigCheck(),
 	fileCheck(
 		"G3",
 		"Vault dashboard",
@@ -252,12 +385,7 @@ local rows: { CheckRow } = {
 		{ "remote", "-v" },
 		"no Git remote configured"
 	),
-	fileCheck(
-		"G5",
-		"Open Cloud config",
-		"secrets/opencloud.env",
-		"file exists; values not printed"
-	),
+	openCloudConfigCheck(),
 	fileCheck("G5", "Open Cloud fixture", "tools/fixtures/opencloud.env", "fixture present"),
 	fileCheck(
 		"G5",

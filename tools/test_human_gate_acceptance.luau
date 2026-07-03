@@ -42,6 +42,16 @@ end
 assertContains(script, "--self-test", "probe must include self-test mode")
 assertContains(script, "process.exit(1)", "probe must fail when gates are blocked")
 assertContains(script, "values not printed", "probe must not print secret values")
+assertContains(script, "readEnvFile", "probe must parse secret env files before accepting gates")
+assertContains(script, "stripEnvQuotes", "probe must accept quoted env values")
+assertContains(script, "looksPlaceholder", "probe must reject placeholder secret values")
+assertContains(script, "numericIdOk", "probe must validate Open Cloud numeric IDs")
+assertContains(script, "OBSIDIAN_API_URL missing or invalid", "probe must validate Obsidian URL")
+assertContains(
+	script,
+	"OPEN_CLOUD_API_KEY missing or placeholder",
+	"probe must validate Open Cloud API key"
+)
 assertContains(script, "NEEDS HUMAN", "probe must represent human-only checks")
 assertContains(
 	script,

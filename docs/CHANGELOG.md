@@ -43,3 +43,4 @@
 - [WO-2/WO-10] Added repeatable Studio bridge bootstrap evidence for G2 local Rojo readiness, Studio process, and receipt state - 2026-07-03.
 - [WO-9/WO-10] Added repeatable Open Cloud bootstrap evidence for G5 release readiness without exposing key or place values - 2026-07-03.
 - [WO-10] Updated generated human-gate checklist/readiness notes to surface all G2-G5 bootstrap helpers from one place - 2026-07-03.
+- [WO-3/WO-9/WO-10] Tightened gate acceptance/readiness so Obsidian and Open Cloud secret files must contain valid non-placeholder keys before passing - 2026-07-03.

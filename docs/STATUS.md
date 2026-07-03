@@ -6,6 +6,8 @@ Last updated: 2026-07-03
 
 WO-0 G1 tool closure now passes locally: Git, Rokit, Rojo, VS Code `code`, GitHub CLI `gh`, Blender CLI, and Obsidian command are all available through refreshed PATH/shims. WO-1 exact local acceptance now passes through `./nexus.ps1 check`. WO-2 now has the sync-rules runbook, sourcemap-aware analyze proof, and `./nexus.ps1 studio-bridge` for repeatable local G2 readiness evidence, but live Studio sync remains blocked on **G2 - Studio connect**. WO-3 vault plugin preinstall now passes locally with all eight required Obsidian plugins downloaded and enabled in vault config; `./nexus.ps1 obsidian-rest` now records non-secret bootstrap evidence and will write `secrets/obsidian.env` only after Obsidian generates Local REST settings, but REST/dashboard acceptance remains blocked on **G3 - Obsidian REST key + dashboard proof**. WO-4 automation scripts now pass through exact `./nexus.ps1 loop --once` and include dummy-service/stale-note evidence, but dashboard rendering remains gated. WO-5 asset pipeline has direct-run proof with seed assets. WO-6 Cmdr integration has build/analyze proof, but in-Studio command execution remains gated. WO-7 data/networking baseline has direct local proof, but live ProfileStore session behavior remains Studio-gated. WO-8 CI workflow and shared local/CI gate are created; `./nexus.ps1 github-ci` now records non-secret G4 readiness and can explicitly create/push the private remote after `gh auth login`, but remote GitHub auth/remote setup remains blocked on **G4 - GitHub auth**. WO-9 release-path dry-run now passes through `./nexus.ps1 release --dry-run --fixture`; `./nexus.ps1 open-cloud` records secret-safe G5 readiness, but live publish remains gated on **G5 - Open Cloud key**. WO-10 `up/status/down` now starts and stops watcher jobs cleanly; full cold-boot Studio acceptance remains blocked on G2/G3.
 
+G3/G5 gate probes now parse local secret env files and only pass when Obsidian REST and Open Cloud values are present, non-placeholder, and valid enough to use; secret values are never printed.
+
 ## WO-0 - Close the Tool Gaps
 
 ### Audit Output
@@ -1565,6 +1567,7 @@ When ready to publish for real:
 - Added `tools/human_gate_readiness.luau` and a dashboard embed for `00_Command_Center/Human Gate Readiness.md`.
 - Added `tools/test_human_gate_readiness.luau` to the shared quality gate. It verifies automatic G1-G5 readiness checks, secret-safe output, launcher/loop wiring, dashboard embed, and generated vault note content.
 - Updated the generated Human Gate Checklist and Human Gate Readiness notes so G2-G5 all point to their repeatable bootstrap helpers from one central gate surface.
+- Tightened G3/G5 human-gate probes so Obsidian REST and Open Cloud secret files must contain required non-placeholder keys before passing; values stay hidden.
 - Added `tools/human_gate_acceptance.luau`, `./nexus.ps1 gatecheck`, and a `Nexus: Gate Acceptance Probe` VS Code task.
 - Added `tools/test_human_gate_acceptance.luau` to the shared quality gate. It verifies the on-demand acceptance probe, its self-test mode, and an honest blocked probe path for human-only gates.
 
@@ -1824,7 +1827,7 @@ Acceptance matrix contract tests passed
 
 ```powershell
 ./nexus.ps1 check
-[PASS] Wally Install (1.30s, exit 0)
+[PASS] Wally Install (0.69s, exit 0)
 [PASS] StyLua (0.09s, exit 0)
 [PASS] Selene (0.11s, exit 0)
 [PASS] Sourcemap (0.08s, exit 0)
@@ -1834,7 +1837,7 @@ Acceptance matrix contract tests passed
 [PASS] Studio Bridge Bootstrap Tests (0.03s, exit 0)
 [PASS] Migration Tests (0.03s, exit 0)
 [PASS] DataService Contract Tests (0.03s, exit 0)
-[PASS] Vault Scaffold Tests (0.06s, exit 0)
+[PASS] Vault Scaffold Tests (0.07s, exit 0)
 [PASS] Obsidian Plugin Setup Tests (0.03s, exit 0)
 [PASS] Obsidian REST Bootstrap Tests (0.03s, exit 0)
 [PASS] GitHub CI Bootstrap Tests (0.03s, exit 0)
@@ -1845,14 +1848,14 @@ Acceptance matrix contract tests passed
 [PASS] Command Center Contract Tests (0.03s, exit 0)
 [PASS] Human Gate Checklist Tests (0.03s, exit 0)
 [PASS] Human Gate Readiness Tests (0.03s, exit 0)
-[PASS] Human Gate Acceptance Tests (2.28s, exit 0)
-[PASS] Human Gate Receipt Tests (1.08s, exit 0)
+[PASS] Human Gate Acceptance Tests (2.10s, exit 0)
+[PASS] Human Gate Receipt Tests (1.07s, exit 0)
 [PASS] Founder Sign-Off Audit Tests (0.03s, exit 0)
 [PASS] Acceptance Matrix Contract Tests (0.03s, exit 0)
 [PASS] Release Contract Tests (0.03s, exit 0)
 [PASS] Open Cloud Bootstrap Tests (0.03s, exit 0)
-[PASS] Secret Scan (0.52s, exit 0)
-[PASS] Analyze (2.02s, exit 0)
+[PASS] Secret Scan (0.55s, exit 0)
+[PASS] Analyze (2.01s, exit 0)
 [PASS] Build (0.08s, exit 0)
 [PASS] Open Cloud Dry Run (0.03s, exit 0)
 Quality gate PASS

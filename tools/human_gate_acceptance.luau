@@ -49,6 +49,56 @@ local function oneLine(value: string): string
 	return normalized
 end
 
+local function trim(value: string): string
+	return value:match("^%s*(.-)%s*$") or ""
+end
+
+local function stripEnvQuotes(value: string): string
+	local trimmed = trim(value)
+	if #trimmed >= 2 then
+		local first = trimmed:sub(1, 1)
+		local last = trimmed:sub(-1)
+		if (first == '"' and last == '"') or (first == "'" and last == "'") then
+			return trimmed:sub(2, -2)
+		end
+	end
+
+	return trimmed
+end
+
+local function readEnvFile(path: string): { [string]: string }
+	local values = {}
+
+	if not fs.isFile(path) then
+		return values
+	end
+
+	for line in fs.readFile(path):gmatch("[^\r\n]+") do
+		local stripped = trim(line)
+		if stripped ~= "" and not stripped:match("^#") then
+			local key, value = stripped:match("^([%w_]+)%s*=%s*(.+)$")
+			if key and value then
+				values[key] = stripEnvQuotes(value)
+			end
+		end
+	end
+
+	return values
+end
+
+local function looksPlaceholder(value: string): boolean
+	local lower = value:lower()
+	return lower == ""
+		or lower:find("replace", 1, true) ~= nil
+		or lower:find("fixture", 1, true) ~= nil
+		or lower:find("placeholder", 1, true) ~= nil
+		or lower:find("do_not_use", 1, true) ~= nil
+end
+
+local function numericIdOk(value: string): boolean
+	return value:match("^%d+$") ~= nil and value:match("^0+$") == nil
+end
+
 local function usage(): string
 	return table.concat({
 		"Usage: lune run tools/human_gate_acceptance.luau [--gate G1] [--self-test]",
@@ -156,6 +206,94 @@ local function fileCheck(gate: string, name: string, path: string, presentDetail
 		name = name,
 		status = if present then "PASS" else "FAIL",
 		detail = if present then presentDetail else path,
+	}
+end
+
+local function obsidianRestConfigCheck(): Check
+	local path = "secrets/obsidian.env"
+	if not fs.isFile(path) then
+		return {
+			gate = "G3",
+			name = "Obsidian REST config present",
+			status = "FAIL",
+			detail = path,
+		}
+	end
+
+	local values = readEnvFile(path)
+	local apiUrl = values.OBSIDIAN_API_URL or ""
+	local apiKey = values.OBSIDIAN_API_KEY or ""
+
+	if not apiUrl:match("^https?://") then
+		return {
+			gate = "G3",
+			name = "Obsidian REST config present",
+			status = "FAIL",
+			detail = "OBSIDIAN_API_URL missing or invalid; values not printed",
+		}
+	end
+
+	if looksPlaceholder(apiKey) then
+		return {
+			gate = "G3",
+			name = "Obsidian REST config present",
+			status = "FAIL",
+			detail = "OBSIDIAN_API_KEY missing or placeholder; values not printed",
+		}
+	end
+
+	return {
+		gate = "G3",
+		name = "Obsidian REST config present",
+		status = "PASS",
+		detail = "required keys present; values not printed",
+	}
+end
+
+local function openCloudConfigCheck(): Check
+	local path = "secrets/opencloud.env"
+	if not fs.isFile(path) then
+		return {
+			gate = "G5",
+			name = "Open Cloud config present",
+			status = "FAIL",
+			detail = path,
+		}
+	end
+
+	local values = readEnvFile(path)
+	if looksPlaceholder(values.OPEN_CLOUD_API_KEY or "") then
+		return {
+			gate = "G5",
+			name = "Open Cloud config present",
+			status = "FAIL",
+			detail = "OPEN_CLOUD_API_KEY missing or placeholder; values not printed",
+		}
+	end
+
+	if not numericIdOk(values.ROBLOX_UNIVERSE_ID or "") then
+		return {
+			gate = "G5",
+			name = "Open Cloud config present",
+			status = "FAIL",
+			detail = "ROBLOX_UNIVERSE_ID missing or invalid; values not printed",
+		}
+	end
+
+	if not numericIdOk(values.ROBLOX_PLACE_ID or "") then
+		return {
+			gate = "G5",
+			name = "Open Cloud config present",
+			status = "FAIL",
+			detail = "ROBLOX_PLACE_ID missing or invalid; values not printed",
+		}
+	end
+
+	return {
+		gate = "G5",
+		name = "Open Cloud config present",
+		status = "PASS",
+		detail = "required keys present; values not printed",
 	}
 end
 
@@ -292,12 +430,7 @@ local function allChecks(): { Check }
 			"docs/runbooks/rojo-sync-rules.md",
 			"runbook present"
 		),
-		fileCheck(
-			"G3",
-			"Obsidian REST config present",
-			"secrets/obsidian.env",
-			"values not printed"
-		),
+		obsidianRestConfigCheck(),
 		obsidianPluginSetupCheck(),
 		pendingCheck(),
 		receiptCheck(
@@ -320,7 +453,7 @@ local function allChecks(): { Check }
 			RECEIPT_ROOT .. "/G4-github-ci.md",
 			"CI branch protection confirmed"
 		),
-		fileCheck("G5", "Open Cloud config present", "secrets/opencloud.env", "values not printed"),
+		openCloudConfigCheck(),
 		fileCheck("G5", "Build artifact present", "build/nexus.rbxl", "build artifact present"),
 		receiptCheck(
 			"G5",
