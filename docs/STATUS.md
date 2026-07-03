@@ -237,6 +237,7 @@ WO-1 is **not complete** until the exact acceptance commands pass, especially `.
 - Added dashboard, current sprint, daily dev log, build health stub, system notes, map/asset indexes, package inventory, sourcemap note, and architecture decision mirror.
 - Added templates for asset, map, system, decision, bug, and playtest notes using the approved frontmatter schema.
 - Initialized the vault as a separate Git repo and made its first commit.
+- Added `tools/vault_ping.luau`, which writes `90_Automation/Generated/Ping.md` through Obsidian Local REST API once `secrets/obsidian.env` exists.
 
 ### Human Gate G3 Request
 
@@ -278,6 +279,28 @@ git status --short
 <clean>
 ```
 
+Vault ping script dry run without secrets:
+
+```powershell
+$env:ROKIT_PROBE='1'; lune run tools/vault_ping.luau
+C:\Users\jackw\Roblox\nexus\tools/vault_ping:40: Missing Obsidian REST config. Create secrets/obsidian.env with OBSIDIAN_API_URL and OBSIDIAN_API_KEY.
+```
+
+Script style/lint:
+
+```powershell
+$env:ROKIT_PROBE='1'; stylua --check src tools
+<exit 0; no output>
+```
+
+```powershell
+$env:ROKIT_PROBE='1'; selene src tools
+Results:
+0 errors
+0 warnings
+0 parse errors
+```
+
 Nexus status after logging:
 
 ```powershell
@@ -289,4 +312,5 @@ git status --short
 
 - Obsidian is not installed yet from WO-0/G1, so dashboard rendering cannot be verified.
 - Local REST API is not installed or keyed yet, so `tools/vault_ping.luau` cannot be completed or accepted.
+- luau-lsp does not currently analyze `tools/*.luau` because it does not know Lune's `@lune/*` runtime imports yet; WO-1 analyzer scope remains `src`.
 - WO-3 is **not complete** until `lune run tools/vault_ping.luau` exits 0, `Ping.md` exists with a fresh timestamp, dashboard Dataview tables render, and the vault has committed the generated proof.
