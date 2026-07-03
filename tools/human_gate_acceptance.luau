@@ -114,6 +114,14 @@ local function commandCheck(gate: string, name: string, command: string, args: {
 	}
 end
 
+local function powershellCommandCheck(gate: string, name: string, commandLine: string): Check
+	return commandCheck(gate, name, "powershell.exe", {
+		"-NoProfile",
+		"-Command",
+		commandLine,
+	})
+end
+
 local function commandOutputRequired(
 	gate: string,
 	name: string,
@@ -204,8 +212,8 @@ local function allChecks(): { Check }
 		commandCheck("G1", "git available", "git", { "--version" }),
 		commandCheck("G1", "rokit available", "rokit", { "--version" }),
 		commandCheck("G1", "rojo available", "rojo", { "--version" }),
-		commandCheck("G1", "code available", "code", { "--version" }),
-		commandCheck("G1", "gh available", "gh", { "--version" }),
+		powershellCommandCheck("G1", "code available", "code --version"),
+		powershellCommandCheck("G1", "gh available", "gh --version"),
 		pathCommandCheck("G1", "blender CLI available", "blender"),
 		pathCommandCheck("G1", "obsidian command available", "obsidian"),
 		receiptCheck(

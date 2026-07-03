@@ -128,6 +128,16 @@ assertContains(
 )
 assertContains(launcher, "Stop-NexusJobs", "down must stop background jobs")
 assertContains(launcher, "Write-NexusJobTable", "status/up/down must print job table")
+assertContains(
+	launcher,
+	"Refresh-NexusPath",
+	"launcher must refresh PATH for newly installed tools"
+)
+assertContains(
+	launcher,
+	'[Environment]::GetEnvironmentVariable("Path", "User")',
+	"launcher must include user PATH entries"
+)
 assertContains(launcher, "git status --short", "status must show Git status")
 assertContains(launcher, "rokit list", "status must show pinned tools")
 

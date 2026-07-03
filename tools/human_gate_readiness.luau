@@ -62,6 +62,14 @@ local function commandCheck(
 	}
 end
 
+local function powershellCommandCheck(gate: string, label: string, commandLine: string): CheckRow
+	return commandCheck(gate, label, "powershell.exe", {
+		"-NoProfile",
+		"-Command",
+		commandLine,
+	})
+end
+
 local function commandOutputRequired(
 	gate: string,
 	label: string,
@@ -124,8 +132,8 @@ local rows: { CheckRow } = {
 	commandCheck("G1", "git --version", "git", { "--version" }),
 	commandCheck("G1", "rokit --version", "rokit", { "--version" }),
 	commandCheck("G1", "rojo --version", "rojo", { "--version" }),
-	commandCheck("G1", "code --version", "code", { "--version" }),
-	commandCheck("G1", "gh --version", "gh", { "--version" }),
+	powershellCommandCheck("G1", "code --version", "code --version"),
+	powershellCommandCheck("G1", "gh --version", "gh --version"),
 	commandSource("blender command", "blender"),
 	commandSource("obsidian command", "obsidian"),
 	humanCheck(

@@ -55,11 +55,12 @@ end
 
 local function toolRow(tool: string, command: string, closeAction: string): ToolRow
 	local source = commandSource(command)
+	local found = source ~= ""
 	return {
 		tool = tool,
-		status = if source ~= "" then "FOUND" else "MISSING",
-		detail = if source ~= "" then source else command .. " not found on PATH",
-		closeAction = closeAction,
+		status = if found then "FOUND" else "MISSING",
+		detail = if found then source else command .. " not found on PATH",
+		closeAction = if found then "No action; verified on PATH." else closeAction,
 	}
 end
 

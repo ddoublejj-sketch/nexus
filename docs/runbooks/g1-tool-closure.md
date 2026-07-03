@@ -31,7 +31,7 @@ Blender currently exists as a Microsoft Store package on this machine, but `blen
 ## After Installation
 
 1. Restart the shell so PATH changes are visible.
-2. Run `./nexus.ps1 g1` to refresh the vault audit note.
+2. Run `./nexus.ps1 g1` to refresh PATH from the current user/machine environment and update the vault audit note.
 3. Run `./nexus.ps1 gatecheck --gate G1`.
 4. Paste the passing output into `docs/STATUS.md`.
 

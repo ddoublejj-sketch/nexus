@@ -44,9 +44,11 @@ assertContains(status, "luau-lsp.exe", "Missing pinned luau-lsp command evidence
 assertContains(status, "v1.29.280", "Missing winget audit output")
 assertContains(
 	status,
-	"code : The term 'code' is not recognized",
-	"STATUS must not pretend code is available"
+	"VS Code was installed with explicit approval",
+	"Missing VS Code install proof"
 )
+assertContains(status, "1.126.0", "Missing VS Code version proof")
+assertContains(status, "| G1 | code available | PASS |", "G1 probe must show code passing")
 assertContains(
 	status,
 	"gh : The term 'gh' is not recognized",
@@ -60,8 +62,8 @@ assertContains(
 	"STATUS must distinguish Blender app presence from CLI readiness"
 )
 assertContains(status, "### Human Gate G1 Request", "Missing G1 request")
-assertContains(status, "Install **Visual Studio Code**", "Missing VS Code G1 request")
-assertContains(status, "Install **GitHub CLI**", "Missing GitHub CLI G1 request")
+assertContains(status, "**VS Code is installed**", "Missing VS Code installed G1 evidence")
+assertContains(status, "Install or repair **GitHub CLI**", "Missing GitHub CLI G1 request")
 assertContains(status, "Install **Obsidian**", "Missing Obsidian G1 request")
 assertContains(status, "standard Blender build", "Missing Blender G1 wording")
 assertContains(
@@ -72,7 +74,7 @@ assertContains(
 assertContains(status, "Tool gap contract tests passed", "Missing WO-0 contract output")
 assertContains(
 	status,
-	"| WO-0 Tool Gaps | Partial | Audit output, G1 Tool Closure note/runbook, and tool-gap contract tests under WO-0 | G1:",
+	"| WO-0 Tool Gaps | Partial | Audit output, VS Code install proof, G1 Tool Closure note/runbook, and tool-gap contract tests under WO-0 | G1: `gh`, Obsidian, Blender",
 	"Acceptance matrix must keep WO-0 partial and G1-gated"
 )
 

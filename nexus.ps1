@@ -111,6 +111,25 @@ function Write-NexusJobTable {
 	$rows | Format-Table -AutoSize
 }
 
+function Refresh-NexusPath {
+	$machinePath = [Environment]::GetEnvironmentVariable("Path", "Machine")
+	$userPath = [Environment]::GetEnvironmentVariable("Path", "User")
+	$parts = @()
+
+	if ($machinePath) {
+		$parts += $machinePath
+	}
+
+	if ($userPath) {
+		$parts += $userPath
+	}
+
+	if ($parts.Count -gt 0) {
+		$env:Path = $parts -join ";"
+	}
+}
+
+Refresh-NexusPath
 Set-Location $RepoRoot
 
 switch ($Command.ToLowerInvariant()) {

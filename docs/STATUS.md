@@ -4,7 +4,7 @@ Last updated: 2026-07-03
 
 ## Current Phase
 
-WO-0 is in progress and blocked on **G1 - GUI installs**. WO-1 exact local acceptance now passes through `./nexus.ps1 check`. WO-2 now has the sync-rules runbook and sourcemap-aware analyze proof, but live Studio sync remains blocked on **G2 - Studio connect**. WO-3 vault scaffolding has started and is blocked on **G3 - Obsidian plugins + REST key** for end-to-end REST verification. WO-4 automation scripts now pass through exact `./nexus.ps1 loop --once` and include dummy-service/stale-note evidence, but dashboard rendering remains gated. WO-5 asset pipeline has direct-run proof with seed assets. WO-6 Cmdr integration has build/analyze proof, but in-Studio command execution remains gated. WO-7 data/networking baseline has direct local proof, but live ProfileStore session behavior remains Studio-gated. WO-8 CI workflow and shared local/CI gate are created, but remote GitHub setup is blocked on **G4 - GitHub auth**. WO-9 release-path dry-run now passes through `./nexus.ps1 release --dry-run --fixture`; live publish remains gated on **G5 - Open Cloud key**. WO-10 `up/status/down` now starts and stops watcher jobs cleanly; full cold-boot Studio acceptance remains blocked on G2/G3.
+WO-0 is in progress and blocked on **G1 - GUI installs**. VS Code is now installed and `code --version` passes through refreshed PATH, but `gh`, Obsidian, and Blender CLI are still missing. WO-1 exact local acceptance now passes through `./nexus.ps1 check`. WO-2 now has the sync-rules runbook and sourcemap-aware analyze proof, but live Studio sync remains blocked on **G2 - Studio connect**. WO-3 vault scaffolding has started and is blocked on **G3 - Obsidian plugins + REST key** for end-to-end REST verification. WO-4 automation scripts now pass through exact `./nexus.ps1 loop --once` and include dummy-service/stale-note evidence, but dashboard rendering remains gated. WO-5 asset pipeline has direct-run proof with seed assets. WO-6 Cmdr integration has build/analyze proof, but in-Studio command execution remains gated. WO-7 data/networking baseline has direct local proof, but live ProfileStore session behavior remains Studio-gated. WO-8 CI workflow and shared local/CI gate are created, but remote GitHub setup is blocked on **G4 - GitHub auth**. WO-9 release-path dry-run now passes through `./nexus.ps1 release --dry-run --fixture`; live publish remains gated on **G5 - Open Cloud key**. WO-10 `up/status/down` now starts and stops watcher jobs cleanly; full cold-boot Studio acceptance remains blocked on G2/G3.
 
 ## WO-0 - Close the Tool Gaps
 
@@ -162,6 +162,53 @@ blender-launcher.exe C:\Users\jackw\AppData\Local\Microsoft\WindowsApps\blender-
 
 Windows Store launcher alias is present, but no reliable `blender.exe` CLI path is exposed yet.
 
+### G1 Partial Progress - 2026-07-03
+
+VS Code was installed with explicit approval through winget:
+
+```powershell
+winget install --id Microsoft.VisualStudioCode --source winget --accept-source-agreements --accept-package-agreements --silent
+Found Microsoft Visual Studio Code [Microsoft.VisualStudioCode] Version 1.126.0
+Successfully installed
+```
+
+The installed user PATH includes the VS Code command shim, and `nexus.ps1` now refreshes PATH from the current user/machine environment before running subcommands:
+
+```powershell
+$env:Path = [Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [Environment]::GetEnvironmentVariable('Path','User'); code --version
+1.126.0
+7e7950df89d055b5a378379db9ee14290772148a
+x64
+```
+
+GitHub CLI install attempt timed out and left an elevated `msiexec` process that this shell could not stop:
+
+```powershell
+winget install --id GitHub.cli --source winget --accept-source-agreements --accept-package-agreements --silent
+command timed out after 124045 milliseconds
+```
+
+```powershell
+gh --version
+gh : The term 'gh' is not recognized as the name of a cmdlet, function, script file, or operable program.
+```
+
+Current G1 probe after VS Code install and PATH refresh:
+
+```powershell
+./nexus.ps1 gatecheck --gate G1
+| Gate | Check | Status | Detail |
+| --- | --- | --- | --- |
+| G1 | git available | PASS | git version 2.54.0.windows.1 |
+| G1 | rokit available | PASS | rokit 1.2.0 |
+| G1 | rojo available | PASS | Rojo 7.7.0 |
+| G1 | code available | PASS | 1.126.0 7e7950df89d055b5a378379db9ee14290772148a x64 |
+| G1 | gh available | FAIL | gh : The term 'gh' is not recognized as the name of a cmdlet, function, script file, or operable program. |
+| G1 | blender CLI available | FAIL | blender not found on PATH |
+| G1 | obsidian command available | FAIL | obsidian not found on PATH |
+Human gate acceptance BLOCKED: 3 check(s) are not accepted.
+```
+
 WO-0/G1 contract guard:
 
 ```powershell
@@ -182,11 +229,10 @@ C:\Users\jackw\Desktop\Claude Code\Greatsword.fbx
 
 Please install or repair the GUI/tooling prerequisites that cannot currently be completed from this shell:
 
-1. **winget is now available**; explicitly approve GUI/tool installs before Codex runs them.
-2. Install **Visual Studio Code** and enable the `code` command on PATH.
-3. Install **GitHub CLI** and make `gh` available on PATH.
-4. Install **Obsidian**.
-5. Install a standard Blender build, repair Blender PATH, or provide the absolute path to `blender.exe`. The current Windows Store `blender-launcher.exe` alias is not enough for CLI thumbnail rendering.
+1. **VS Code is installed**; `code --version` passes through refreshed PATH.
+2. Install or repair **GitHub CLI** and make `gh` available on PATH. The first silent winget attempt timed out and left an elevated `msiexec` process.
+3. Install **Obsidian**.
+4. Install a standard Blender build, repair Blender PATH, or provide the absolute path to `blender.exe`. The current Windows Store `blender-launcher.exe` alias is not enough for CLI thumbnail rendering.
 
 After this, rerun WO-0 acceptance:
 
@@ -202,7 +248,8 @@ Get-Command blender -ErrorAction SilentlyContinue
 ### Open Notes
 
 - `rojo`, Wally, Lune, StyLua, Selene, and luau-lsp are now available through the Nexus Rokit project.
-- VS Code CLI, GitHub CLI, Obsidian, and an automatable Blender CLI path are still not available.
+- VS Code CLI is now available after PATH refresh.
+- GitHub CLI, Obsidian, and an automatable Blender CLI path are still not available.
 - No WO-0 acceptance item is marked complete yet because the full command list has not passed.
 
 ## WO-1 - Bootstrap the Nexus Repo
@@ -1574,7 +1621,7 @@ NexusAutomationLoop Stopped
 
 | Work Order | Local Status | Evidence In This File | Remaining Gate / Blocker |
 | --- | --- | --- | --- |
-| WO-0 Tool Gaps | Partial | Audit output, G1 Tool Closure note/runbook, and tool-gap contract tests under WO-0 | G1: `code`, `gh`, Obsidian, Blender on PATH/install path |
+| WO-0 Tool Gaps | Partial | Audit output, VS Code install proof, G1 Tool Closure note/runbook, and tool-gap contract tests under WO-0 | G1: `gh`, Obsidian, Blender on PATH/install path |
 | WO-1 Bootstrap | Exact local acceptance passed | Repo scaffold, tool pins, `rokit install`, `wally install`, `rojo build`, `rojo sourcemap`, `./nexus.ps1 check` | None locally |
 | WO-2 Studio Bridge | Runbook added, live bridge blocked | Sourcemap-aware analyze output, Rojo bridge tests, and `docs/runbooks/rojo-sync-rules.md` | G2: Studio plugin connect and live sync proof |
 | WO-3 Vault | Scaffolded, REST blocked | Vault repo, templates, vault scaffold tests, pending queue output | G3: Obsidian install, plugins, Local REST API key, pending flush |
@@ -1597,16 +1644,16 @@ Acceptance matrix contract tests passed
 
 ```powershell
 ./nexus.ps1 check
-[PASS] Wally Install (0.70s, exit 0)
+[PASS] Wally Install (1.16s, exit 0)
 [PASS] StyLua (0.08s, exit 0)
-[PASS] Selene (0.10s, exit 0)
-[PASS] Sourcemap (0.08s, exit 0)
+[PASS] Selene (0.26s, exit 0)
+[PASS] Sourcemap (0.09s, exit 0)
 [PASS] Tool Gap Contract Tests (0.03s, exit 0)
 [PASS] G1 Tool Closure Tests (0.03s, exit 0)
 [PASS] Rojo Bridge Tests (0.03s, exit 0)
 [PASS] Migration Tests (0.03s, exit 0)
 [PASS] DataService Contract Tests (0.03s, exit 0)
-[PASS] Vault Scaffold Tests (0.06s, exit 0)
+[PASS] Vault Scaffold Tests (0.07s, exit 0)
 [PASS] Asset Manifest Tests (0.03s, exit 0)
 [PASS] Command Surface Tests (0.03s, exit 0)
 [PASS] Net Contract Tests (0.02s, exit 0)
@@ -1614,13 +1661,13 @@ Acceptance matrix contract tests passed
 [PASS] Command Center Contract Tests (0.03s, exit 0)
 [PASS] Human Gate Checklist Tests (0.03s, exit 0)
 [PASS] Human Gate Readiness Tests (0.02s, exit 0)
-[PASS] Human Gate Acceptance Tests (2.06s, exit 0)
-[PASS] Human Gate Receipt Tests (1.05s, exit 0)
-[PASS] Founder Sign-Off Audit Tests (0.02s, exit 0)
+[PASS] Human Gate Acceptance Tests (3.71s, exit 0)
+[PASS] Human Gate Receipt Tests (1.82s, exit 0)
+[PASS] Founder Sign-Off Audit Tests (0.03s, exit 0)
 [PASS] Acceptance Matrix Contract Tests (0.03s, exit 0)
 [PASS] Release Contract Tests (0.03s, exit 0)
-[PASS] Secret Scan (0.39s, exit 0)
-[PASS] Analyze (2.03s, exit 0)
+[PASS] Secret Scan (0.48s, exit 0)
+[PASS] Analyze (2.10s, exit 0)
 [PASS] Build (0.08s, exit 0)
 [PASS] Open Cloud Dry Run (0.03s, exit 0)
 Quality gate PASS
