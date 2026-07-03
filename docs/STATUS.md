@@ -4,7 +4,7 @@ Last updated: 2026-07-03
 
 ## Current Phase
 
-WO-0 G1 tool closure now passes locally: Git, Rokit, Rojo, VS Code `code`, GitHub CLI `gh`, Blender CLI, and Obsidian command are all available through refreshed PATH/shims. WO-1 exact local acceptance now passes through `./nexus.ps1 check`. WO-2 now has the sync-rules runbook, sourcemap-aware analyze proof, and `./nexus.ps1 studio-bridge` for repeatable local G2 readiness evidence, but live Studio sync remains blocked on **G2 - Studio connect**. WO-3 vault plugin preinstall now passes locally with all eight required Obsidian plugins downloaded and enabled in vault config; `./nexus.ps1 obsidian-rest` now records non-secret bootstrap evidence and will write `secrets/obsidian.env` only after Obsidian generates Local REST settings, but REST/dashboard acceptance remains blocked on **G3 - Obsidian REST key + dashboard proof**. WO-4 automation scripts now pass through exact `./nexus.ps1 loop --once` and include dummy-service/stale-note evidence, but dashboard rendering remains gated. WO-5 asset pipeline now renders real Blender PNG thumbnails for the four seed assets through `./nexus.ps1 thumbnails`. WO-6 Cmdr profile commands now call DataService for inventory grants, schema-backed stat edits, and Owner-confirmed profile resets, but in-Studio command execution remains gated. WO-7 data/networking baseline has direct local proof and server-owned profile mutation helpers, but live ProfileStore session behavior remains Studio-gated. WO-8 CI workflow and shared local/CI gate are created; `./nexus.ps1 github-ci` now records non-secret G4 readiness and can explicitly create/push the private remote after `gh auth login`, but remote GitHub auth/remote setup remains blocked on **G4 - GitHub auth**. WO-9 release-path dry-run now passes through `./nexus.ps1 release --dry-run --fixture`; `./nexus.ps1 open-cloud` records secret-safe G5 readiness, but live publish remains gated on **G5 - Open Cloud key**. WO-10 `up/status/down` now starts and stops watcher jobs cleanly; full cold-boot Studio acceptance remains blocked on G2/G3.
+WO-0 G1 tool closure now passes locally: Git, Rokit, Rojo, VS Code `code`, GitHub CLI `gh`, Blender CLI, and Obsidian command are all available through refreshed PATH/shims. WO-1 exact local acceptance now passes through `./nexus.ps1 check`. WO-2 now has the sync-rules runbook, sourcemap-aware analyze proof, Rojo-managed `ServerStorage.Maps`, and `./nexus.ps1 studio-bridge` for repeatable local G2 readiness evidence, but live Studio sync remains blocked on **G2 - Studio connect**. WO-3 vault plugin preinstall now passes locally with all eight required Obsidian plugins downloaded and enabled in vault config; `./nexus.ps1 obsidian-rest` now records non-secret bootstrap evidence and will write `secrets/obsidian.env` only after Obsidian generates Local REST settings, but REST/dashboard acceptance remains blocked on **G3 - Obsidian REST key + dashboard proof**. WO-4 automation scripts now pass through exact `./nexus.ps1 loop --once` and include dummy-service/stale-note evidence, but dashboard rendering remains gated. WO-5 asset pipeline now renders real Blender PNG thumbnails for the four seed assets through `./nexus.ps1 thumbnails`. WO-6 Cmdr profile commands now call DataService for inventory grants, schema-backed stat edits, and Owner-confirmed profile resets; `reloadmap` now calls MapService to reload Rojo-managed maps into `Workspace.Map`, but in-Studio command execution remains gated. WO-7 data/networking baseline has direct local proof and server-owned profile mutation helpers, but live ProfileStore session behavior remains Studio-gated. WO-8 CI workflow and shared local/CI gate are created; `./nexus.ps1 github-ci` now records non-secret G4 readiness and can explicitly create/push the private remote after `gh auth login`, but remote GitHub auth/remote setup remains blocked on **G4 - GitHub auth**. WO-9 release-path dry-run now passes through `./nexus.ps1 release --dry-run --fixture`; `./nexus.ps1 open-cloud` records secret-safe G5 readiness, but live publish remains gated on **G5 - Open Cloud key**. WO-10 `up/status/down` now starts and stops watcher jobs cleanly; full cold-boot Studio acceptance remains blocked on G2/G3.
 
 G3/G5 gate probes now parse local secret env files and only pass when Obsidian REST and Open Cloud values are present, non-placeholder, and valid enough to use; secret values are never printed.
 
@@ -995,6 +995,7 @@ Build health PASS; wrote C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center
   - `debugtag`
 - `profilewipe` is Owner-tier and also refuses unless the confirm argument is `CONFIRM_WIPE`.
 - `give`, `setstat`, and `profilewipe` now call DataService helpers so profile commands mutate loaded profiles instead of queueing future work.
+- Added `MapService` plus a Rojo-managed `maps/Default.model.json`; `reloadmap` now loads maps from `ServerStorage.Maps` into `Workspace.Map`.
 - Updated `tools/command_registry.luau` so it skips `*Server` implementation modules and documents only command definitions.
 - Added `tools/test_commands.luau` to verify the command surface without Studio:
   - exactly seven command definition modules
@@ -1002,6 +1003,8 @@ Build health PASS; wrote C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center
   - every command header tier matches its Cmdr group
   - `profilewipe` is `Owner`/`NexusOwner`
   - `profilewipeServer` re-checks Owner permission and refuses without `CONFIRM_WIPE`
+  - `reloadmapServer` calls `MapService.reload`
+- Added `tools/test_map_service_contract.luau` to verify the Rojo map lane, MapService contract, and server init wiring.
 
 ### Direct-Run Evidence
 
@@ -1042,6 +1045,13 @@ Command surface tests:
 ```powershell
 lune run tools/test_commands.luau
 Command surface tests passed
+```
+
+MapService contract tests:
+
+```powershell
+lune run tools/test_map_service_contract.luau
+MapService contract tests passed
 ```
 
 Commands.md rows:
@@ -1841,7 +1851,7 @@ NexusAutomationLoop Stopped
 | WO-3 Vault | Scaffolded, REST blocked | Vault repo, templates, vault scaffold tests, pending queue output, Obsidian plugin setup proof | G3: Local REST API key, pending flush, dashboard render |
 | WO-4 Automation Loop | Exact local launcher proof passed | Sourcemap, vault sync, dummy/stale-note demo, command registry, gate status, vault scaffold tests, asset manifest, `./nexus.ps1 loop --once`, Build Health outputs | Dashboard render needs G3 |
 | WO-5 Asset Pipeline | Implemented with seed assets | Manifest, orphan repair, asset manifest tests, vault asset notes, Blender-rendered PNG thumbnails, and seed catalog | Dashboard render needs G3 |
-| WO-6 Cmdr | Implemented and analyzed | Cmdr service/controller, DataService-backed profile commands, generated command docs | G2 Studio playtest for command execution |
+| WO-6 Cmdr | Implemented and analyzed | Cmdr service/controller, DataService-backed profile commands, MapService-backed reloadmap, generated command docs | G2 Studio playtest for command execution |
 | WO-7 Data/Networking | Implemented and tested locally | ProfileStore wrapper, server-owned mutation helpers, migration tests, DataService contract tests, Net contract tests, typed Net, Build Health | G2 Studio playtest for session/runtime behavior |
 | WO-8 CI | Local workflow committed | Shared gate output, CI contract tests, GitHub CI bootstrap proof, workflow, runbook | G4: `gh auth`, remote repo, branch protection, real CI run |
 | WO-9 Release Path | Dry-run accepted locally | Fixture dry-run, `./nexus.ps1 release --dry-run --fixture`, Open Cloud bootstrap proof, release contract tests, secret-history scan, release checklist | G5 for live publish only |
@@ -1858,9 +1868,9 @@ Acceptance matrix contract tests passed
 
 ```powershell
 ./nexus.ps1 check
-[PASS] Wally Install (0.71s, exit 0)
+[PASS] Wally Install (0.77s, exit 0)
 [PASS] StyLua (0.09s, exit 0)
-[PASS] Selene (0.10s, exit 0)
+[PASS] Selene (0.11s, exit 0)
 [PASS] Sourcemap (0.09s, exit 0)
 [PASS] Tool Gap Contract Tests (0.03s, exit 0)
 [PASS] G1 Tool Closure Tests (0.03s, exit 0)
@@ -1868,27 +1878,28 @@ Acceptance matrix contract tests passed
 [PASS] Studio Bridge Bootstrap Tests (0.03s, exit 0)
 [PASS] Migration Tests (0.03s, exit 0)
 [PASS] DataService Contract Tests (0.03s, exit 0)
-[PASS] Vault Scaffold Tests (0.06s, exit 0)
+[PASS] Vault Scaffold Tests (0.07s, exit 0)
 [PASS] Obsidian Plugin Setup Tests (0.03s, exit 0)
 [PASS] Obsidian REST Bootstrap Tests (0.03s, exit 0)
 [PASS] GitHub CI Bootstrap Tests (0.03s, exit 0)
 [PASS] Asset Manifest Tests (0.03s, exit 0)
 [PASS] Command Surface Tests (0.03s, exit 0)
+[PASS] MapService Contract Tests (0.03s, exit 0)
 [PASS] Net Contract Tests (0.03s, exit 0)
 [PASS] CI Contract Tests (0.03s, exit 0)
 [PASS] Command Center Contract Tests (0.03s, exit 0)
 [PASS] Human Gate Checklist Tests (0.03s, exit 0)
 [PASS] Human Gate Readiness Tests (0.03s, exit 0)
-[PASS] Human Gate Acceptance Tests (2.13s, exit 0)
-[PASS] Human Gate Receipt Tests (1.16s, exit 0)
-[PASS] Founder Sign-Off Audit Tests (0.03s, exit 0)
-[PASS] Acceptance Matrix Contract Tests (0.03s, exit 0)
+[PASS] Human Gate Acceptance Tests (2.20s, exit 0)
+[PASS] Human Gate Receipt Tests (1.14s, exit 0)
+[PASS] Founder Sign-Off Audit Tests (0.09s, exit 0)
+[PASS] Acceptance Matrix Contract Tests (0.04s, exit 0)
 [PASS] Release Contract Tests (0.03s, exit 0)
 [PASS] Open Cloud Bootstrap Tests (0.03s, exit 0)
-[PASS] Secret Scan (0.55s, exit 0)
-[PASS] Analyze (1.96s, exit 0)
+[PASS] Secret Scan (0.65s, exit 0)
+[PASS] Analyze (2.00s, exit 0)
 [PASS] Build (0.08s, exit 0)
-[PASS] Open Cloud Dry Run (0.03s, exit 0)
+[PASS] Open Cloud Dry Run (0.02s, exit 0)
 Quality gate PASS
 ```
 
@@ -1903,8 +1914,8 @@ Wrote G1 tool closure note to C:/Users/jackw/Roblox/RobloxGameVault/00_Command_C
 
 ```powershell
 ./nexus.ps1 loop --once
-Wrote 132 sourcemap rows to C:/Users/jackw/Roblox/RobloxGameVault/90_Automation/Generated/Sourcemap.md
-Wrote 12 module notes under C:/Users/jackw/Roblox/RobloxGameVault/02_Systems/Generated Modules and refreshed stale-source report
+Wrote 133 sourcemap rows to C:/Users/jackw/Roblox/RobloxGameVault/90_Automation/Generated/Sourcemap.md
+Wrote 13 module notes under C:/Users/jackw/Roblox/RobloxGameVault/02_Systems/Generated Modules and refreshed stale-source report
 Wrote 7 command rows to C:/Users/jackw/Roblox/RobloxGameVault/02_Systems/Commands.md
 Asset manifest reconciled 4 assets; auto-added 0; missing sources 0; missing exports 0
 Wrote gate status for 11 work orders to C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Gate Status.md

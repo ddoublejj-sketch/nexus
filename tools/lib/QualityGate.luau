@@ -191,6 +191,14 @@ function QualityGate.runAll(options: RunOptions?): { CommandResult }
 	)
 	table.insert(
 		results,
+		QualityGate.runTool(
+			"MapService Contract Tests",
+			"lune",
+			{ "run", "tools/test_map_service_contract.luau" }
+		)
+	)
+	table.insert(
+		results,
 		QualityGate.runTool("Net Contract Tests", "lune", { "run", "tools/test_net_contract.luau" })
 	)
 	table.insert(

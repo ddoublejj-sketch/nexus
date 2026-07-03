@@ -2,12 +2,12 @@
 -- Command: reloadmap
 -- Tier: Dev
 -- Args: string mapName?
--- Description: Queue a map reload request for later map-service integration.
+-- Description: Reload a Rojo-managed map from ServerStorage.Maps into Workspace.Map.
 
 return {
 	Name = "reloadmap",
 	Aliases = { "reload" },
-	Description = "Queue a map reload request for later map-service integration.",
+	Description = "Reload a Rojo-managed map from ServerStorage.Maps into Workspace.Map.",
 	Group = "NexusDev",
 	Args = {
 		{

@@ -10,6 +10,7 @@ WO-2 proves the daily Studio bridge. The command center treats disk-owned source
 | Wally packages | Disk to Studio | Ready | Regenerate with `wally install`; never edit generated package folders. |
 | Shared config modules | Disk to Studio | Ready | All tunable game numbers live in `src/ReplicatedStorage/Shared/Config`. |
 | Cmdr command modules | Disk to Studio | Ready | Command docs are generated from file headers by `tools/command_registry.luau`. |
+| Rojo-managed maps under `maps/` | Disk to Studio | Ready | Place reusable map models under `maps/`; `MapService.reload` clones them from `ServerStorage.Maps` into `Workspace.Map`. |
 
 ## Studio-Owned Or Snapshot Content
 

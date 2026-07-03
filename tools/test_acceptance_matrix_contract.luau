@@ -22,6 +22,7 @@ local REQUIRED_GATE_LABELS = {
 	"GitHub CI Bootstrap Tests",
 	"Asset Manifest Tests",
 	"Command Surface Tests",
+	"MapService Contract Tests",
 	"Net Contract Tests",
 	"CI Contract Tests",
 	"Command Center Contract Tests",

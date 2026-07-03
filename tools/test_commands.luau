@@ -101,15 +101,29 @@ end
 local profilewipeHandler = read(COMMAND_ROOT .. "/profilewipeServer.luau")
 local giveDefinition = read(COMMAND_ROOT .. "/give.luau")
 local giveHandler = read(COMMAND_ROOT .. "/giveServer.luau")
+local reloadmapDefinition = read(COMMAND_ROOT .. "/reloadmap.luau")
+local reloadmapHandler = read(COMMAND_ROOT .. "/reloadmapServer.luau")
 local setstatDefinition = read(COMMAND_ROOT .. "/setstat.luau")
 local setstatHandler = read(COMMAND_ROOT .. "/setstatServer.luau")
 
 for _, contents in
-	{ giveDefinition, giveHandler, setstatDefinition, setstatHandler, profilewipeHandler }
+	{
+		giveDefinition,
+		giveHandler,
+		reloadmapDefinition,
+		reloadmapHandler,
+		setstatDefinition,
+		setstatHandler,
+		profilewipeHandler,
+	}
 do
 	assertTrue(
 		contents:find("arrives in WO-7", 1, true) == nil,
 		"Cmdr command surfaces must not describe WO-7 data integration as future work"
+	)
+	assertTrue(
+		contents:find("later map-service integration", 1, true) == nil,
+		"Cmdr command surfaces must not describe MapService integration as future work"
 	)
 end
 
@@ -136,6 +150,10 @@ assertTrue(
 assertTrue(
 	profilewipeHandler:find("DataService.resetProfile", 1, true) ~= nil,
 	"profilewipe must reset through DataService after confirmation"
+)
+assertTrue(
+	reloadmapHandler:find("MapService.reload", 1, true) ~= nil,
+	"reloadmap must execute through MapService.reload"
 )
 
 print("Command surface tests passed")

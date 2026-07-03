@@ -24,6 +24,9 @@
       "$className": "ServerStorage",
       "Assets": {
         "$path": "src/ServerStorage/Assets"
+      },
+      "Maps": {
+        "$path": "maps"
       }
     },
     "StarterPlayer": {

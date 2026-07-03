@@ -40,6 +40,11 @@ local EXPECTED_MAPPINGS: { { label: string, className: string?, path: string? } 
 		path = "src/ServerStorage/Assets",
 	},
 	{
+		label = "ServerStorage.Maps",
+		className = nil,
+		path = "maps",
+	},
+	{
 		label = "StarterPlayer.StarterPlayerScripts.Client",
 		className = nil,
 		path = "src/StarterPlayer/StarterPlayerScripts/Client",
@@ -65,6 +70,7 @@ local SOURCEMAP_ANCHORS = {
 	"src/ReplicatedStorage/Shared/Net/init.luau",
 	"src/ServerScriptService/Server/Services/NexusService.luau",
 	"src/ServerScriptService/Server/Services/DataService.luau",
+	"src/ServerScriptService/Server/Services/MapService.luau",
 	"src/StarterPlayer/StarterPlayerScripts/Client/Controllers/NexusController.luau",
 }
 
