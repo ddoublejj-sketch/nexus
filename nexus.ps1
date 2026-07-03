@@ -50,11 +50,11 @@ function Get-ToolPath {
 function Invoke-Tool {
 	param(
 		[string]$Name,
-		[string[]]$Args = @()
+		[string[]]$ToolArgs = @()
 	)
 
 	$toolPath = Get-ToolPath $Name
-	& $toolPath @Args
+	& $toolPath @ToolArgs
 	if ($LASTEXITCODE -ne 0) {
 		throw "$Name failed with exit code $LASTEXITCODE"
 	}
@@ -150,7 +150,10 @@ switch ($Command.ToLowerInvariant()) {
 				Invoke-LoopScript "tools/vault_sync.luau"
 				Invoke-LoopScript "tools/command_registry.luau"
 				Invoke-LoopScript "tools/asset_manifest.luau"
-				Invoke-LoopScript "tools/build_health.luau"
+				& $Lune run tools/build_health.luau --skip-install
+				if ($LASTEXITCODE -ne 0) {
+					throw "tools/build_health.luau --skip-install failed with exit code $LASTEXITCODE"
+				}
 				Start-Sleep -Seconds 10
 			}
 		} -JobArgs @($RepoRoot, $lunePath)

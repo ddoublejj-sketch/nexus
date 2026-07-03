@@ -8,6 +8,16 @@ local QualityGate = require("./lib/QualityGate")
 local VAULT_ROOT = "C:/Users/jackw/Roblox/RobloxGameVault"
 local OUTPUT_PATH = VAULT_ROOT .. "/00_Command_Center/Build Health.md"
 
+local function hasArg(name: string): boolean
+	for _, arg in process.args do
+		if arg == name then
+			return true
+		end
+	end
+
+	return false
+end
+
 local function isoTimestamp(): string
 	return os.date("!%Y-%m-%dT%H:%M:%SZ")
 end
@@ -25,7 +35,10 @@ local function markdownFence(value: string): string
 	return sanitized
 end
 
-local checks = QualityGate.runAll()
+local skipInstall = hasArg("--skip-install")
+local checks = QualityGate.runAll({
+	skipInstall = skipInstall,
+})
 local passed = QualityGate.allPassed(checks)
 
 local timestamp = isoTimestamp()
@@ -45,6 +58,8 @@ local lines = {
 	"# Build Health",
 	"",
 	"Generated: " .. timestamp,
+	"",
+	if skipInstall then "Mode: watcher-safe; Wally Install skipped" else "Mode: full",
 	"",
 	"Overall: " .. if passed then "PASS" else "FAIL",
 	"",

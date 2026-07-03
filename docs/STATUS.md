@@ -4,7 +4,7 @@ Last updated: 2026-07-03
 
 ## Current Phase
 
-WO-0 is in progress and blocked on **G1 - GUI installs**. WO-1 bootstrap work is partially complete, but WO-1 cannot be marked complete until the exact `./nexus.ps1 check` acceptance command can run. WO-2 now has the sync-rules runbook and sourcemap-aware analyze proof, but live Studio sync remains blocked on **G2 - Studio connect**. WO-3 vault scaffolding has started and is blocked on **G3 - Obsidian plugins + REST key** for end-to-end REST verification. WO-4 automation scripts have direct-run proof including dummy-service and stale-note evidence, but exact launcher/dashboard acceptance remains gated. WO-5 asset pipeline has direct-run proof with seed assets, but remains downstream of the still-open WO-4 formal acceptance. WO-6 Cmdr integration has build/analyze proof, but in-Studio command execution remains gated. WO-7 data/networking baseline has direct local proof, but live ProfileStore session behavior remains Studio-gated. WO-8 CI workflow and shared local/CI gate are created, but remote GitHub setup is blocked on **G4 - GitHub auth**. WO-9 release-path dry-run tooling is created and locally verified; live publish remains gated on **G5 - Open Cloud key**. WO-10 daily-driver hardening is implemented locally; exact `./nexus.ps1 up/down` and cold-boot Studio acceptance remain blocked by PowerShell policy and G2.
+WO-0 is in progress and blocked on **G1 - GUI installs**. WO-1 exact local acceptance now passes through `./nexus.ps1 check`. WO-2 now has the sync-rules runbook and sourcemap-aware analyze proof, but live Studio sync remains blocked on **G2 - Studio connect**. WO-3 vault scaffolding has started and is blocked on **G3 - Obsidian plugins + REST key** for end-to-end REST verification. WO-4 automation scripts now pass through exact `./nexus.ps1 loop --once` and include dummy-service/stale-note evidence, but dashboard rendering remains gated. WO-5 asset pipeline has direct-run proof with seed assets. WO-6 Cmdr integration has build/analyze proof, but in-Studio command execution remains gated. WO-7 data/networking baseline has direct local proof, but live ProfileStore session behavior remains Studio-gated. WO-8 CI workflow and shared local/CI gate are created, but remote GitHub setup is blocked on **G4 - GitHub auth**. WO-9 release-path dry-run now passes through `./nexus.ps1 release --dry-run --fixture`; live publish remains gated on **G5 - Open Cloud key**. WO-10 `up/status/down` now starts and stops watcher jobs cleanly; full cold-boot Studio acceptance remains blocked on G2/G3.
 
 ## WO-0 - Close the Tool Gaps
 
@@ -70,6 +70,40 @@ C:\Users\jackw\AppData\Local\Programs\Microsoft VS Code\bin\code.cmd = False
 C:\Program Files\Microsoft VS Code\bin\code.cmd = False
 C:\Program Files\Blender Foundation = False
 C:\Users\jackw\AppData\Local\Programs\Obsidian\Obsidian.exe = False
+```
+
+### Current Re-Audit - 2026-07-03
+
+Run from `C:\Users\jackw\Roblox\nexus` after the project manifest existed:
+
+```powershell
+git --version
+git version 2.54.0.windows.1
+```
+
+```powershell
+rokit --version
+rokit 1.2.0
+```
+
+```powershell
+rojo --version
+Rojo 7.7.0
+```
+
+```powershell
+code --version
+code : The term 'code' is not recognized as the name of a cmdlet, function, script file, or operable program.
+```
+
+```powershell
+gh --version
+gh : The term 'gh' is not recognized as the name of a cmdlet, function, script file, or operable program.
+```
+
+```powershell
+Get-Command blender -ErrorAction SilentlyContinue
+<no output>
 ```
 
 Seed asset files confirmed for WO-5:
@@ -146,22 +180,13 @@ rokit install
 <exit 0; no output>
 ```
 
-Exact command currently fails in the managed shell because the Rokit shims intermittently fail with `os error 3`:
-
 ```powershell
 wally install
-ERROR The system cannot find the path specified. (os error 3)
-```
-
-Same pinned project tool succeeds when the Rokit shim resolves in a PowerShell process with an environment variable set:
-
-```powershell
-$env:ROKIT_PROBE='1'; wally install
 <exit 0; no output>
 ```
 
 ```powershell
-$env:ROKIT_PROBE='1'; rojo build default.project.json -o build/nexus.rbxl
+rojo build default.project.json -o build/nexus.rbxl
 Building project 'Nexus'
 Built project to nexus.rbxl
 ```
@@ -170,58 +195,41 @@ Build artifact:
 
 ```text
 C:\Users\jackw\Roblox\nexus\build\nexus.rbxl
-Length: 3089 bytes
+Length: 88295 bytes
 ```
 
 ```powershell
-$env:ROKIT_PROBE='1'; rojo sourcemap default.project.json -o sourcemap.json
+rojo sourcemap default.project.json -o sourcemap.json
 Created sourcemap at sourcemap.json
 ```
 
-Quality gate components:
-
-```powershell
-$env:ROKIT_PROBE='1'; stylua --check src tools
-<exit 0; no output>
-```
-
-```powershell
-$env:ROKIT_PROBE='1'; selene src
-Results:
-0 errors
-0 warnings
-0 parse errors
-```
-
-```powershell
-$env:ROKIT_PROBE='1'; luau-lsp analyze --definitions types/globalTypes.d.luau --sourcemap sourcemap.json src
-[INFO] Loading definitions file: @roblox - types/globalTypes.d.luau
-[WARN] client does not allow didChangeWatchedFiles registration - automatic updating on sourcemap changes disabled
-[INFO] Loading Luau configuration from c:\Users\jackw\Roblox\nexus\.luaurc
-```
-
-Exact launcher command is blocked by Windows script execution policy:
-
 ```powershell
 ./nexus.ps1 check
-./nexus.ps1 : File C:\Users\jackw\Roblox\nexus\nexus.ps1 cannot be loaded because running scripts is disabled on this system.
-FullyQualifiedErrorId : UnauthorizedAccess
+[PASS] Wally Install (0.67s, exit 0)
+[PASS] StyLua (0.05s, exit 0)
+[PASS] Selene (0.08s, exit 0)
+[PASS] Sourcemap (0.09s, exit 0)
+[PASS] Migration Tests (0.03s, exit 0)
+[PASS] Analyze (2.07s, exit 0)
+[PASS] Build (0.08s, exit 0)
+[PASS] Open Cloud Dry Run (0.03s, exit 0)
+Quality gate PASS
 ```
 
 Commit history:
 
 ```powershell
 git log --oneline
-3909c51 Add Nexus hello world service scaffold
-d0e69e1 Bootstrap Nexus command center scaffold
+4c82721 Track target layout placeholders
+e3f0057 Document Studio sync rules and stale-note proof
+a7d16c9 Add command center hardening tools
+687f76b Add Open Cloud release dry run
+b13f88a Add shared CI quality gate
 ```
 
 ### Open Blockers
 
-- **PowerShell execution policy:** `./nexus.ps1` cannot run until the user explicitly approves a user-level policy change such as `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned -Force`, or chooses another approved launcher strategy. A request to change it was rejected by the safety layer because the user has not explicitly approved that exact persistent security change.
-- **Rokit shim behavior in managed shell:** bare `wally`, `rojo`, `stylua`, `selene`, `lune`, and `luau-lsp` commands can fail with `os error 3` in this shell. The pinned binaries are installed and work; `nexus.ps1` resolves them directly once script execution is allowed.
-
-WO-1 is **not complete** until the exact acceptance commands pass, especially `./nexus.ps1 check`.
+- No local WO-1 acceptance blockers remain. The exact acceptance commands above ran and passed from `C:\Users\jackw\Roblox\nexus`.
 
 ## WO-3 - Obsidian Command Vault
 
@@ -349,7 +357,7 @@ Please complete when ready:
 ### Open Blockers
 
 - G2 is not complete, so live disk-to-Studio and syncback behavior remains unverified.
-- `./nexus.ps1 serve` cannot be run exactly until the PowerShell execution-policy blocker from WO-1 is cleared.
+- `./nexus.ps1 up` starts the Rojo server locally, but live Studio plugin connection still requires G2.
 
 ## WO-4 - Live Project Indexer
 
@@ -489,14 +497,30 @@ Final stale-source state:
 No stale generated module notes found.
 ```
 
+### Exact Launcher Loop Evidence
+
+```powershell
+./nexus.ps1 loop --once
+Wrote 132 sourcemap rows to C:/Users/jackw/Roblox/RobloxGameVault/90_Automation/Generated/Sourcemap.md
+Wrote 12 module notes under C:/Users/jackw/Roblox/RobloxGameVault/02_Systems/Generated Modules and refreshed stale-source report
+Wrote 7 command rows to C:/Users/jackw/Roblox/RobloxGameVault/02_Systems/Commands.md
+Asset manifest reconciled 4 assets; auto-added 0; missing sources 0; missing exports 0
+Build health PASS; wrote C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Build Health.md
+```
+
+Runtime: 3.9 seconds, under the 30-second target.
+
+```powershell
+./nexus.ps1 health
+Build health PASS; wrote C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Build Health.md
+```
+
 ### Open Blockers
 
 - WO-4 depends on WO-2 and WO-3 in the master plan. Those are still gated by Studio/Obsidian setup.
-- `./nexus.ps1 loop --once` cannot be run until the PowerShell execution policy blocker from WO-1 is cleared.
-- The acceptance dummy-service add/rename stale-note demonstration has not been run yet.
 - Dashboard rendering still cannot be visually verified until Obsidian is installed and G3 plugins are enabled.
 
-WO-4 is **not complete** until its exact acceptance tests run and pass.
+WO-4 has local exact launcher proof, but final acceptance still needs the G3 dashboard render check.
 
 ## WO-5 - Asset Pipeline
 
@@ -992,6 +1016,20 @@ Endpoint: https://apis.roblox.com/universes/v1/1234567890/places/9876543210/vers
 Live request was not sent.
 ```
 
+Exact launcher dry-run:
+
+```powershell
+./nexus.ps1 release --dry-run --fixture
+Open Cloud publish dry-run PASS
+Mode: dry-run
+Config source: tools/fixtures/opencloud.env (fixture)
+Artifact: build/nexus.rbxl (88295 bytes)
+Universe ID: 1234567890
+Place ID: 9876543210
+Endpoint: https://apis.roblox.com/universes/v1/1234567890/places/9876543210/versions?versionType=Published
+Live request was not sent.
+```
+
 ### Shared Gate Evidence After WO-9
 
 ```powershell
@@ -1040,7 +1078,6 @@ When ready to publish for real:
 ### Open Blockers
 
 - G5 is not complete, so live publish was intentionally not attempted.
-- `./nexus.ps1 release` cannot be run exactly until the PowerShell execution-policy blocker from WO-1 is cleared.
 
 ## WO-10 - Command Center Hardening
 
@@ -1054,10 +1091,11 @@ When ready to publish for real:
 - Added `docs/runbooks/fresh-machine-setup.md`.
 - Added `docs/runbooks/disaster-recovery.md`.
 - Added vault snapshot archive placeholder at `80_Archives/StudioSnapshots/.gitkeep`.
+- Updated the `up` automation loop to run Build Health in watcher-safe mode so it does not run `wally install` while Rojo is serving `Packages/`.
 
 ### Verification Evidence
 
-PowerShell syntax parse only, without executing the blocked launcher:
+Launcher syntax parse:
 
 ```powershell
 $errors = $null; [void][System.Management.Automation.PSParser]::Tokenize((Get-Content -LiteralPath ".\nexus.ps1" -Raw), [ref]$errors); if ($errors -and $errors.Count -gt 0) { $errors | ForEach-Object { "$($_.Message) at $($_.StartLine):$($_.StartColumn)" }; exit 1 } else { "PowerShell parse PASS" }
@@ -1117,9 +1155,47 @@ Build: PASS
 Open Cloud Dry Run: PASS
 ```
 
+### Exact Up/Down Evidence
+
+Initial `up/status/down` test showed Rojo serve and sourcemap-watch jobs crashing because the loop's Build Health step ran `wally install` while Rojo was watching `Packages/`. The launcher now uses `tools/build_health.luau --skip-install` only inside the continuous `up` loop; full `./nexus.ps1 check` and `./nexus.ps1 health` still run the complete gate with Wally install.
+
+```powershell
+./nexus.ps1 up; Start-Sleep -Seconds 5; ./nexus.ps1 status; Receive-Job -Name NexusRojoServe,NexusSourcemapWatch,NexusAutomationLoop -Keep; ./nexus.ps1 down
+Dev log appended: C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Daily Dev Log.md (Session Start)
+
+Name                State   Id
+----                -----   --
+NexusRojoServe      Running  1
+NexusSourcemapWatch Running  3
+NexusAutomationLoop Running  5
+
+Name                State   Id
+----                -----   --
+NexusRojoServe      Running  1
+NexusSourcemapWatch Running  3
+NexusAutomationLoop Running  5
+
+Rojo server listening:
+  Address: localhost
+  Port:    34872
+Visit http://localhost:34872/ in your browser for more information.
+Created sourcemap at sourcemap.json
+Wrote 132 sourcemap rows to C:/Users/jackw/Roblox/RobloxGameVault/90_Automation/Generated/Sourcemap.md
+Wrote 12 module notes under C:/Users/jackw/Roblox/RobloxGameVault/02_Systems/Generated Modules and refreshed stale-source report
+Wrote 7 command rows to C:/Users/jackw/Roblox/RobloxGameVault/02_Systems/Commands.md
+Asset manifest reconciled 4 assets; auto-added 0; missing sources 0; missing exports 0
+Build health PASS; wrote C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Build Health.md
+Dev log appended: C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Daily Dev Log.md (Session End)
+
+Name                State   Id
+----                -----   --
+NexusRojoServe      Stopped
+NexusSourcemapWatch Stopped
+NexusAutomationLoop Stopped
+```
+
 ### Exact Acceptance Blockers
 
-- `./nexus.ps1 up` and `./nexus.ps1 down` cannot be executed exactly until the PowerShell execution-policy blocker from WO-1 is cleared.
 - The cold-boot flow cannot prove Studio updates until G2 Studio plugin connect is complete.
 - Vault dashboard rendering still needs G3 Obsidian plugins.
 
@@ -1128,33 +1204,33 @@ Open Cloud Dry Run: PASS
 | Work Order | Local Status | Evidence In This File | Remaining Gate / Blocker |
 | --- | --- | --- | --- |
 | WO-0 Tool Gaps | Partial | Audit output under WO-0 | G1: `winget`, `code`, `gh`, Obsidian, Blender on PATH/install path |
-| WO-1 Bootstrap | Implemented, exact launcher blocked | Repo scaffold, tool pins, direct quality outputs | PowerShell execution policy blocks exact `./nexus.ps1 check` |
+| WO-1 Bootstrap | Exact local acceptance passed | Repo scaffold, tool pins, `rokit install`, `wally install`, `rojo build`, `rojo sourcemap`, `./nexus.ps1 check` | None locally |
 | WO-2 Studio Bridge | Runbook added, live bridge blocked | Sourcemap-aware analyze output and `docs/runbooks/rojo-sync-rules.md` | G2: Studio plugin connect and live sync proof |
 | WO-3 Vault | Scaffolded, REST blocked | Vault repo, templates, dry-run failure output | G3: Obsidian install, plugins, Local REST API key |
-| WO-4 Automation Loop | Implemented with direct-run proof | Sourcemap, vault sync, dummy/stale-note demo, command registry, asset manifest, Build Health outputs | Exact `./nexus.ps1 loop --once` blocked by PowerShell policy; dashboard render needs G3 |
-| WO-5 Asset Pipeline | Implemented with seed assets | Manifest, orphan repair, vault asset notes | Formal acceptance downstream of WO-4/G3 visual checks |
+| WO-4 Automation Loop | Exact local launcher proof passed | Sourcemap, vault sync, dummy/stale-note demo, command registry, asset manifest, `./nexus.ps1 loop --once`, Build Health outputs | Dashboard render needs G3 |
+| WO-5 Asset Pipeline | Implemented with seed assets | Manifest, orphan repair, vault asset notes | Blender thumbnail rendering still waits on G1 Blender path; dashboard render needs G3 |
 | WO-6 Cmdr | Implemented and analyzed | Cmdr service/controller, commands, generated command docs | G2 Studio playtest for command execution |
 | WO-7 Data/Networking | Implemented and tested locally | ProfileStore wrapper, migration tests, typed Net, Build Health | G2 Studio playtest for session/runtime behavior |
 | WO-8 CI | Local workflow committed | Shared gate output, workflow, runbook | G4: `gh auth`, remote repo, branch protection, real CI run |
-| WO-9 Release Path | Dry-run accepted locally | Fixture dry-run, secret-history scan, release checklist | G5 for live publish only |
-| WO-10 Hardening | Implemented locally | Parse check, task JSON parse, dev log writes, full gate | PowerShell policy, G2 Studio connect, G3 dashboard render for cold-boot acceptance |
+| WO-9 Release Path | Dry-run accepted locally | Fixture dry-run, `./nexus.ps1 release --dry-run --fixture`, secret-history scan, release checklist | G5 for live publish only |
+| WO-10 Hardening | Up/down smoke test passed locally | Task JSON parse, dev log writes, `./nexus.ps1 up/status/down`, full gate | G2 Studio connect and G3 dashboard render for cold-boot acceptance |
 
 ## Latest Whole-Repo Verification
 
 ```powershell
-$env:ROKIT_PROBE='1'; lune run tools/quality_gate.luau
-[PASS] Wally Install (0.76s, exit 0)
+./nexus.ps1 check
+[PASS] Wally Install (0.66s, exit 0)
 [PASS] StyLua (0.05s, exit 0)
-[PASS] Selene (0.08s, exit 0)
+[PASS] Selene (0.09s, exit 0)
 [PASS] Sourcemap (0.09s, exit 0)
 [PASS] Migration Tests (0.03s, exit 0)
-[PASS] Analyze (1.99s, exit 0)
+[PASS] Analyze (2.01s, exit 0)
 [PASS] Build (0.08s, exit 0)
 [PASS] Open Cloud Dry Run (0.03s, exit 0)
 Quality gate PASS
 ```
 
 ```powershell
-$env:ROKIT_PROBE='1'; lune run tools/build_health.luau
+./nexus.ps1 health
 Build health PASS; wrote C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Build Health.md
 ```

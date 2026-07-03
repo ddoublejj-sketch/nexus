@@ -13,6 +13,10 @@ export type CommandResult = {
 	duration: number,
 }
 
+export type RunOptions = {
+	skipInstall: boolean?,
+}
+
 local QualityGate = {}
 
 local TOOL_EXES = {
@@ -75,21 +79,34 @@ function QualityGate.runTool(label: string, name: string, args: { string }): Com
 	}
 end
 
-function QualityGate.runAll(): { CommandResult }
+function QualityGate.runAll(options: RunOptions?): { CommandResult }
 	if not fs.isDir("build") then
 		fs.writeDir("build")
 	end
 
-	return {
-		QualityGate.runTool("Wally Install", "wally", { "install" }),
-		QualityGate.runTool("StyLua", "stylua", { "--check", "src", "tools" }),
-		QualityGate.runTool("Selene", "selene", { "src", "tools" }),
-		QualityGate.runTool(
-			"Sourcemap",
-			"rojo",
-			{ "sourcemap", "default.project.json", "-o", "sourcemap.json" }
-		),
-		QualityGate.runTool("Migration Tests", "lune", { "run", "tools/test_migrations.luau" }),
+	local results = {}
+
+	if not (options and options.skipInstall) then
+		table.insert(results, QualityGate.runTool("Wally Install", "wally", { "install" }))
+	end
+
+	table.insert(results, QualityGate.runTool("StyLua", "stylua", { "--check", "src", "tools" }))
+	table.insert(results, QualityGate.runTool("Selene", "selene", { "src", "tools" }))
+	table.insert(
+		results,
+		QualityGate.runTool("Sourcemap", "rojo", {
+			"sourcemap",
+			"default.project.json",
+			"-o",
+			"sourcemap.json",
+		})
+	)
+	table.insert(
+		results,
+		QualityGate.runTool("Migration Tests", "lune", { "run", "tools/test_migrations.luau" })
+	)
+	table.insert(
+		results,
 		QualityGate.runTool("Analyze", "luau-lsp", {
 			"analyze",
 			"--definitions",
@@ -97,18 +114,26 @@ function QualityGate.runAll(): { CommandResult }
 			"--sourcemap",
 			"sourcemap.json",
 			"src",
-		}),
+		})
+	)
+	table.insert(
+		results,
 		QualityGate.runTool(
 			"Build",
 			"rojo",
 			{ "build", "default.project.json", "-o", "build/nexus.rbxl" }
-		),
+		)
+	)
+	table.insert(
+		results,
 		QualityGate.runTool(
 			"Open Cloud Dry Run",
 			"lune",
 			{ "run", "tools/open_cloud_publish.luau", "--dry-run", "--fixture" }
-		),
-	}
+		)
+	)
+
+	return results
 end
 
 function QualityGate.allPassed(results: { CommandResult }): boolean
