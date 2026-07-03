@@ -131,6 +131,11 @@ else
 	assertContains(dashboard, "## Open Tasks", "Dashboard missing Open Tasks")
 	assertContains(dashboard, "```tasks", "Dashboard missing Tasks query")
 	assertContains(dashboard, "![[Gate Status]]", "Dashboard missing Gate Status embed")
+	assertContains(
+		dashboard,
+		"![[Human Gate Checklist]]",
+		"Dashboard missing Human Gate Checklist embed"
+	)
 	assertContains(dashboard, "![[Build Health]]", "Dashboard missing Build Health embed")
 	assertContains(dashboard, "![[Stale Sources]]", "Dashboard missing Stale Sources embed")
 
@@ -144,6 +149,14 @@ else
 		)
 	end
 	assertTrue(countWorkOrderRows(gateStatus) == 11, "Gate Status must list WO-0 through WO-10")
+
+	local humanGateChecklist = read("00_Command_Center/Human Gate Checklist.md")
+	assertFrontmatter(humanGateChecklist, "Human Gate Checklist")
+	assertContains(humanGateChecklist, "## G1 - GUI Installs", "Checklist missing G1")
+	assertContains(humanGateChecklist, "## G2 - Studio Connect", "Checklist missing G2")
+	assertContains(humanGateChecklist, "## G3 - Obsidian REST And Plugins", "Checklist missing G3")
+	assertContains(humanGateChecklist, "## G4 - GitHub Auth And CI", "Checklist missing G4")
+	assertContains(humanGateChecklist, "## G5 - Open Cloud Key", "Checklist missing G5")
 
 	local buildHealth = read("00_Command_Center/Build Health.md")
 	assertFrontmatter(buildHealth, "Build Health")

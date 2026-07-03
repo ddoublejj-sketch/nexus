@@ -56,6 +56,12 @@
       "problemMatcher": []
     },
     {
+      "label": "Nexus: Human Gates",
+      "type": "shell",
+      "command": "./nexus.ps1 gates",
+      "problemMatcher": []
+    },
+    {
       "label": "Nexus: Release Dry Run",
       "type": "shell",
       "command": "./nexus.ps1 release --dry-run --fixture",

@@ -22,6 +22,7 @@ local EXPECTED_TASKS = {
 	["Nexus: Format"] = "./nexus.ps1 fix",
 	["Nexus: Vault Sync"] = "./nexus.ps1 sync",
 	["Nexus: Health"] = "./nexus.ps1 health",
+	["Nexus: Human Gates"] = "./nexus.ps1 gates",
 	["Nexus: Release Dry Run"] = "./nexus.ps1 release --dry-run --fixture",
 	["Nexus: Loop Once"] = "./nexus.ps1 loop --once",
 }
@@ -39,6 +40,7 @@ local LOOP_SCRIPTS = {
 	"tools/command_registry.luau",
 	"tools/asset_manifest.luau",
 	"tools/gate_status.luau",
+	"tools/human_gate_checklist.luau",
 	"tools/build_health.luau",
 }
 
@@ -83,6 +85,7 @@ for _, command in
 		'"fix"',
 		'"sync"',
 		'"health"',
+		'"gates"',
 		'"release"',
 		'"loop"',
 		'"status"',

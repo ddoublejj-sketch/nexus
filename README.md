@@ -18,6 +18,7 @@ wally install
 ./nexus.ps1 build
 ./nexus.ps1 check
 ./nexus.ps1 fix
+./nexus.ps1 gates
 ./nexus.ps1 up
 ./nexus.ps1 down
 ./nexus.ps1 release --dry-run --fixture
