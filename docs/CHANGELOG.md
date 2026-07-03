@@ -23,3 +23,4 @@
 - [WO-7] Added Net contract self-test for declared remotes, validators, snapshot exposure, and server-owned mutation boundaries - 2026-07-03.
 - [WO-5] Added asset manifest self-test for seed assets, source/export files, generated notes, and thumbnail backlog coverage - 2026-07-03.
 - [WO-3/WO-4] Added vault scaffold self-test for folder layout, templates, dashboard embeds, and generated command-center notes - 2026-07-03.
+- [WO-8] Added CI contract self-test for shared-gate parity, workflow artifact upload, and G4 runbook requirements - 2026-07-03.

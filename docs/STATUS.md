@@ -985,6 +985,7 @@ Actual Studio/runtime observation is still pending G2.
 - Refactored `tools/build_health.luau` so Build Health also uses the shared gate.
 - Added `.github/workflows/ci.yml`.
 - Added `docs/runbooks/github-ci.md`.
+- Added `tools/test_ci_contract.luau` to the shared gate. It verifies workflow/launcher/build-health parity, artifact upload settings, runbook G4 instructions, and that CI does not duplicate the quality checklist outside `tools/quality_gate.luau`.
 
 ### Workflow Shape
 
@@ -1001,14 +1002,28 @@ Actual Studio/runtime observation is still pending G2.
 
 ```powershell
 $env:ROKIT_PROBE='1'; lune run tools/quality_gate.luau
-[PASS] Wally Install (0.86s, exit 0)
-[PASS] StyLua (0.04s, exit 0)
+[PASS] Wally Install (0.72s, exit 0)
+[PASS] StyLua (0.06s, exit 0)
 [PASS] Selene (0.08s, exit 0)
-[PASS] Sourcemap (0.08s, exit 0)
+[PASS] Sourcemap (0.10s, exit 0)
 [PASS] Migration Tests (0.03s, exit 0)
+[PASS] Vault Scaffold Tests (0.06s, exit 0)
+[PASS] Asset Manifest Tests (0.03s, exit 0)
+[PASS] Command Surface Tests (0.03s, exit 0)
+[PASS] Net Contract Tests (0.03s, exit 0)
+[PASS] CI Contract Tests (0.02s, exit 0)
+[PASS] Secret Scan (0.36s, exit 0)
 [PASS] Analyze (1.98s, exit 0)
 [PASS] Build (0.08s, exit 0)
+[PASS] Open Cloud Dry Run (0.03s, exit 0)
 Quality gate PASS
+```
+
+CI contract self-test:
+
+```powershell
+lune run tools/test_ci_contract.luau
+CI contract tests passed
 ```
 
 Individual checks after CI work:
@@ -1049,8 +1064,15 @@ StyLua: PASS
 Selene: PASS
 Sourcemap: PASS
 Migration Tests: PASS
+Vault Scaffold Tests: PASS
+Asset Manifest Tests: PASS
+Command Surface Tests: PASS
+Net Contract Tests: PASS
+CI Contract Tests: PASS
+Secret Scan: PASS
 Analyze: PASS
 Build: PASS
+Open Cloud Dry Run: PASS
 ```
 
 ### Human Gate G4 Request
@@ -1114,13 +1136,19 @@ Live request was not sent.
 
 ```powershell
 $env:ROKIT_PROBE='1'; lune run tools/quality_gate.luau
-[PASS] Wally Install (0.70s, exit 0)
-[PASS] StyLua (0.05s, exit 0)
-[PASS] Selene (0.08s, exit 0)
+[PASS] Wally Install (0.71s, exit 0)
+[PASS] StyLua (0.06s, exit 0)
+[PASS] Selene (0.09s, exit 0)
 [PASS] Sourcemap (0.09s, exit 0)
 [PASS] Migration Tests (0.03s, exit 0)
+[PASS] Vault Scaffold Tests (0.06s, exit 0)
+[PASS] Asset Manifest Tests (0.03s, exit 0)
+[PASS] Command Surface Tests (0.03s, exit 0)
+[PASS] Net Contract Tests (0.03s, exit 0)
+[PASS] CI Contract Tests (0.02s, exit 0)
+[PASS] Secret Scan (0.35s, exit 0)
 [PASS] Analyze (2.01s, exit 0)
-[PASS] Build (0.10s, exit 0)
+[PASS] Build (0.08s, exit 0)
 [PASS] Open Cloud Dry Run (0.03s, exit 0)
 Quality gate PASS
 ```
@@ -1134,6 +1162,12 @@ StyLua: PASS
 Selene: PASS
 Sourcemap: PASS
 Migration Tests: PASS
+Vault Scaffold Tests: PASS
+Asset Manifest Tests: PASS
+Command Surface Tests: PASS
+Net Contract Tests: PASS
+CI Contract Tests: PASS
+Secret Scan: PASS
 Analyze: PASS
 Build: PASS
 Open Cloud Dry Run: PASS
@@ -1217,17 +1251,18 @@ Full gate after WO-10:
 
 ```powershell
 $env:ROKIT_PROBE='1'; lune run tools/quality_gate.luau
-[PASS] Wally Install (0.82s, exit 0)
+[PASS] Wally Install (0.71s, exit 0)
 [PASS] StyLua (0.06s, exit 0)
 [PASS] Selene (0.09s, exit 0)
 [PASS] Sourcemap (0.09s, exit 0)
 [PASS] Migration Tests (0.03s, exit 0)
-[PASS] Vault Scaffold Tests (0.07s, exit 0)
+[PASS] Vault Scaffold Tests (0.06s, exit 0)
 [PASS] Asset Manifest Tests (0.03s, exit 0)
 [PASS] Command Surface Tests (0.03s, exit 0)
 [PASS] Net Contract Tests (0.03s, exit 0)
-[PASS] Secret Scan (0.37s, exit 0)
-[PASS] Analyze (2.09s, exit 0)
+[PASS] CI Contract Tests (0.02s, exit 0)
+[PASS] Secret Scan (0.35s, exit 0)
+[PASS] Analyze (2.01s, exit 0)
 [PASS] Build (0.08s, exit 0)
 [PASS] Open Cloud Dry Run (0.03s, exit 0)
 Quality gate PASS
@@ -1246,6 +1281,7 @@ Vault Scaffold Tests: PASS
 Asset Manifest Tests: PASS
 Command Surface Tests: PASS
 Net Contract Tests: PASS
+CI Contract Tests: PASS
 Secret Scan: PASS
 Analyze: PASS
 Build: PASS
@@ -1308,7 +1344,7 @@ NexusAutomationLoop Stopped
 | WO-5 Asset Pipeline | Implemented with seed assets | Manifest, orphan repair, asset manifest tests, vault asset notes | Blender thumbnail rendering still waits on G1 Blender path; dashboard render needs G3 |
 | WO-6 Cmdr | Implemented and analyzed | Cmdr service/controller, commands, generated command docs | G2 Studio playtest for command execution |
 | WO-7 Data/Networking | Implemented and tested locally | ProfileStore wrapper, migration tests, Net contract tests, typed Net, Build Health | G2 Studio playtest for session/runtime behavior |
-| WO-8 CI | Local workflow committed | Shared gate output, workflow, runbook | G4: `gh auth`, remote repo, branch protection, real CI run |
+| WO-8 CI | Local workflow committed | Shared gate output, CI contract tests, workflow, runbook | G4: `gh auth`, remote repo, branch protection, real CI run |
 | WO-9 Release Path | Dry-run accepted locally | Fixture dry-run, `./nexus.ps1 release --dry-run --fixture`, secret-history scan, release checklist | G5 for live publish only |
 | WO-10 Hardening | Up/down smoke test passed locally | Task JSON parse, dev log writes, Gate Status dashboard embed, `./nexus.ps1 up/status/down`, full gate | G2 Studio connect and G3 dashboard render for cold-boot acceptance |
 
@@ -1316,17 +1352,18 @@ NexusAutomationLoop Stopped
 
 ```powershell
 ./nexus.ps1 check
-[PASS] Wally Install (0.75s, exit 0)
+[PASS] Wally Install (0.72s, exit 0)
 [PASS] StyLua (0.05s, exit 0)
 [PASS] Selene (0.08s, exit 0)
-[PASS] Sourcemap (0.08s, exit 0)
+[PASS] Sourcemap (0.09s, exit 0)
 [PASS] Migration Tests (0.03s, exit 0)
 [PASS] Vault Scaffold Tests (0.06s, exit 0)
 [PASS] Asset Manifest Tests (0.03s, exit 0)
-[PASS] Command Surface Tests (0.04s, exit 0)
+[PASS] Command Surface Tests (0.03s, exit 0)
 [PASS] Net Contract Tests (0.03s, exit 0)
-[PASS] Secret Scan (0.37s, exit 0)
-[PASS] Analyze (2.04s, exit 0)
+[PASS] CI Contract Tests (0.02s, exit 0)
+[PASS] Secret Scan (0.36s, exit 0)
+[PASS] Analyze (2.00s, exit 0)
 [PASS] Build (0.08s, exit 0)
 [PASS] Open Cloud Dry Run (0.03s, exit 0)
 Quality gate PASS
