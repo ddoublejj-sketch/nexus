@@ -224,6 +224,14 @@ function QualityGate.runAll(options: RunOptions?): { CommandResult }
 	table.insert(
 		results,
 		QualityGate.runTool(
+			"Work Order Acceptance Audit Tests",
+			"lune",
+			{ "run", "tools/test_work_order_acceptance_audit.luau" }
+		)
+	)
+	table.insert(
+		results,
+		QualityGate.runTool(
 			"Human Gate Checklist Tests",
 			"lune",
 			{ "run", "tools/test_human_gate_checklist.luau" }

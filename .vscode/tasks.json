@@ -128,6 +128,12 @@
       "problemMatcher": []
     },
     {
+      "label": "Nexus: Work Order Acceptance Audit",
+      "type": "shell",
+      "command": "./nexus.ps1 wo-audit",
+      "problemMatcher": []
+    },
+    {
       "label": "Nexus: Release Dry Run",
       "type": "shell",
       "command": "./nexus.ps1 release --dry-run --fixture",

@@ -34,6 +34,7 @@ local EXPECTED_TASKS = {
 	["Nexus: Open Cloud Bootstrap"] = "./nexus.ps1 open-cloud",
 	["Nexus: Founder Sign-Off Audit"] = "./nexus.ps1 audit",
 	["Nexus: Cold Boot Readiness"] = "./nexus.ps1 cold-boot",
+	["Nexus: Work Order Acceptance Audit"] = "./nexus.ps1 wo-audit",
 	["Nexus: Release Dry Run"] = "./nexus.ps1 release --dry-run --fixture",
 	["Nexus: Loop Once"] = "./nexus.ps1 loop --once",
 }
@@ -55,6 +56,7 @@ local LOOP_SCRIPTS = {
 	"tools/human_gate_readiness.luau",
 	"tools/human_gate_receipts.luau",
 	"tools/cold_boot_readiness.luau",
+	"tools/work_order_acceptance_audit.luau",
 	"tools/founder_signoff_audit.luau",
 	"tools/build_health.luau",
 }
@@ -112,6 +114,7 @@ for _, command in
 		'"open-cloud"',
 		'"audit"',
 		'"cold-boot"',
+		'"wo-audit"',
 		'"release"',
 		'"loop"',
 		'"status"',
@@ -159,6 +162,11 @@ assertContains(
 	launcher,
 	'Invoke-Tool "lune" @("run", "tools/cold_boot_readiness.luau")',
 	"cold-boot must write readiness evidence"
+)
+assertContains(
+	launcher,
+	'Invoke-Tool "lune" @("run", "tools/work_order_acceptance_audit.luau")',
+	"wo-audit must write work-order acceptance evidence"
 )
 
 for _, scriptPath in LOOP_SCRIPTS do

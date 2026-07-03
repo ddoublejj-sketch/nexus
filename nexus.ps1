@@ -178,6 +178,7 @@ switch ($Command.ToLowerInvariant()) {
 					throw "tools/build_health.luau --skip-install failed with exit code $LASTEXITCODE"
 				}
 				Invoke-LoopScript "tools/cold_boot_readiness.luau"
+				Invoke-LoopScript "tools/work_order_acceptance_audit.luau"
 				Invoke-LoopScript "tools/founder_signoff_audit.luau"
 				Start-Sleep -Seconds 10
 			}
@@ -266,6 +267,9 @@ switch ($Command.ToLowerInvariant()) {
 	"cold-boot" {
 		Invoke-Tool "lune" @("run", "tools/cold_boot_readiness.luau")
 	}
+	"wo-audit" {
+		Invoke-Tool "lune" @("run", "tools/work_order_acceptance_audit.luau")
+	}
 	"release" {
 		Invoke-Tool "lune" (@("run", "tools/open_cloud_publish.luau") + $Rest)
 	}
@@ -281,6 +285,7 @@ switch ($Command.ToLowerInvariant()) {
 			Invoke-Tool "lune" @("run", "tools/human_gate_receipts.luau")
 			Invoke-Tool "lune" @("run", "tools/build_health.luau")
 			Invoke-Tool "lune" @("run", "tools/cold_boot_readiness.luau")
+			Invoke-Tool "lune" @("run", "tools/work_order_acceptance_audit.luau")
 			Invoke-Tool "lune" @("run", "tools/founder_signoff_audit.luau")
 
 			if ($Rest -contains "--once") {
@@ -311,6 +316,6 @@ switch ($Command.ToLowerInvariant()) {
 		Write-NexusJobTable
 	}
 	default {
-		throw "Unknown command '$Command'. Use up, down, serve, build, map, check, fix, sync, health, thumbnails, gates, gatecheck, g1, studio-bridge, receipts, obsidian-plugins, obsidian-rest, github-ci, open-cloud, audit, cold-boot, release, loop, or status."
+		throw "Unknown command '$Command'. Use up, down, serve, build, map, check, fix, sync, health, thumbnails, gates, gatecheck, g1, studio-bridge, receipts, obsidian-plugins, obsidian-rest, github-ci, open-cloud, audit, cold-boot, wo-audit, release, loop, or status."
 	}
 }

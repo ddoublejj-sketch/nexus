@@ -177,6 +177,11 @@ else
 		"![[Cold Boot Readiness]]",
 		"Dashboard missing Cold Boot Readiness embed"
 	)
+	assertContains(
+		dashboard,
+		"![[Work Order Acceptance Audit]]",
+		"Dashboard missing Work Order Acceptance Audit embed"
+	)
 	assertContains(dashboard, "![[Build Health]]", "Dashboard missing Build Health embed")
 	assertContains(dashboard, "![[Stale Sources]]", "Dashboard missing Stale Sources embed")
 
@@ -272,6 +277,21 @@ else
 	)
 	assertContains(coldBootReadiness, "G2 Studio Connect", "Cold Boot Readiness missing G2")
 	assertContains(coldBootReadiness, "G3 Obsidian Dashboard", "Cold Boot Readiness missing G3")
+
+	local workOrderAudit = read("00_Command_Center/Work Order Acceptance Audit.md")
+	assertFrontmatter(workOrderAudit, "Work Order Acceptance Audit")
+	assertContains(
+		workOrderAudit,
+		"Overall: BLOCKED_ON_HUMAN_GATES",
+		"Work Order Acceptance Audit must preserve human blockers"
+	)
+	for index = 0, 10 do
+		assertContains(
+			workOrderAudit,
+			"WO-" .. tostring(index),
+			"Work Order Acceptance Audit missing WO-" .. tostring(index)
+		)
+	end
 
 	local buildHealth = read("00_Command_Center/Build Health.md")
 	assertFrontmatter(buildHealth, "Build Health")
