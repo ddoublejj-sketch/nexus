@@ -41,6 +41,7 @@ local LOOP_SCRIPTS = {
 	"tools/asset_manifest.luau",
 	"tools/gate_status.luau",
 	"tools/human_gate_checklist.luau",
+	"tools/human_gate_readiness.luau",
 	"tools/build_health.luau",
 }
 

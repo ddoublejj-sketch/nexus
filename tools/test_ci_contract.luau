@@ -24,6 +24,7 @@ local REQUIRED_GATE_LABELS = {
 	"CI Contract Tests",
 	"Command Center Contract Tests",
 	"Human Gate Checklist Tests",
+	"Human Gate Readiness Tests",
 	"Acceptance Matrix Contract Tests",
 	"Release Contract Tests",
 	"Secret Scan",

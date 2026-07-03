@@ -136,6 +136,11 @@ else
 		"![[Human Gate Checklist]]",
 		"Dashboard missing Human Gate Checklist embed"
 	)
+	assertContains(
+		dashboard,
+		"![[Human Gate Readiness]]",
+		"Dashboard missing Human Gate Readiness embed"
+	)
 	assertContains(dashboard, "![[Build Health]]", "Dashboard missing Build Health embed")
 	assertContains(dashboard, "![[Stale Sources]]", "Dashboard missing Stale Sources embed")
 
@@ -157,6 +162,21 @@ else
 	assertContains(humanGateChecklist, "## G3 - Obsidian REST And Plugins", "Checklist missing G3")
 	assertContains(humanGateChecklist, "## G4 - GitHub Auth And CI", "Checklist missing G4")
 	assertContains(humanGateChecklist, "## G5 - Open Cloud Key", "Checklist missing G5")
+
+	local humanGateReadiness = read("00_Command_Center/Human Gate Readiness.md")
+	assertFrontmatter(humanGateReadiness, "Human Gate Readiness")
+	assertContains(
+		humanGateReadiness,
+		"| Gate | Check | Status | Detail |",
+		"Readiness missing table"
+	)
+	assertContains(humanGateReadiness, "code --version", "Readiness missing code audit")
+	assertContains(humanGateReadiness, "gh auth status", "Readiness missing gh auth audit")
+	assertContains(
+		humanGateReadiness,
+		"Open Cloud config",
+		"Readiness missing Open Cloud config audit"
+	)
 
 	local buildHealth = read("00_Command_Center/Build Health.md")
 	assertFrontmatter(buildHealth, "Build Health")

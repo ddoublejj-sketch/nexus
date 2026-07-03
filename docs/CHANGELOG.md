@@ -31,3 +31,4 @@
 - [WO-0] Added tool-gap contract self-test for current G1 evidence, fresh-machine setup, Blender CLI caveat, and honest acceptance status - 2026-07-03.
 - [WO-10] Added acceptance-matrix contract self-test for work-order rows, latest gate evidence, and human-gate blocker honesty - 2026-07-03.
 - [WO-10] Added generated Human Gate Checklist vault note, launcher/task wiring, dashboard embed, and contract self-test - 2026-07-03.
+- [WO-10] Added generated Human Gate Readiness vault note with automatic G1-G5 audit checks and contract self-test - 2026-07-03.

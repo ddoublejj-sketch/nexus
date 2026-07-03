@@ -152,6 +152,7 @@ switch ($Command.ToLowerInvariant()) {
 				Invoke-LoopScript "tools/asset_manifest.luau"
 				Invoke-LoopScript "tools/gate_status.luau"
 				Invoke-LoopScript "tools/human_gate_checklist.luau"
+				Invoke-LoopScript "tools/human_gate_readiness.luau"
 				& $Lune run tools/build_health.luau --skip-install
 				if ($LASTEXITCODE -ne 0) {
 					throw "tools/build_health.luau --skip-install failed with exit code $LASTEXITCODE"
@@ -196,6 +197,7 @@ switch ($Command.ToLowerInvariant()) {
 	"gates" {
 		Invoke-Tool "lune" @("run", "tools/gate_status.luau")
 		Invoke-Tool "lune" @("run", "tools/human_gate_checklist.luau")
+		Invoke-Tool "lune" @("run", "tools/human_gate_readiness.luau")
 	}
 	"release" {
 		Invoke-Tool "lune" (@("run", "tools/open_cloud_publish.luau") + $Rest)
@@ -208,6 +210,7 @@ switch ($Command.ToLowerInvariant()) {
 			Invoke-Tool "lune" @("run", "tools/asset_manifest.luau")
 			Invoke-Tool "lune" @("run", "tools/gate_status.luau")
 			Invoke-Tool "lune" @("run", "tools/human_gate_checklist.luau")
+			Invoke-Tool "lune" @("run", "tools/human_gate_readiness.luau")
 			Invoke-Tool "lune" @("run", "tools/build_health.luau")
 
 			if ($Rest -contains "--once") {
