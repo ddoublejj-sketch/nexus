@@ -62,6 +62,12 @@
       "problemMatcher": []
     },
     {
+      "label": "Nexus: Gate Acceptance Probe",
+      "type": "shell",
+      "command": "./nexus.ps1 gatecheck --self-test",
+      "problemMatcher": []
+    },
+    {
       "label": "Nexus: Release Dry Run",
       "type": "shell",
       "command": "./nexus.ps1 release --dry-run --fixture",

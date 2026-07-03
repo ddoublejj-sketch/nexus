@@ -62,6 +62,7 @@ assertContains(
 )
 assertContains(script, "values not printed", "script must not print secret values")
 assertContains(script, "NEEDS HUMAN", "script must preserve human-only checks")
+assertContains(script, "./nexus.ps1 gatecheck --self-test", "script must document probe self-test")
 for _, check in REQUIRED_CHECKS do
 	assertContains(script, check, "script missing check " .. check)
 end

@@ -37,6 +37,7 @@ local GATES: { Gate } = {
 			"code --version",
 			"gh --version",
 			"Get-Command blender -ErrorAction SilentlyContinue",
+			"./nexus.ps1 gatecheck --gate G1",
 		},
 	},
 	{
@@ -59,6 +60,7 @@ local GATES: { Gate } = {
 			"./nexus.ps1 up",
 			"luau-lsp analyze --definitions types/globalTypes.d.luau --sourcemap sourcemap.json src",
 			"./nexus.ps1 down",
+			"./nexus.ps1 gatecheck --gate G2",
 		},
 	},
 	{
@@ -79,6 +81,7 @@ local GATES: { Gate } = {
 			"lune run tools/vault_ping.luau",
 			"./nexus.ps1 loop --once",
 			"git -C C:\\Users\\jackw\\Roblox\\RobloxGameVault status --short",
+			"./nexus.ps1 gatecheck --gate G3",
 		},
 	},
 	{
@@ -99,6 +102,7 @@ local GATES: { Gate } = {
 			"gh auth status",
 			"gh repo create nexus --private --source . --remote origin --push",
 			"gh pr checks",
+			"./nexus.ps1 gatecheck --gate G4",
 		},
 	},
 	{
@@ -117,6 +121,7 @@ local GATES: { Gate } = {
 			"./nexus.ps1 release --dry-run --fixture",
 			"lune run tools/open_cloud_publish.luau --dry-run",
 			"lune run tools/secret_scan.luau",
+			"./nexus.ps1 gatecheck --gate G5",
 		},
 	},
 }

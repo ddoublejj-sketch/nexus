@@ -201,6 +201,8 @@ local lines = {
 	"",
 	"This note is an automatic audit. `PASS` means Codex can verify the item from this shell; `MISSING`, `BLOCKED`, and `NEEDS HUMAN` are not completion states.",
 	"",
+	"To enforce gate acceptance after a human action, run `./nexus.ps1 gatecheck --gate G1` through `./nexus.ps1 gatecheck --gate G5`. To verify the probe itself without claiming completion, run `./nexus.ps1 gatecheck --self-test`.",
+	"",
 	"| Gate | Check | Status | Detail |",
 	"| --- | --- | --- | --- |",
 }

@@ -1096,6 +1096,7 @@ $env:ROKIT_PROBE='1'; lune run tools/quality_gate.luau
 [PASS] Command Center Contract Tests (0.03s, exit 0)
 [PASS] Human Gate Checklist Tests (0.03s, exit 0)
 [PASS] Human Gate Readiness Tests (0.03s, exit 0)
+[PASS] Human Gate Acceptance Tests (0.03s, exit 0)
 [PASS] Acceptance Matrix Contract Tests (0.03s, exit 0)
 [PASS] Secret Scan (0.37s, exit 0)
 [PASS] Analyze (2.04s, exit 0)
@@ -1160,6 +1161,7 @@ CI Contract Tests: PASS
 Command Center Contract Tests: PASS
 Human Gate Checklist Tests: PASS
 Human Gate Readiness Tests: PASS
+Human Gate Acceptance Tests: PASS
 Acceptance Matrix Contract Tests: PASS
 Secret Scan: PASS
 Analyze: PASS
@@ -1252,6 +1254,7 @@ $env:ROKIT_PROBE='1'; lune run tools/quality_gate.luau
 [PASS] Command Center Contract Tests (0.03s, exit 0)
 [PASS] Human Gate Checklist Tests (0.03s, exit 0)
 [PASS] Human Gate Readiness Tests (0.03s, exit 0)
+[PASS] Human Gate Acceptance Tests (0.03s, exit 0)
 [PASS] Acceptance Matrix Contract Tests (0.03s, exit 0)
 [PASS] Release Contract Tests (0.03s, exit 0)
 [PASS] Secret Scan (0.40s, exit 0)
@@ -1281,6 +1284,7 @@ CI Contract Tests: PASS
 Command Center Contract Tests: PASS
 Human Gate Checklist Tests: PASS
 Human Gate Readiness Tests: PASS
+Human Gate Acceptance Tests: PASS
 Acceptance Matrix Contract Tests: PASS
 Release Contract Tests: PASS
 Secret Scan: PASS
@@ -1334,6 +1338,8 @@ When ready to publish for real:
 - Added `tools/test_human_gate_checklist.luau` to the shared quality gate. It verifies G1-G5 actions, proof commands, launcher/task wiring, README visibility, dashboard embed, and generated vault note content.
 - Added `tools/human_gate_readiness.luau` and a dashboard embed for `00_Command_Center/Human Gate Readiness.md`.
 - Added `tools/test_human_gate_readiness.luau` to the shared quality gate. It verifies automatic G1-G5 readiness checks, secret-safe output, launcher/loop wiring, dashboard embed, and generated vault note content.
+- Added `tools/human_gate_acceptance.luau`, `./nexus.ps1 gatecheck`, and a `Nexus: Gate Acceptance Probe` VS Code task.
+- Added `tools/test_human_gate_acceptance.luau` to the shared quality gate. It verifies the on-demand acceptance probe, its self-test mode, and an honest blocked probe path for human-only gates.
 
 ### Verification Evidence
 
@@ -1379,6 +1385,54 @@ Human gate readiness contract self-test:
 ```powershell
 lune run tools/test_human_gate_readiness.luau
 Human gate readiness tests passed
+```
+
+Human gate acceptance probe self-test:
+
+```powershell
+./nexus.ps1 gatecheck --self-test
+| Gate | Check | Status | Detail |
+| --- | --- | --- | --- |
+| G1 | git available | PASS | git version 2.54.0.windows.1 |
+| G1 | rokit available | PASS | rokit 1.2.0 |
+| G1 | rojo available | PASS | Rojo 7.7.0 |
+| G1 | code available | FAIL | program not found |
+| G1 | gh available | FAIL | program not found |
+| G1 | blender CLI available | FAIL | blender not found on PATH |
+| G1 | obsidian command available | FAIL | obsidian not found on PATH |
+| G2 | Studio plugin connected | NEEDS HUMAN | Record G2 proof in docs/STATUS.md. |
+| G2 | Studio playtest observed | NEEDS HUMAN | Record Cmdr/DataService runtime proof. |
+| G2 | Rojo sync runbook present | PASS | runbook present |
+| G3 | Obsidian REST config present | FAIL | secrets/obsidian.env |
+| G3 | pending Obsidian REST writes flushed | FAIL | 1 pending write(s) |
+| G3 | Dashboard rendered in Obsidian | NEEDS HUMAN | Record visual/plugin proof in docs/STATUS.md. |
+| G4 | GitHub auth active | FAIL | program not found |
+| G4 | Git remote configured | FAIL | no remote |
+| G4 | CI branch protection confirmed | NEEDS HUMAN | Record GitHub branch protection proof. |
+| G5 | Open Cloud config present | FAIL | secrets/opencloud.env |
+| G5 | Build artifact present | PASS | build artifact present |
+| G5 | Live publish approval recorded | NEEDS HUMAN | Live publish requires explicit approval. |
+Human gate acceptance probe self-test PASS; current blocked checks: 14
+```
+
+Human gate acceptance probe blocked-path sample:
+
+```powershell
+./nexus.ps1 gatecheck --gate G2
+| Gate | Check | Status | Detail |
+| --- | --- | --- | --- |
+| G2 | Studio plugin connected | NEEDS HUMAN | Record G2 proof in docs/STATUS.md. |
+| G2 | Studio playtest observed | NEEDS HUMAN | Record Cmdr/DataService runtime proof. |
+| G2 | Rojo sync runbook present | PASS | runbook present |
+Human gate acceptance BLOCKED: 2 check(s) are not accepted.
+lune failed with exit code 1
+```
+
+Human gate acceptance contract self-test:
+
+```powershell
+lune run tools/test_human_gate_acceptance.luau
+Human gate acceptance tests passed
 ```
 
 One-shot automation loop after human-gate checklist/readiness wiring:
@@ -1432,6 +1486,7 @@ $env:ROKIT_PROBE='1'; lune run tools/quality_gate.luau
 [PASS] Command Center Contract Tests (0.03s, exit 0)
 [PASS] Human Gate Checklist Tests (0.03s, exit 0)
 [PASS] Human Gate Readiness Tests (0.03s, exit 0)
+[PASS] Human Gate Acceptance Tests (0.03s, exit 0)
 [PASS] Acceptance Matrix Contract Tests (0.03s, exit 0)
 [PASS] Release Contract Tests (0.03s, exit 0)
 [PASS] Secret Scan (0.37s, exit 0)
@@ -1461,6 +1516,7 @@ CI Contract Tests: PASS
 Command Center Contract Tests: PASS
 Human Gate Checklist Tests: PASS
 Human Gate Readiness Tests: PASS
+Human Gate Acceptance Tests: PASS
 Acceptance Matrix Contract Tests: PASS
 Release Contract Tests: PASS
 Secret Scan: PASS
@@ -1527,7 +1583,7 @@ NexusAutomationLoop Stopped
 | WO-7 Data/Networking | Implemented and tested locally | ProfileStore wrapper, migration tests, DataService contract tests, Net contract tests, typed Net, Build Health | G2 Studio playtest for session/runtime behavior |
 | WO-8 CI | Local workflow committed | Shared gate output, CI contract tests, workflow, runbook | G4: `gh auth`, remote repo, branch protection, real CI run |
 | WO-9 Release Path | Dry-run accepted locally | Fixture dry-run, `./nexus.ps1 release --dry-run --fixture`, release contract tests, secret-history scan, release checklist | G5 for live publish only |
-| WO-10 Hardening | Up/down smoke test passed locally | Task JSON parse, command-center contract tests, human gate checklist/readiness tests, dev log writes, Gate Status dashboard embed, `./nexus.ps1 up/status/down`, full gate | G2 Studio connect and G3 dashboard render for cold-boot acceptance |
+| WO-10 Hardening | Up/down smoke test passed locally | Task JSON parse, command-center contract tests, human gate checklist/readiness/acceptance tests, dev log writes, Gate Status dashboard embed, `./nexus.ps1 up/status/down`, full gate | G2 Studio connect and G3 dashboard render for cold-boot acceptance |
 
 Acceptance Matrix contract self-test:
 
@@ -1540,7 +1596,7 @@ Acceptance matrix contract tests passed
 
 ```powershell
 ./nexus.ps1 check
-[PASS] Wally Install (0.79s, exit 0)
+[PASS] Wally Install (0.98s, exit 0)
 [PASS] StyLua (0.07s, exit 0)
 [PASS] Selene (0.09s, exit 0)
 [PASS] Sourcemap (0.08s, exit 0)
@@ -1556,11 +1612,12 @@ Acceptance matrix contract tests passed
 [PASS] Command Center Contract Tests (0.03s, exit 0)
 [PASS] Human Gate Checklist Tests (0.02s, exit 0)
 [PASS] Human Gate Readiness Tests (0.03s, exit 0)
+[PASS] Human Gate Acceptance Tests (2.07s, exit 0)
 [PASS] Acceptance Matrix Contract Tests (0.03s, exit 0)
 [PASS] Release Contract Tests (0.03s, exit 0)
-[PASS] Secret Scan (0.42s, exit 0)
-[PASS] Analyze (1.94s, exit 0)
-[PASS] Build (0.08s, exit 0)
+[PASS] Secret Scan (0.45s, exit 0)
+[PASS] Analyze (2.02s, exit 0)
+[PASS] Build (0.09s, exit 0)
 [PASS] Open Cloud Dry Run (0.03s, exit 0)
 Quality gate PASS
 ```

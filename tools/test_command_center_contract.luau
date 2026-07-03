@@ -23,6 +23,7 @@ local EXPECTED_TASKS = {
 	["Nexus: Vault Sync"] = "./nexus.ps1 sync",
 	["Nexus: Health"] = "./nexus.ps1 health",
 	["Nexus: Human Gates"] = "./nexus.ps1 gates",
+	["Nexus: Gate Acceptance Probe"] = "./nexus.ps1 gatecheck --self-test",
 	["Nexus: Release Dry Run"] = "./nexus.ps1 release --dry-run --fixture",
 	["Nexus: Loop Once"] = "./nexus.ps1 loop --once",
 }
@@ -87,6 +88,7 @@ for _, command in
 		'"sync"',
 		'"health"',
 		'"gates"',
+		'"gatecheck"',
 		'"release"',
 		'"loop"',
 		'"status"',
