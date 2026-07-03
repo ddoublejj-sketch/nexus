@@ -28,7 +28,7 @@ local GATES: { Gate } = {
 			"Run `./nexus.ps1 g1` to refresh the exact local tool audit and install/PATH repair note.",
 			"Run `./nexus.ps1 receipts` to refresh the pending proof receipt templates.",
 			"Rerun WO-0 acceptance from the Nexus repo if a tool path changes.",
-			"Replace the placeholder thumbnail backlog with real Blender thumbnail renders if `blender.exe` is available.",
+			"Run `./nexus.ps1 thumbnails` after adding or changing exported model assets.",
 		},
 		proof = {
 			"git --version",

@@ -2,12 +2,12 @@
 -- Command: setstat
 -- Tier: Dev
 -- Args: players targetPlayers, string statKey, number value
--- Description: Queue a profile stat set request for later data-service integration.
+-- Description: Set a schema-backed profile stat on loaded player profiles.
 
 return {
 	Name = "setstat",
 	Aliases = {},
-	Description = "Queue a profile stat set request for later data-service integration.",
+	Description = "Set a schema-backed profile stat on loaded player profiles.",
 	Group = "NexusDev",
 	Args = {
 		{

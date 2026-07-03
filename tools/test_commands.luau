@@ -99,6 +99,28 @@ for _, commandName in definitions do
 end
 
 local profilewipeHandler = read(COMMAND_ROOT .. "/profilewipeServer.luau")
+local giveDefinition = read(COMMAND_ROOT .. "/give.luau")
+local giveHandler = read(COMMAND_ROOT .. "/giveServer.luau")
+local setstatDefinition = read(COMMAND_ROOT .. "/setstat.luau")
+local setstatHandler = read(COMMAND_ROOT .. "/setstatServer.luau")
+
+for _, contents in
+	{ giveDefinition, giveHandler, setstatDefinition, setstatHandler, profilewipeHandler }
+do
+	assertTrue(
+		contents:find("arrives in WO-7", 1, true) == nil,
+		"Cmdr command surfaces must not describe WO-7 data integration as future work"
+	)
+end
+
+assertTrue(
+	giveHandler:find("DataService.addInventoryItem", 1, true) ~= nil,
+	"give must write through DataService.addInventoryItem"
+)
+assertTrue(
+	setstatHandler:find("DataService.setStat", 1, true) ~= nil,
+	"setstat must write through DataService.setStat"
+)
 assertTrue(
 	profilewipeHandler:find('Permissions.canRun(context.Executor, "Owner")', 1, true) ~= nil,
 	"profilewipe must re-check Owner permission in the server handler"
@@ -110,6 +132,10 @@ assertTrue(
 assertTrue(
 	profilewipeHandler:find("Refused. Re-run with confirm value CONFIRM_WIPE.", 1, true) ~= nil,
 	"profilewipe must return a refusal message before confirmation"
+)
+assertTrue(
+	profilewipeHandler:find("DataService.resetProfile", 1, true) ~= nil,
+	"profilewipe must reset through DataService after confirmation"
 )
 
 print("Command surface tests passed")

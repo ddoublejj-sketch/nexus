@@ -45,3 +45,4 @@
 - [WO-10] Updated generated human-gate checklist/readiness notes to surface all G2-G5 bootstrap helpers from one place - 2026-07-03.
 - [WO-3/WO-9/WO-10] Tightened gate acceptance/readiness so Obsidian and Open Cloud secret files must contain valid non-placeholder keys before passing - 2026-07-03.
 - [WO-5/WO-10] Added repeatable Blender thumbnail rendering, committed PNG thumbnails for seed assets, and refreshed asset-vault notes - 2026-07-03.
+- [WO-6/WO-7] Wired Cmdr profile commands to DataService inventory, stat, and profile-reset helpers - 2026-07-03.

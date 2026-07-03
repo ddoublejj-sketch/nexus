@@ -119,6 +119,45 @@ function DataService.setKey(player: Player, key: string, value: any): boolean
 	return true
 end
 
+function DataService.addInventoryItem(player: Player, itemKey: string, amount: number): boolean
+	local profile = profiles[player]
+	if profile == nil then
+		return false
+	end
+
+	local data = profile.Data :: ProfileData
+	data.inventory.items[itemKey] = (data.inventory.items[itemKey] or 0) + amount
+	return true
+end
+
+function DataService.setStat(player: Player, statKey: string, value: number): (boolean, string?)
+	local profile = profiles[player]
+	if profile == nil then
+		return false, "Profile is not loaded."
+	end
+
+	local data = profile.Data :: ProfileData
+	if statKey == "level" then
+		data.stats.level = value
+	elseif statKey == "xp" then
+		data.stats.xp = value
+	else
+		return false, ("Unknown stat %q. Expected level or xp."):format(statKey)
+	end
+
+	return true, nil
+end
+
+function DataService.resetProfile(player: Player): boolean
+	local profile = profiles[player]
+	if profile == nil then
+		return false
+	end
+
+	profile.Data = ProfileSchema.createDefaultProfile()
+	return true
+end
+
 function DataService.release(player: Player)
 	releaseProfile(player)
 end

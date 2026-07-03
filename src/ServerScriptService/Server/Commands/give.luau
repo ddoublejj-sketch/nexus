@@ -2,12 +2,12 @@
 -- Command: give
 -- Tier: Dev
 -- Args: players targetPlayers, string itemKey, number amount
--- Description: Queue a grant request for later inventory integration.
+-- Description: Grant a schema-backed inventory item to loaded player profiles.
 
 return {
 	Name = "give",
 	Aliases = {},
-	Description = "Queue a grant request for later inventory integration.",
+	Description = "Grant a schema-backed inventory item to loaded player profiles.",
 	Group = "NexusDev",
 	Args = {
 		{

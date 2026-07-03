@@ -102,6 +102,36 @@ assertContains(
 	"function DataService.setKey",
 	"DataService must expose server-owned setKey"
 )
+assertContains(
+	dataService,
+	"function DataService.addInventoryItem",
+	"DataService must expose inventory mutation for server commands"
+)
+assertContains(
+	dataService,
+	"data.inventory.items[itemKey] = (data.inventory.items[itemKey] or 0) + amount",
+	"DataService inventory mutation must preserve existing item counts"
+)
+assertContains(
+	dataService,
+	"function DataService.setStat",
+	"DataService must expose schema-backed stat mutation"
+)
+assertContains(
+	dataService,
+	'return false, ("Unknown stat %q. Expected level or xp."):format(statKey)',
+	"DataService stat mutation must reject unknown stat keys"
+)
+assertContains(
+	dataService,
+	"function DataService.resetProfile",
+	"DataService must expose profile reset for Owner-only profilewipe"
+)
+assertContains(
+	dataService,
+	"profile.Data = ProfileSchema.createDefaultProfile()",
+	"DataService reset must use schema defaults"
+)
 assertContains(dataService, "function DataService.release", "DataService must expose release")
 assertContains(dataService, "function DataService.isMockMode", "DataService must expose mock mode")
 

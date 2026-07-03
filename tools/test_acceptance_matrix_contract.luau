@@ -79,13 +79,13 @@ local EXPECTED_ROWS = {
 	{
 		id = "WO-6 Cmdr",
 		status = "Implemented and analyzed",
-		evidence = "generated command docs",
+		evidence = "DataService-backed profile commands",
 		blocker = "G2 Studio playtest",
 	},
 	{
 		id = "WO-7 Data/Networking",
 		status = "Implemented and tested locally",
-		evidence = "DataService contract tests",
+		evidence = "server-owned mutation helpers",
 		blocker = "G2 Studio playtest",
 	},
 	{

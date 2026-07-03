@@ -2,12 +2,12 @@
 -- Command: profilewipe
 -- Tier: Owner
 -- Args: player targetPlayer, string confirm
--- Description: Refuse profile wipe unless caller is Owner and confirm is CONFIRM_WIPE.
+-- Description: Reset a loaded profile to schema defaults after Owner confirmation.
 
 return {
 	Name = "profilewipe",
 	Aliases = {},
-	Description = "Refuse profile wipe unless caller is Owner and confirm is CONFIRM_WIPE.",
+	Description = "Reset a loaded profile to schema defaults after Owner confirmation.",
 	Group = "NexusOwner",
 	Args = {
 		{
