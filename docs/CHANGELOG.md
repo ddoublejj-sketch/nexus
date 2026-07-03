@@ -21,3 +21,4 @@
 - [WO-6] Added command-surface self-test for Cmdr definitions, handlers, tiers, and profilewipe guards - 2026-07-03.
 - [WO-9] Added automated Nexus/vault secret-history scan to the shared quality gate - 2026-07-03.
 - [WO-7] Added Net contract self-test for declared remotes, validators, snapshot exposure, and server-owned mutation boundaries - 2026-07-03.
+- [WO-5] Added asset manifest self-test for seed assets, source/export files, generated notes, and thumbnail backlog coverage - 2026-07-03.

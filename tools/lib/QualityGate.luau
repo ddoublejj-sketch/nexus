@@ -107,6 +107,14 @@ function QualityGate.runAll(options: RunOptions?): { CommandResult }
 	)
 	table.insert(
 		results,
+		QualityGate.runTool(
+			"Asset Manifest Tests",
+			"lune",
+			{ "run", "tools/test_asset_manifest.luau" }
+		)
+	)
+	table.insert(
+		results,
 		QualityGate.runTool("Command Surface Tests", "lune", { "run", "tools/test_commands.luau" })
 	)
 	table.insert(
