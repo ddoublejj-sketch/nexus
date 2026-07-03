@@ -4,7 +4,7 @@ Last updated: 2026-07-03
 
 ## Current Phase
 
-WO-0 G1 tool closure now passes locally: Git, Rokit, Rojo, VS Code `code`, GitHub CLI `gh`, Blender CLI, and Obsidian command are all available through refreshed PATH/shims. WO-1 exact local acceptance now passes through `./nexus.ps1 check`. WO-2 now has the sync-rules runbook and sourcemap-aware analyze proof, but live Studio sync remains blocked on **G2 - Studio connect**. WO-3 vault plugin preinstall now passes locally with all eight required Obsidian plugins downloaded and enabled in vault config; `./nexus.ps1 obsidian-rest` now records non-secret bootstrap evidence and will write `secrets/obsidian.env` only after Obsidian generates Local REST settings, but REST/dashboard acceptance remains blocked on **G3 - Obsidian REST key + dashboard proof**. WO-4 automation scripts now pass through exact `./nexus.ps1 loop --once` and include dummy-service/stale-note evidence, but dashboard rendering remains gated. WO-5 asset pipeline has direct-run proof with seed assets. WO-6 Cmdr integration has build/analyze proof, but in-Studio command execution remains gated. WO-7 data/networking baseline has direct local proof, but live ProfileStore session behavior remains Studio-gated. WO-8 CI workflow and shared local/CI gate are created; `./nexus.ps1 github-ci` now records non-secret G4 readiness and can explicitly create/push the private remote after `gh auth login`, but remote GitHub auth/remote setup remains blocked on **G4 - GitHub auth**. WO-9 release-path dry-run now passes through `./nexus.ps1 release --dry-run --fixture`; live publish remains gated on **G5 - Open Cloud key**. WO-10 `up/status/down` now starts and stops watcher jobs cleanly; full cold-boot Studio acceptance remains blocked on G2/G3.
+WO-0 G1 tool closure now passes locally: Git, Rokit, Rojo, VS Code `code`, GitHub CLI `gh`, Blender CLI, and Obsidian command are all available through refreshed PATH/shims. WO-1 exact local acceptance now passes through `./nexus.ps1 check`. WO-2 now has the sync-rules runbook, sourcemap-aware analyze proof, and `./nexus.ps1 studio-bridge` for repeatable local G2 readiness evidence, but live Studio sync remains blocked on **G2 - Studio connect**. WO-3 vault plugin preinstall now passes locally with all eight required Obsidian plugins downloaded and enabled in vault config; `./nexus.ps1 obsidian-rest` now records non-secret bootstrap evidence and will write `secrets/obsidian.env` only after Obsidian generates Local REST settings, but REST/dashboard acceptance remains blocked on **G3 - Obsidian REST key + dashboard proof**. WO-4 automation scripts now pass through exact `./nexus.ps1 loop --once` and include dummy-service/stale-note evidence, but dashboard rendering remains gated. WO-5 asset pipeline has direct-run proof with seed assets. WO-6 Cmdr integration has build/analyze proof, but in-Studio command execution remains gated. WO-7 data/networking baseline has direct local proof, but live ProfileStore session behavior remains Studio-gated. WO-8 CI workflow and shared local/CI gate are created; `./nexus.ps1 github-ci` now records non-secret G4 readiness and can explicitly create/push the private remote after `gh auth login`, but remote GitHub auth/remote setup remains blocked on **G4 - GitHub auth**. WO-9 release-path dry-run now passes through `./nexus.ps1 release --dry-run --fixture`; live publish remains gated on **G5 - Open Cloud key**. WO-10 `up/status/down` now starts and stops watcher jobs cleanly; full cold-boot Studio acceptance remains blocked on G2/G3.
 
 ## WO-0 - Close the Tool Gaps
 
@@ -578,6 +578,8 @@ git status --short
 - Documented disk-owned source, Studio-owned/snapshot content, the G2 test sequence, and the Studio snapshot location.
 - The runbook marks live round-trip rows as pending G2 instead of pretending Studio confirmation has happened.
 - Added `tools/test_rojo_bridge_contract.luau` to the shared quality gate. It verifies Rojo project mappings, sourcemap/luau-lsp wiring, launcher `serve`/`map` commands, snapshot archive location, and that STATUS/runbook still honestly mark live Studio proof as pending G2.
+- Added `tools/studio_bridge_bootstrap.luau` and `./nexus.ps1 studio-bridge`; it records local G2 readiness for Rojo project, sourcemap, runbook, snapshot archive, local Rojo server, Studio process, and the human receipt without claiming the Studio proof.
+- Added `tools/test_studio_bridge_bootstrap.luau` to the shared quality gate. It verifies the helper checks the Rojo server, Studio process, receipt markers, snapshot archive, launcher/task wiring, runbook mention, and dashboard embed.
 
 ### Sourcemap-Aware Analyze Evidence
 
@@ -595,20 +597,42 @@ lune run tools/test_rojo_bridge_contract.luau
 Rojo bridge contract tests passed
 ```
 
+Studio bridge bootstrap while Rojo server/Studio are not running:
+
+```powershell
+./nexus.ps1 studio-bridge
+Rojo project: PASS
+Sourcemap: PASS
+Sync runbook: PASS
+Snapshot archive: PASS
+Rojo local server: WAITING
+Roblox Studio process: WAITING
+G2 human receipt: NEEDS HUMAN
+Wrote Studio bridge bootstrap evidence to C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Studio Bridge Bootstrap.md
+```
+
+Bootstrap verifier:
+
+```powershell
+lune run tools/test_studio_bridge_bootstrap.luau
+Studio bridge bootstrap tests passed
+```
+
 ### Human Gate G2 Request
 
 Please complete when ready:
 
 1. Open the Nexus place in Roblox Studio.
-2. Start Rojo serve from Nexus.
+2. Run `./nexus.ps1 up`, then `./nexus.ps1 studio-bridge`.
 3. Click the Rojo Studio plugin and connect to the local server.
 4. Confirm a disk edit appears in Studio within seconds.
-5. Create one disposable Studio object, test what syncback/export preserves, and record the observed result in `docs/runbooks/rojo-sync-rules.md`.
+5. Playtest Cmdr/DataService behavior.
+6. Create one disposable Studio object, test what syncback/export preserves, and record the observed result in `docs/runbooks/rojo-sync-rules.md`.
 
 ### Open Blockers
 
 - G2 is not complete, so live disk-to-Studio and syncback behavior remains unverified.
-- `./nexus.ps1 up` starts the Rojo server locally, but live Studio plugin connection still requires G2.
+- `./nexus.ps1 studio-bridge` records local readiness, but live Studio plugin connection and playtest receipt still require G2.
 
 ## WO-4 - Live Project Indexer
 
@@ -1754,7 +1778,7 @@ NexusAutomationLoop Stopped
 | --- | --- | --- | --- |
 | WO-0 Tool Gaps | Exact G1 acceptance passed | Audit output, VS Code install proof, portable gh/Blender/Obsidian shim proof, G1 Tool Closure note/runbook, and tool-gap contract tests under WO-0 | None locally |
 | WO-1 Bootstrap | Exact local acceptance passed | Repo scaffold, tool pins, `rokit install`, `wally install`, `rojo build`, `rojo sourcemap`, `./nexus.ps1 check` | None locally |
-| WO-2 Studio Bridge | Runbook added, live bridge blocked | Sourcemap-aware analyze output, Rojo bridge tests, and `docs/runbooks/rojo-sync-rules.md` | G2: Studio plugin connect and live sync proof |
+| WO-2 Studio Bridge | Runbook added, live bridge blocked | Sourcemap-aware analyze output, Rojo bridge tests, Studio bridge bootstrap proof, and `docs/runbooks/rojo-sync-rules.md` | G2: Studio plugin connect and live sync proof |
 | WO-3 Vault | Scaffolded, REST blocked | Vault repo, templates, vault scaffold tests, pending queue output, Obsidian plugin setup proof | G3: Local REST API key, pending flush, dashboard render |
 | WO-4 Automation Loop | Exact local launcher proof passed | Sourcemap, vault sync, dummy/stale-note demo, command registry, gate status, vault scaffold tests, asset manifest, `./nexus.ps1 loop --once`, Build Health outputs | Dashboard render needs G3 |
 | WO-5 Asset Pipeline | Implemented with seed assets | Manifest, orphan repair, asset manifest tests, vault asset notes, Blender CLI-ready seed catalog | Dashboard render needs G3 |
@@ -1775,18 +1799,19 @@ Acceptance matrix contract tests passed
 
 ```powershell
 ./nexus.ps1 check
-[PASS] Wally Install (0.74s, exit 0)
+[PASS] Wally Install (0.78s, exit 0)
 [PASS] StyLua (0.08s, exit 0)
-[PASS] Selene (0.11s, exit 0)
-[PASS] Sourcemap (0.09s, exit 0)
+[PASS] Selene (0.10s, exit 0)
+[PASS] Sourcemap (0.08s, exit 0)
 [PASS] Tool Gap Contract Tests (0.03s, exit 0)
 [PASS] G1 Tool Closure Tests (0.03s, exit 0)
 [PASS] Rojo Bridge Tests (0.03s, exit 0)
+[PASS] Studio Bridge Bootstrap Tests (0.03s, exit 0)
 [PASS] Migration Tests (0.03s, exit 0)
 [PASS] DataService Contract Tests (0.03s, exit 0)
 [PASS] Vault Scaffold Tests (0.07s, exit 0)
 [PASS] Obsidian Plugin Setup Tests (0.03s, exit 0)
-[PASS] Obsidian REST Bootstrap Tests (0.03s, exit 0)
+[PASS] Obsidian REST Bootstrap Tests (0.05s, exit 0)
 [PASS] GitHub CI Bootstrap Tests (0.03s, exit 0)
 [PASS] Asset Manifest Tests (0.03s, exit 0)
 [PASS] Command Surface Tests (0.03s, exit 0)
@@ -1795,13 +1820,13 @@ Acceptance matrix contract tests passed
 [PASS] Command Center Contract Tests (0.03s, exit 0)
 [PASS] Human Gate Checklist Tests (0.03s, exit 0)
 [PASS] Human Gate Readiness Tests (0.03s, exit 0)
-[PASS] Human Gate Acceptance Tests (2.25s, exit 0)
-[PASS] Human Gate Receipt Tests (1.12s, exit 0)
+[PASS] Human Gate Acceptance Tests (2.17s, exit 0)
+[PASS] Human Gate Receipt Tests (1.11s, exit 0)
 [PASS] Founder Sign-Off Audit Tests (0.03s, exit 0)
 [PASS] Acceptance Matrix Contract Tests (0.03s, exit 0)
 [PASS] Release Contract Tests (0.03s, exit 0)
-[PASS] Secret Scan (0.49s, exit 0)
-[PASS] Analyze (2.00s, exit 0)
+[PASS] Secret Scan (0.51s, exit 0)
+[PASS] Analyze (2.03s, exit 0)
 [PASS] Build (0.08s, exit 0)
 [PASS] Open Cloud Dry Run (0.03s, exit 0)
 Quality gate PASS

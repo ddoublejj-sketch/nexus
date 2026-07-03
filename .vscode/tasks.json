@@ -74,6 +74,12 @@
       "problemMatcher": []
     },
     {
+      "label": "Nexus: Studio Bridge Bootstrap",
+      "type": "shell",
+      "command": "./nexus.ps1 studio-bridge",
+      "problemMatcher": []
+    },
+    {
       "label": "Nexus: Human Gate Receipts",
       "type": "shell",
       "command": "./nexus.ps1 receipts",

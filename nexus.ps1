@@ -228,6 +228,9 @@ switch ($Command.ToLowerInvariant()) {
 	"g1" {
 		Invoke-Tool "lune" @("run", "tools/g1_tool_closure.luau")
 	}
+	"studio-bridge" {
+		Invoke-Tool "lune" @("run", "tools/studio_bridge_bootstrap.luau")
+	}
 	"receipts" {
 		Invoke-Tool "lune" @("run", "tools/human_gate_receipts.luau")
 	}
@@ -287,6 +290,6 @@ switch ($Command.ToLowerInvariant()) {
 		Write-NexusJobTable
 	}
 	default {
-		throw "Unknown command '$Command'. Use up, down, serve, build, map, check, fix, sync, health, gates, gatecheck, g1, receipts, obsidian-plugins, obsidian-rest, github-ci, audit, release, loop, or status."
+		throw "Unknown command '$Command'. Use up, down, serve, build, map, check, fix, sync, health, gates, gatecheck, g1, studio-bridge, receipts, obsidian-plugins, obsidian-rest, github-ci, audit, release, loop, or status."
 	}
 }

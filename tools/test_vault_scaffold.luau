@@ -149,6 +149,11 @@ else
 	)
 	assertContains(
 		dashboard,
+		"![[Studio Bridge Bootstrap]]",
+		"Dashboard missing Studio Bridge Bootstrap embed"
+	)
+	assertContains(
+		dashboard,
 		"![[Obsidian Plugin Setup]]",
 		"Dashboard missing Obsidian Plugin Setup embed"
 	)

@@ -13,6 +13,7 @@ local REQUIRED_GATE_LABELS = {
 	"Tool Gap Contract Tests",
 	"G1 Tool Closure Tests",
 	"Rojo Bridge Tests",
+	"Studio Bridge Bootstrap Tests",
 	"Migration Tests",
 	"DataService Contract Tests",
 	"Vault Scaffold Tests",

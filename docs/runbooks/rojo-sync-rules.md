@@ -24,11 +24,12 @@ WO-2 proves the daily Studio bridge. The command center treats disk-owned source
 ## G2 Test Steps
 
 1. Start `./nexus.ps1 serve`.
-2. Connect the Rojo Studio plugin to the local server.
-3. Edit `src/ServerScriptService/Server/Services/NexusService.luau` on disk.
-4. Confirm the change appears in Studio within seconds.
-5. Create one disposable Studio object, attempt syncback/export, and record the result in this table.
-6. Run:
+2. Run `./nexus.ps1 studio-bridge` to confirm the project, sourcemap, runbook, snapshot archive, local Rojo server, Studio process, and G2 receipt state.
+3. Connect the Rojo Studio plugin to the local server.
+4. Edit `src/ServerScriptService/Server/Services/NexusService.luau` on disk.
+5. Confirm the change appears in Studio within seconds.
+6. Create one disposable Studio object, attempt syncback/export, and record the result in this table.
+7. Run:
 
 ```powershell
 ./nexus.ps1 map --once
