@@ -34,3 +34,4 @@
 - [WO-10] Added generated Human Gate Readiness vault note with automatic G1-G5 audit checks and contract self-test - 2026-07-03.
 - [WO-10] Added on-demand human gate acceptance probe with self-test mode, launcher/task wiring, and contract self-test - 2026-07-03.
 - [WO-10] Added generated Founder Sign-Off Audit vault note, launcher/task wiring, dashboard embed, and contract self-test - 2026-07-03.
+- [WO-9/WO-10] Narrowed secret-history scan allowlist for quoted negative-test env-name literals - 2026-07-03.

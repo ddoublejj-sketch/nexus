@@ -58,6 +58,8 @@ local ALLOWED_VALUE_FRAGMENTS = {
 	"replace_with",
 	"fixture",
 	"do_not_use",
+	"assertnotcontains",
+	"must not expose",
 }
 
 local function trim(value: string): string
@@ -68,6 +70,12 @@ local function isAllowed(line: string): boolean
 	local lower = line:lower()
 
 	if lower:find("pattern =", 1, true) then
+		return true
+	end
+
+	if
+		lower:find('"obsidian_api_key="', 1, true) or lower:find('"open_cloud_api_key="', 1, true)
+	then
 		return true
 	end
 
