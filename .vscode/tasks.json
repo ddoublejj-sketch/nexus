@@ -80,6 +80,12 @@
       "problemMatcher": []
     },
     {
+      "label": "Nexus: Obsidian Plugin Setup",
+      "type": "shell",
+      "command": "./nexus.ps1 obsidian-plugins",
+      "problemMatcher": []
+    },
+    {
       "label": "Nexus: Founder Sign-Off Audit",
       "type": "shell",
       "command": "./nexus.ps1 audit",

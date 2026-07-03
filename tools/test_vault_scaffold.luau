@@ -149,6 +149,11 @@ else
 	)
 	assertContains(
 		dashboard,
+		"![[Obsidian Plugin Setup]]",
+		"Dashboard missing Obsidian Plugin Setup embed"
+	)
+	assertContains(
+		dashboard,
 		"![[Founder Sign-Off Audit]]",
 		"Dashboard missing Founder Sign-Off Audit embed"
 	)
@@ -210,6 +215,19 @@ else
 		humanGateReceipts,
 		"docs/gate-proofs/G2-studio-connect.md",
 		"Human Gate Proof Receipts missing G2 receipt"
+	)
+
+	local obsidianPluginSetup = read("00_Command_Center/Obsidian Plugin Setup.md")
+	assertFrontmatter(obsidianPluginSetup, "Obsidian Plugin Setup")
+	assertContains(
+		obsidianPluginSetup,
+		"Local REST API",
+		"Obsidian Plugin Setup missing Local REST API"
+	)
+	assertContains(
+		obsidianPluginSetup,
+		"Remaining G3 Human Proof",
+		"Obsidian Plugin Setup missing remaining G3 proof"
 	)
 
 	local founderSignoffAudit = read("00_Command_Center/Founder Sign-Off Audit.md")

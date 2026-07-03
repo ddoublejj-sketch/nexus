@@ -40,6 +40,7 @@ git clone <private-vault-url> RobloxGameVault
 cd C:\Users\jackw\Roblox\nexus
 rokit install
 wally install
+./nexus.ps1 obsidian-plugins
 ./nexus.ps1 check
 ```
 
@@ -71,7 +72,8 @@ Never commit either file. The release dry-run works before `secrets/opencloud.en
 3. Run Rojo serve from Nexus.
 4. Connect the Studio plugin to the local server.
 5. Open `C:\Users\jackw\Roblox\RobloxGameVault` as an Obsidian vault.
-6. Enable the Local REST API, Obsidian Git, Dataview, Tasks, Kanban, Templater, QuickAdd, and Omnisearch plugins.
+6. Confirm the preinstalled Local REST API, Obsidian Git, Dataview, Tasks, Kanban, Templater, QuickAdd, and Omnisearch plugins load.
+7. Copy the Local REST API key into `secrets/obsidian.env`, then run `lune run tools/vault_ping.luau`.
 
 ## Launcher Check
 

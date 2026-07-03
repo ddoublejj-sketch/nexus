@@ -232,7 +232,7 @@ table.insert(lines, "")
 table.insert(lines, "- G2: Roblox Studio Rojo plugin connect and live sync proof.")
 table.insert(
 	lines,
-	"- G3: Obsidian plugins, Local REST API key, pending write flush, and dashboard render."
+	"- G3: Obsidian plugin load confirmation, Local REST API key, pending write flush, and dashboard render."
 )
 table.insert(lines, "- G4: GitHub CLI auth, remote repos, branch protection, and real CI run.")
 table.insert(lines, "- G5: Open Cloud key and live publish approval.")

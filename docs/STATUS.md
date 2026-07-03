@@ -4,7 +4,7 @@ Last updated: 2026-07-03
 
 ## Current Phase
 
-WO-0 G1 tool closure now passes locally: Git, Rokit, Rojo, VS Code `code`, GitHub CLI `gh`, Blender CLI, and Obsidian command are all available through refreshed PATH/shims. WO-1 exact local acceptance now passes through `./nexus.ps1 check`. WO-2 now has the sync-rules runbook and sourcemap-aware analyze proof, but live Studio sync remains blocked on **G2 - Studio connect**. WO-3 vault scaffolding has started and is blocked on **G3 - Obsidian plugins + REST key** for end-to-end REST verification. WO-4 automation scripts now pass through exact `./nexus.ps1 loop --once` and include dummy-service/stale-note evidence, but dashboard rendering remains gated. WO-5 asset pipeline has direct-run proof with seed assets. WO-6 Cmdr integration has build/analyze proof, but in-Studio command execution remains gated. WO-7 data/networking baseline has direct local proof, but live ProfileStore session behavior remains Studio-gated. WO-8 CI workflow and shared local/CI gate are created, but remote GitHub auth/remote setup remains blocked on **G4 - GitHub auth**. WO-9 release-path dry-run now passes through `./nexus.ps1 release --dry-run --fixture`; live publish remains gated on **G5 - Open Cloud key**. WO-10 `up/status/down` now starts and stops watcher jobs cleanly; full cold-boot Studio acceptance remains blocked on G2/G3.
+WO-0 G1 tool closure now passes locally: Git, Rokit, Rojo, VS Code `code`, GitHub CLI `gh`, Blender CLI, and Obsidian command are all available through refreshed PATH/shims. WO-1 exact local acceptance now passes through `./nexus.ps1 check`. WO-2 now has the sync-rules runbook and sourcemap-aware analyze proof, but live Studio sync remains blocked on **G2 - Studio connect**. WO-3 vault plugin preinstall now passes locally with all eight required Obsidian plugins downloaded and enabled in vault config, but REST/dashboard acceptance remains blocked on **G3 - Obsidian REST key + dashboard proof**. WO-4 automation scripts now pass through exact `./nexus.ps1 loop --once` and include dummy-service/stale-note evidence, but dashboard rendering remains gated. WO-5 asset pipeline has direct-run proof with seed assets. WO-6 Cmdr integration has build/analyze proof, but in-Studio command execution remains gated. WO-7 data/networking baseline has direct local proof, but live ProfileStore session behavior remains Studio-gated. WO-8 CI workflow and shared local/CI gate are created, but remote GitHub auth/remote setup remains blocked on **G4 - GitHub auth**. WO-9 release-path dry-run now passes through `./nexus.ps1 release --dry-run --fixture`; live publish remains gated on **G5 - Open Cloud key**. WO-10 `up/status/down` now starts and stops watcher jobs cleanly; full cold-boot Studio acceptance remains blocked on G2/G3.
 
 ## WO-0 - Close the Tool Gaps
 
@@ -424,11 +424,10 @@ b13f88a Add shared CI quality gate
 
 ### Human Gate G3 Request
 
-Please complete Obsidian setup when ready:
+Please complete the remaining Obsidian setup when ready:
 
 1. Open `C:\Users\jackw\Roblox\RobloxGameVault` as an Obsidian vault.
-2. Enable community plugins.
-3. Install and enable:
+2. Confirm the preinstalled community plugins load:
    - Local REST API
    - Obsidian Git
    - Dataview
@@ -437,7 +436,7 @@ Please complete Obsidian setup when ready:
    - Templater
    - QuickAdd
    - Omnisearch
-4. Copy the Local REST API key into `C:\Users\jackw\Roblox\nexus\secrets\obsidian.env`.
+3. Copy the Local REST API key into `C:\Users\jackw\Roblox\nexus\secrets\obsidian.env`.
 
 Expected local secret file shape:
 
@@ -488,6 +487,43 @@ lune run tools/test_vault_scaffold.luau
 Vault scaffold tests passed
 ```
 
+Obsidian plugin preinstall:
+
+```powershell
+./nexus.ps1 obsidian-plugins
+Installed Local REST API 4.1.3 (main.js, manifest.json, styles.css)
+Installed Obsidian Git 2.38.5 (main.js, manifest.json, styles.css)
+Installed Dataview 0.5.70 (main.js, manifest.json, styles.css)
+Installed Tasks 8.2.2 (main.js, manifest.json, styles.css)
+Installed Kanban 2.0.51 (main.js, manifest.json, styles.css)
+Installed Templater 2.23.0 (main.js, manifest.json, styles.css)
+Installed QuickAdd 2.14.1 (main.js, manifest.json, styles.css)
+Installed Omnisearch 1.29.3 (main.js, manifest.json, styles.css)
+Enabled 8 Obsidian plugins in .obsidian/community-plugins.json
+Wrote Obsidian plugin setup evidence to C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Obsidian Plugin Setup.md
+```
+
+Plugin setup verifier:
+
+```powershell
+lune run tools/test_obsidian_plugin_setup.luau
+Obsidian plugin setup tests passed
+```
+
+G3 acceptance probe after plugin setup:
+
+```powershell
+./nexus.ps1 gatecheck --gate G3
+| Gate | Check | Status | Detail |
+| --- | --- | --- | --- |
+| G3 | Obsidian REST config present | FAIL | secrets/obsidian.env |
+| G3 | Obsidian plugins preinstalled and enabled | PASS | 8 plugin(s) ready |
+| G3 | pending Obsidian REST writes flushed | FAIL | 1 pending write(s) |
+| G3 | Dashboard rendered in Obsidian | NEEDS HUMAN | receipt pending: docs/gate-proofs/G3-obsidian-dashboard.md needs `Dashboard rendered in Obsidian: PASS` |
+Human gate acceptance BLOCKED: 3 check(s) are not accepted.
+lune failed with exit code 1
+```
+
 Script style/lint:
 
 ```powershell
@@ -512,8 +548,8 @@ git status --short
 
 ### Open Blockers
 
-- Obsidian is installed, but dashboard rendering still cannot be accepted until the required plugins are enabled and checked in the vault.
-- Local REST API is not installed or keyed yet, so `tools/vault_ping.luau` can only queue the write; the REST flush is not accepted yet.
+- Obsidian and the required plugin bundles are installed locally, but dashboard rendering still cannot be accepted until the vault is opened and the plugin render is checked.
+- Local REST API is preinstalled but not keyed yet, so `tools/vault_ping.luau` can only queue the write; the REST flush is not accepted yet.
 - luau-lsp does not currently analyze `tools/*.luau` because it does not know Lune's `@lune/*` runtime imports yet; WO-1 analyzer scope remains `src`.
 - WO-3 is **not complete** until `lune run tools/vault_ping.luau` exits 0, `Ping.md` exists with a fresh timestamp, dashboard Dataview tables render, and the vault has committed the generated proof.
 
@@ -1507,6 +1543,7 @@ Human gate acceptance probe self-test:
 | G2 | Studio playtest observed | NEEDS HUMAN | receipt pending: docs/gate-proofs/G2-studio-connect.md needs `Studio playtest observed: PASS` |
 | G2 | Rojo sync runbook present | PASS | runbook present |
 | G3 | Obsidian REST config present | FAIL | secrets/obsidian.env |
+| G3 | Obsidian plugins preinstalled and enabled | PASS | 8 plugin(s) ready |
 | G3 | pending Obsidian REST writes flushed | FAIL | 1 pending write(s) |
 | G3 | Dashboard rendered in Obsidian | NEEDS HUMAN | receipt pending: docs/gate-proofs/G3-obsidian-dashboard.md needs `Dashboard rendered in Obsidian: PASS` |
 | G4 | GitHub auth active | FAIL | You are not logged into any GitHub hosts. To log in, run: gh auth login |
@@ -1679,7 +1716,7 @@ NexusAutomationLoop Stopped
 | WO-0 Tool Gaps | Exact G1 acceptance passed | Audit output, VS Code install proof, portable gh/Blender/Obsidian shim proof, G1 Tool Closure note/runbook, and tool-gap contract tests under WO-0 | None locally |
 | WO-1 Bootstrap | Exact local acceptance passed | Repo scaffold, tool pins, `rokit install`, `wally install`, `rojo build`, `rojo sourcemap`, `./nexus.ps1 check` | None locally |
 | WO-2 Studio Bridge | Runbook added, live bridge blocked | Sourcemap-aware analyze output, Rojo bridge tests, and `docs/runbooks/rojo-sync-rules.md` | G2: Studio plugin connect and live sync proof |
-| WO-3 Vault | Scaffolded, REST blocked | Vault repo, templates, vault scaffold tests, pending queue output | G3: Obsidian install, plugins, Local REST API key, pending flush |
+| WO-3 Vault | Scaffolded, REST blocked | Vault repo, templates, vault scaffold tests, pending queue output, Obsidian plugin setup proof | G3: Local REST API key, pending flush, dashboard render |
 | WO-4 Automation Loop | Exact local launcher proof passed | Sourcemap, vault sync, dummy/stale-note demo, command registry, gate status, vault scaffold tests, asset manifest, `./nexus.ps1 loop --once`, Build Health outputs | Dashboard render needs G3 |
 | WO-5 Asset Pipeline | Implemented with seed assets | Manifest, orphan repair, asset manifest tests, vault asset notes, Blender CLI-ready seed catalog | Dashboard render needs G3 |
 | WO-6 Cmdr | Implemented and analyzed | Cmdr service/controller, commands, generated command docs | G2 Studio playtest for command execution |
@@ -1699,31 +1736,32 @@ Acceptance matrix contract tests passed
 
 ```powershell
 ./nexus.ps1 check
-[PASS] Wally Install (0.76s, exit 0)
+[PASS] Wally Install (0.84s, exit 0)
 [PASS] StyLua (0.08s, exit 0)
-[PASS] Selene (0.09s, exit 0)
-[PASS] Sourcemap (0.08s, exit 0)
+[PASS] Selene (0.10s, exit 0)
+[PASS] Sourcemap (0.09s, exit 0)
 [PASS] Tool Gap Contract Tests (0.03s, exit 0)
 [PASS] G1 Tool Closure Tests (0.03s, exit 0)
 [PASS] Rojo Bridge Tests (0.03s, exit 0)
 [PASS] Migration Tests (0.03s, exit 0)
 [PASS] DataService Contract Tests (0.03s, exit 0)
-[PASS] Vault Scaffold Tests (0.06s, exit 0)
+[PASS] Vault Scaffold Tests (0.07s, exit 0)
+[PASS] Obsidian Plugin Setup Tests (0.03s, exit 0)
 [PASS] Asset Manifest Tests (0.03s, exit 0)
 [PASS] Command Surface Tests (0.03s, exit 0)
 [PASS] Net Contract Tests (0.03s, exit 0)
-[PASS] CI Contract Tests (0.02s, exit 0)
+[PASS] CI Contract Tests (0.03s, exit 0)
 [PASS] Command Center Contract Tests (0.03s, exit 0)
 [PASS] Human Gate Checklist Tests (0.03s, exit 0)
 [PASS] Human Gate Readiness Tests (0.03s, exit 0)
-[PASS] Human Gate Acceptance Tests (2.15s, exit 0)
-[PASS] Human Gate Receipt Tests (1.08s, exit 0)
+[PASS] Human Gate Acceptance Tests (2.25s, exit 0)
+[PASS] Human Gate Receipt Tests (1.12s, exit 0)
 [PASS] Founder Sign-Off Audit Tests (0.03s, exit 0)
 [PASS] Acceptance Matrix Contract Tests (0.03s, exit 0)
 [PASS] Release Contract Tests (0.03s, exit 0)
-[PASS] Secret Scan (0.42s, exit 0)
-[PASS] Analyze (2.05s, exit 0)
-[PASS] Build (0.08s, exit 0)
+[PASS] Secret Scan (0.47s, exit 0)
+[PASS] Analyze (1.98s, exit 0)
+[PASS] Build (0.10s, exit 0)
 [PASS] Open Cloud Dry Run (0.03s, exit 0)
 Quality gate PASS
 ```

@@ -20,6 +20,7 @@ local REQUIRED_CHECKS = {
 	"obsidian command",
 	"Studio plugin connected",
 	"Obsidian REST config",
+	"Obsidian plugins preinstalled",
 	"Pending REST writes",
 	"gh auth status",
 	"git remote -v",

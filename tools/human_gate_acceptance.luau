@@ -7,6 +7,17 @@ local VAULT_ROOT = "C:/Users/jackw/Roblox/RobloxGameVault"
 local PENDING_ROOT = VAULT_ROOT .. "/90_Automation/Logs/pending"
 local RECEIPT_ROOT = "docs/gate-proofs"
 
+local REQUIRED_OBSIDIAN_PLUGINS = {
+	"obsidian-local-rest-api",
+	"obsidian-git",
+	"dataview",
+	"obsidian-tasks-plugin",
+	"obsidian-kanban",
+	"templater-obsidian",
+	"quickadd",
+	"omnisearch",
+}
+
 type Options = {
 	selfTest: boolean,
 	gates: { [string]: boolean },
@@ -207,6 +218,49 @@ local function pendingCheck(): Check
 	}
 end
 
+local function obsidianPluginSetupCheck(): Check
+	local enabledPath = VAULT_ROOT .. "/.obsidian/community-plugins.json"
+	if not fs.isFile(enabledPath) then
+		return {
+			gate = "G3",
+			name = "Obsidian plugins preinstalled and enabled",
+			status = "FAIL",
+			detail = ".obsidian/community-plugins.json",
+		}
+	end
+
+	local enabled = fs.readFile(enabledPath)
+	for _, pluginId in REQUIRED_OBSIDIAN_PLUGINS do
+		if not enabled:find('"' .. pluginId .. '"', 1, true) then
+			return {
+				gate = "G3",
+				name = "Obsidian plugins preinstalled and enabled",
+				status = "FAIL",
+				detail = "missing enabled plugin " .. pluginId,
+			}
+		end
+
+		local pluginPath = VAULT_ROOT .. "/.obsidian/plugins/" .. pluginId
+		for _, asset in { "main.js", "manifest.json", "styles.css" } do
+			if not fs.isFile(pluginPath .. "/" .. asset) then
+				return {
+					gate = "G3",
+					name = "Obsidian plugins preinstalled and enabled",
+					status = "FAIL",
+					detail = "missing " .. pluginId .. "/" .. asset,
+				}
+			end
+		end
+	end
+
+	return {
+		gate = "G3",
+		name = "Obsidian plugins preinstalled and enabled",
+		status = "PASS",
+		detail = tostring(#REQUIRED_OBSIDIAN_PLUGINS) .. " plugin(s) ready",
+	}
+end
+
 local function allChecks(): { Check }
 	return {
 		commandCheck("G1", "git available", "git", { "--version" }),
@@ -240,6 +294,7 @@ local function allChecks(): { Check }
 			"secrets/obsidian.env",
 			"values not printed"
 		),
+		obsidianPluginSetupCheck(),
 		pendingCheck(),
 		receiptCheck(
 			"G3",

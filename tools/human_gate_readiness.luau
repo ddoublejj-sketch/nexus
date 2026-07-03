@@ -7,6 +7,17 @@ local VAULT_ROOT = "C:/Users/jackw/Roblox/RobloxGameVault"
 local OUTPUT_PATH = VAULT_ROOT .. "/00_Command_Center/Human Gate Readiness.md"
 local PENDING_ROOT = VAULT_ROOT .. "/90_Automation/Logs/pending"
 
+local REQUIRED_OBSIDIAN_PLUGINS = {
+	"obsidian-local-rest-api",
+	"obsidian-git",
+	"dataview",
+	"obsidian-tasks-plugin",
+	"obsidian-kanban",
+	"templater-obsidian",
+	"quickadd",
+	"omnisearch",
+}
+
 type CheckRow = {
 	gate: string,
 	check: string,
@@ -128,6 +139,49 @@ local function commandSource(label: string, command: string): CheckRow
 	}, command .. " not found on PATH")
 end
 
+local function obsidianPluginSetupCheck(): CheckRow
+	local enabledPath = VAULT_ROOT .. "/.obsidian/community-plugins.json"
+	if not fs.isFile(enabledPath) then
+		return {
+			gate = "G3",
+			check = "Obsidian plugins preinstalled",
+			status = "MISSING",
+			detail = ".obsidian/community-plugins.json",
+		}
+	end
+
+	local enabled = fs.readFile(enabledPath)
+	for _, pluginId in REQUIRED_OBSIDIAN_PLUGINS do
+		if not enabled:find('"' .. pluginId .. '"', 1, true) then
+			return {
+				gate = "G3",
+				check = "Obsidian plugins preinstalled",
+				status = "MISSING",
+				detail = "missing enabled plugin " .. pluginId,
+			}
+		end
+
+		local pluginPath = VAULT_ROOT .. "/.obsidian/plugins/" .. pluginId
+		for _, asset in { "main.js", "manifest.json", "styles.css" } do
+			if not fs.isFile(pluginPath .. "/" .. asset) then
+				return {
+					gate = "G3",
+					check = "Obsidian plugins preinstalled",
+					status = "MISSING",
+					detail = "missing " .. pluginId .. "/" .. asset,
+				}
+			end
+		end
+	end
+
+	return {
+		gate = "G3",
+		check = "Obsidian plugins preinstalled",
+		status = "PASS",
+		detail = tostring(#REQUIRED_OBSIDIAN_PLUGINS) .. " plugin(s) ready",
+	}
+end
+
 local rows: { CheckRow } = {
 	commandCheck("G1", "git --version", "git", { "--version" }),
 	commandCheck("G1", "rokit --version", "rokit", { "--version" }),
@@ -160,6 +214,7 @@ local rows: { CheckRow } = {
 		VAULT_ROOT .. "/00_Command_Center/Dashboard.md",
 		"dashboard present"
 	),
+	obsidianPluginSetupCheck(),
 	{
 		gate = "G3",
 		check = "Pending REST writes",

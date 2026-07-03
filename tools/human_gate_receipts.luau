@@ -46,7 +46,7 @@ local RECEIPTS: { Receipt } = {
 		},
 		humanSteps = {
 			"Open `C:\\Users\\jackw\\Roblox\\RobloxGameVault` as an Obsidian vault.",
-			"Enable Local REST API, Obsidian Git, Dataview, Tasks, Kanban, Templater, QuickAdd, and Omnisearch.",
+			"Confirm the preinstalled plugins load: Local REST API, Obsidian Git, Dataview, Tasks, Kanban, Templater, QuickAdd, and Omnisearch.",
 			"Create `secrets/obsidian.env`; never paste key values into this receipt.",
 			"Confirm the dashboard renders Dataview and Tasks sections.",
 		},

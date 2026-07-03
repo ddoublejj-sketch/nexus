@@ -16,6 +16,7 @@ local REQUIRED_GATE_LABELS = {
 	"Migration Tests",
 	"DataService Contract Tests",
 	"Vault Scaffold Tests",
+	"Obsidian Plugin Setup Tests",
 	"Asset Manifest Tests",
 	"Command Surface Tests",
 	"Net Contract Tests",
@@ -189,7 +190,7 @@ assertContains(status, "WO-0 G1 tool closure now passes locally", "Current phase
 assertContains(status, "blocked on **G2 - Studio connect**", "Current phase must preserve G2")
 assertContains(
 	status,
-	"blocked on **G3 - Obsidian plugins + REST key**",
+	"blocked on **G3 - Obsidian REST key + dashboard proof**",
 	"Current phase must preserve G3"
 )
 assertContains(status, "blocked on **G4 - GitHub auth**", "Current phase must preserve G4")

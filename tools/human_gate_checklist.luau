@@ -69,13 +69,14 @@ local GATES: { Gate } = {
 	{
 		id = "G3",
 		title = "Obsidian REST And Plugins",
-		state = "Blocked on Obsidian plugins, dashboard proof, and Local REST API key",
+		state = "Blocked on Obsidian plugin load confirmation, dashboard proof, and Local REST API key",
 		human = {
 			"Open `C:\\Users\\jackw\\Roblox\\RobloxGameVault` as an Obsidian vault.",
-			"Enable Local REST API, Obsidian Git, Dataview, Tasks, Kanban, Templater, QuickAdd, and Omnisearch.",
+			"Confirm the preinstalled plugins load: Local REST API, Obsidian Git, Dataview, Tasks, Kanban, Templater, QuickAdd, and Omnisearch.",
 			"Create `secrets/obsidian.env` with `OBSIDIAN_API_URL` and `OBSIDIAN_API_KEY`.",
 		},
 		codex = {
+			"Run `./nexus.ps1 obsidian-plugins` if the local plugin bundle files need to be restored.",
 			"Mark the required marker in `docs/gate-proofs/G3-obsidian-dashboard.md` as `PASS` after the dashboard render is confirmed.",
 			"Run the REST ping and flush queued pending writes.",
 			"Verify Dataview and Tasks sections render in the Dashboard.",

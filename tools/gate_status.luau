@@ -63,7 +63,7 @@ local function gateRows(rows: { MatrixRow }): { { string } }
 	local gates = {
 		{ id = "G1", area = "GUI installs", blockers = {} },
 		{ id = "G2", area = "Studio connect", blockers = {} },
-		{ id = "G3", area = "Obsidian REST/plugins", blockers = {} },
+		{ id = "G3", area = "Obsidian REST/dashboard", blockers = {} },
 		{ id = "G4", area = "GitHub auth/remote CI", blockers = {} },
 		{ id = "G5", area = "Open Cloud live publish", blockers = {} },
 	}

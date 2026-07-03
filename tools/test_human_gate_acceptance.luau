@@ -43,6 +43,11 @@ assertContains(script, "--self-test", "probe must include self-test mode")
 assertContains(script, "process.exit(1)", "probe must fail when gates are blocked")
 assertContains(script, "values not printed", "probe must not print secret values")
 assertContains(script, "NEEDS HUMAN", "probe must represent human-only checks")
+assertContains(
+	script,
+	"Obsidian plugins preinstalled and enabled",
+	"probe must verify Obsidian plugin preinstall separately from REST key proof"
+)
 assertContains(script, "Human gate acceptance BLOCKED", "probe must report blocked state")
 assertContains(script, "Human gate acceptance PASS", "probe must report accepted state")
 

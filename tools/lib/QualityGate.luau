@@ -148,6 +148,14 @@ function QualityGate.runAll(options: RunOptions?): { CommandResult }
 	table.insert(
 		results,
 		QualityGate.runTool(
+			"Obsidian Plugin Setup Tests",
+			"lune",
+			{ "run", "tools/test_obsidian_plugin_setup.luau" }
+		)
+	)
+	table.insert(
+		results,
+		QualityGate.runTool(
 			"Asset Manifest Tests",
 			"lune",
 			{ "run", "tools/test_asset_manifest.luau" }
