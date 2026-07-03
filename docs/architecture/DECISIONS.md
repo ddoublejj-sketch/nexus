@@ -18,7 +18,7 @@ explicitly opens a new decision.
 
 ## WO-1 Tool Pins
 
-Resolved by Rokit on 2026-07-02:
+Resolved by Rokit on 2026-07-03:
 
 | Tool | Version |
 | --- | --- |
