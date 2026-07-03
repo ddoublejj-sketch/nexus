@@ -18,6 +18,7 @@ local REQUIRED_GATE_LABELS = {
 	"Vault Scaffold Tests",
 	"Obsidian Plugin Setup Tests",
 	"Obsidian REST Bootstrap Tests",
+	"GitHub CI Bootstrap Tests",
 	"Asset Manifest Tests",
 	"Command Surface Tests",
 	"Net Contract Tests",

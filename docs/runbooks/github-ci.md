@@ -37,7 +37,11 @@ After GitHub CLI is installed and authenticated:
 
 ```powershell
 gh auth login
+./nexus.ps1 github-ci
 gh repo create nexus --private --source . --remote origin --push
+./nexus.ps1 github-ci
 ```
 
 Then enable branch protection on `main` so `Nexus CI / Quality Gate` is required before merge.
+The repeatable helper is read-only by default; after auth, `./nexus.ps1 github-ci --create-private`
+can create and push the private `origin` remote explicitly.

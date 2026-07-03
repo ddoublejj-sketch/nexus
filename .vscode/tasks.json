@@ -92,6 +92,12 @@
       "problemMatcher": []
     },
     {
+      "label": "Nexus: GitHub CI Bootstrap",
+      "type": "shell",
+      "command": "./nexus.ps1 github-ci",
+      "problemMatcher": []
+    },
+    {
       "label": "Nexus: Founder Sign-Off Audit",
       "type": "shell",
       "command": "./nexus.ps1 audit",

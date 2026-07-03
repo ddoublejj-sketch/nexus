@@ -38,3 +38,5 @@
 - [WO-10] Added pending human-gate proof receipts, gatecheck receipt support, dashboard embed, and contract self-test - 2026-07-03.
 - [WO-0/WO-10] Added G1 tool-closure audit note, runbook, launcher/task wiring, dashboard embed, and contract self-test - 2026-07-03.
 - [WO-3/WO-10] Added repeatable Obsidian plugin preinstall, evidence note, G3 readiness probe row, and contract self-test - 2026-07-03.
+- [WO-3/WO-10] Added repeatable Obsidian REST bootstrap, fixed pending flush accounting, and recorded non-secret G3 evidence - 2026-07-03.
+- [WO-8/WO-10] Added repeatable GitHub CI bootstrap evidence for G4 auth, remote, workflow, and branch-protection readiness - 2026-07-03.

@@ -154,6 +154,11 @@ else
 	)
 	assertContains(
 		dashboard,
+		"![[GitHub CI Bootstrap]]",
+		"Dashboard missing GitHub CI Bootstrap embed"
+	)
+	assertContains(
+		dashboard,
 		"![[Founder Sign-Off Audit]]",
 		"Dashboard missing Founder Sign-Off Audit embed"
 	)
