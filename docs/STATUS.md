@@ -114,6 +114,10 @@ Get-Command blender -ErrorAction SilentlyContinue
 - Created `C:\Users\jackw\Roblox\nexus` as a Git repo.
 - Added `rokit.toml`, `wally.toml`, `selene.toml`, `stylua.toml`, `.luaurc`, `.env.example`, `.gitignore`, and VS Code task/settings files.
 - Added `nexus.ps1` launcher with subcommands: `serve`, `build`, `map`, `check`, `fix`, `sync`, `health`, `status`.
+- Added tracked placeholders for empty target-layout lanes:
+  - `maps/.gitkeep`
+  - `src/ServerStorage/Assets/.gitkeep`
+  - `src/StarterGui/UI/.gitkeep`
 - Added minimal Roblox scaffold:
   - `Shared/Config/GameConfig.luau`
   - `Shared/Net/init.luau`
@@ -992,13 +996,13 @@ Live request was not sent.
 
 ```powershell
 $env:ROKIT_PROBE='1'; lune run tools/quality_gate.luau
-[PASS] Wally Install (0.76s, exit 0)
+[PASS] Wally Install (0.70s, exit 0)
 [PASS] StyLua (0.05s, exit 0)
 [PASS] Selene (0.08s, exit 0)
 [PASS] Sourcemap (0.09s, exit 0)
 [PASS] Migration Tests (0.03s, exit 0)
-[PASS] Analyze (1.99s, exit 0)
-[PASS] Build (0.08s, exit 0)
+[PASS] Analyze (2.01s, exit 0)
+[PASS] Build (0.10s, exit 0)
 [PASS] Open Cloud Dry Run (0.03s, exit 0)
 Quality gate PASS
 ```
@@ -1049,6 +1053,7 @@ When ready to publish for real:
 - Added VS Code tasks for Up, Down, and Release Dry Run.
 - Added `docs/runbooks/fresh-machine-setup.md`.
 - Added `docs/runbooks/disaster-recovery.md`.
+- Added vault snapshot archive placeholder at `80_Archives/StudioSnapshots/.gitkeep`.
 
 ### Verification Evidence
 

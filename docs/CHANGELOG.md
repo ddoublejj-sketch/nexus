@@ -14,3 +14,4 @@
 - [WO-9] Added Open Cloud publish dry-run tooling, release checklist, fixture config, and secret-history scan evidence - 2026-07-03.
 - [WO-10] Added up/down launcher jobs, daily dev log automation, VS Code tasks, setup/recovery runbooks, and acceptance matrix - 2026-07-03.
 - [WO-2/WO-4] Added Rojo sync rules runbook and recorded dummy-service stale-note proof - 2026-07-03.
+- [WO-1/WO-10] Added tracked placeholders for map/UI/asset lanes and Studio snapshot archive - 2026-07-03.
