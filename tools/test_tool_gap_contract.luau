@@ -4,6 +4,7 @@ local fs = require("@lune/fs")
 
 local STATUS_PATH = "docs/STATUS.md"
 local FRESH_SETUP_PATH = "docs/runbooks/fresh-machine-setup.md"
+local G1_RUNBOOK_PATH = "docs/runbooks/g1-tool-closure.md"
 local BLENDER_RUNBOOK_PATH = "docs/runbooks/blender-export.md"
 local GATE_STATUS_PATH = "tools/gate_status.luau"
 
@@ -24,6 +25,7 @@ end
 
 local status = read(STATUS_PATH)
 local freshSetup = read(FRESH_SETUP_PATH)
+local g1Runbook = read(G1_RUNBOOK_PATH)
 local blenderRunbook = read(BLENDER_RUNBOOK_PATH)
 local gateStatus = read(GATE_STATUS_PATH)
 
@@ -70,12 +72,15 @@ assertContains(
 assertContains(status, "Tool gap contract tests passed", "Missing WO-0 contract output")
 assertContains(
 	status,
-	"| WO-0 Tool Gaps | Partial | Audit output and tool-gap contract tests under WO-0 | G1:",
+	"| WO-0 Tool Gaps | Partial | Audit output, G1 Tool Closure note/runbook, and tool-gap contract tests under WO-0 | G1:",
 	"Acceptance matrix must keep WO-0 partial and G1-gated"
 )
 
 assertContains(freshSetup, "rojo --version", "Fresh setup must verify Rojo")
 assertContains(freshSetup, "Get-Command blender", "Fresh setup must verify Blender command")
+assertContains(freshSetup, "g1-tool-closure.md", "Fresh setup must link G1 closure runbook")
+assertContains(g1Runbook, "./nexus.ps1 gatecheck --gate G1", "G1 runbook must verify gate")
+assertContains(g1Runbook, "G4 still owns `gh auth login`", "G1 runbook must not absorb G4")
 assertContains(
 	freshSetup,
 	"Windows Store launcher alias is not enough",
