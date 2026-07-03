@@ -1044,6 +1044,7 @@ Please complete when ready:
 - Added `docs/runbooks/release-checklist.md`.
 - Added `./nexus.ps1 release`.
 - Added `Open Cloud Dry Run` to the shared quality gate, so local checks, CI, and Build Health verify the release path without a real key.
+- Added `tools/secret_scan.luau` to the shared quality gate. It scans Nexus and vault Git history for common real credential patterns while allowing intentional placeholders/fixtures.
 
 ### Dry-Run Evidence
 
@@ -1107,6 +1108,13 @@ Open Cloud Dry Run: PASS
 ```powershell
 git log -p -- secrets .env | Select-String -Pattern "key|token"
 <no output>
+```
+
+Automated scan:
+
+```powershell
+lune run tools/secret_scan.luau
+Secret scan passed
 ```
 
 ### Human Gate G5 Request
@@ -1268,7 +1276,8 @@ NexusAutomationLoop Stopped
 [PASS] Sourcemap (0.09s, exit 0)
 [PASS] Migration Tests (0.03s, exit 0)
 [PASS] Command Surface Tests (0.03s, exit 0)
-[PASS] Analyze (1.99s, exit 0)
+[PASS] Secret Scan (0.34s, exit 0)
+[PASS] Analyze (1.95s, exit 0)
 [PASS] Build (0.08s, exit 0)
 [PASS] Open Cloud Dry Run (0.03s, exit 0)
 Quality gate PASS

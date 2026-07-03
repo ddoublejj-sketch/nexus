@@ -111,6 +111,10 @@ function QualityGate.runAll(options: RunOptions?): { CommandResult }
 	)
 	table.insert(
 		results,
+		QualityGate.runTool("Secret Scan", "lune", { "run", "tools/secret_scan.luau" })
+	)
+	table.insert(
+		results,
 		QualityGate.runTool("Analyze", "luau-lsp", {
 			"analyze",
 			"--definitions",
