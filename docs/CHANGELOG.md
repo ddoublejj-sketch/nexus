@@ -49,3 +49,4 @@
 - [WO-2/WO-6] Added Rojo-managed Default map lane and MapService-backed reloadmap command - 2026-07-03.
 - [WO-10] Added cold-boot readiness probe, dashboard note, launcher/task wiring, and contract test - 2026-07-03.
 - [WO-10] Added work-order acceptance audit for WO-0 through WO-10 evidence coverage - 2026-07-03.
+- [WO-10] Revalidated up/status/down smoke test with work-order acceptance audit in the automation loop - 2026-07-03.

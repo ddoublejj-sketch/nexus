@@ -1834,7 +1834,7 @@ Open Cloud Dry Run: PASS
 Initial `up/status/down` test showed Rojo serve and sourcemap-watch jobs crashing because the loop's Build Health step ran `wally install` while Rojo was watching `Packages/`. The launcher now uses `tools/build_health.luau --skip-install` only inside the continuous `up` loop; full `./nexus.ps1 check` and `./nexus.ps1 health` still run the complete gate with Wally install.
 
 ```powershell
-./nexus.ps1 up; Start-Sleep -Seconds 5; ./nexus.ps1 status; Receive-Job -Name NexusRojoServe,NexusSourcemapWatch,NexusAutomationLoop -Keep; ./nexus.ps1 down
+./nexus.ps1 up; Start-Sleep -Seconds 12; ./nexus.ps1 status; Receive-Job -Name NexusRojoServe,NexusSourcemapWatch,NexusAutomationLoop -Keep; ./nexus.ps1 down
 Dev log appended: C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Daily Dev Log.md (Session Start)
 
 Name                State   Id
@@ -1842,6 +1842,25 @@ Name                State   Id
 NexusRojoServe      Running  1
 NexusSourcemapWatch Running  3
 NexusAutomationLoop Running  5
+
+Found tools:
+
+./rokit.toml
+- luau-lsp -> JohnnyMorganz/luau-lsp @ 1.68.1
+- lune -> lune-org/lune @ 0.10.5
+- rojo -> rojo-rbx/rojo @ 7.7.0
+- selene -> Kampfkarren/selene @ 0.31.0
+- stylua -> JohnnyMorganz/StyLua @ 2.5.2
+- wally -> UpliftGames/wally @ 0.3.2
+
+Pinned tool versions:
+Rojo 7.7.0
+wally 0.3.2
+lune 0.10.5
+selene 0.31.0
+stylua 2.5.2
+1.68.1
+Last build: 89423 bytes at 07/03/2026 04:56:51
 
 Name                State   Id
 ----                -----   --
@@ -1854,11 +1873,18 @@ Rojo server listening:
   Port:    34872
 Visit http://localhost:34872/ in your browser for more information.
 Created sourcemap at sourcemap.json
-Wrote 132 sourcemap rows to C:/Users/jackw/Roblox/RobloxGameVault/90_Automation/Generated/Sourcemap.md
-Wrote 12 module notes under C:/Users/jackw/Roblox/RobloxGameVault/02_Systems/Generated Modules and refreshed stale-source report
+Wrote 133 sourcemap rows to C:/Users/jackw/Roblox/RobloxGameVault/90_Automation/Generated/Sourcemap.md
+Wrote 13 module notes under C:/Users/jackw/Roblox/RobloxGameVault/02_Systems/Generated Modules and refreshed stale-source report
 Wrote 7 command rows to C:/Users/jackw/Roblox/RobloxGameVault/02_Systems/Commands.md
 Asset manifest reconciled 4 assets; auto-added 0; missing sources 0; missing exports 0
+Wrote gate status for 11 work orders to C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Gate Status.md
+Wrote human gate checklist to C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Human Gate Checklist.md
+Wrote human gate readiness to C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Human Gate Readiness.md
+Wrote human gate proof receipts to C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Human Gate Proof Receipts.md
 Build health PASS; wrote C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Build Health.md
+Cold boot readiness BLOCKED_ON_G2_G3; wrote C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Cold Boot Readiness.md
+Work order acceptance audit BLOCKED_ON_HUMAN_GATES; wrote C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Work Order Acceptance Audit.md
+Wrote founder sign-off audit to C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Founder Sign-Off Audit.md
 Dev log appended: C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Daily Dev Log.md (Session End)
 
 Name                State   Id
@@ -1900,9 +1926,9 @@ Acceptance matrix contract tests passed
 
 ```powershell
 ./nexus.ps1 check
-[PASS] Wally Install (0.76s, exit 0)
+[PASS] Wally Install (0.70s, exit 0)
 [PASS] StyLua (0.09s, exit 0)
-[PASS] Selene (0.10s, exit 0)
+[PASS] Selene (0.11s, exit 0)
 [PASS] Sourcemap (0.09s, exit 0)
 [PASS] Tool Gap Contract Tests (0.03s, exit 0)
 [PASS] G1 Tool Closure Tests (0.03s, exit 0)
@@ -1919,19 +1945,19 @@ Acceptance matrix contract tests passed
 [PASS] MapService Contract Tests (0.03s, exit 0)
 [PASS] Net Contract Tests (0.03s, exit 0)
 [PASS] CI Contract Tests (0.03s, exit 0)
-[PASS] Command Center Contract Tests (0.03s, exit 0)
+[PASS] Command Center Contract Tests (0.08s, exit 0)
 [PASS] Cold Boot Readiness Tests (0.03s, exit 0)
 [PASS] Work Order Acceptance Audit Tests (0.03s, exit 0)
 [PASS] Human Gate Checklist Tests (0.03s, exit 0)
 [PASS] Human Gate Readiness Tests (0.03s, exit 0)
-[PASS] Human Gate Acceptance Tests (2.16s, exit 0)
-[PASS] Human Gate Receipt Tests (1.19s, exit 0)
+[PASS] Human Gate Acceptance Tests (2.28s, exit 0)
+[PASS] Human Gate Receipt Tests (1.08s, exit 0)
 [PASS] Founder Sign-Off Audit Tests (0.03s, exit 0)
 [PASS] Acceptance Matrix Contract Tests (0.03s, exit 0)
 [PASS] Release Contract Tests (0.03s, exit 0)
-[PASS] Open Cloud Bootstrap Tests (0.03s, exit 0)
-[PASS] Secret Scan (0.66s, exit 0)
-[PASS] Analyze (2.00s, exit 0)
+[PASS] Open Cloud Bootstrap Tests (0.02s, exit 0)
+[PASS] Secret Scan (0.69s, exit 0)
+[PASS] Analyze (2.05s, exit 0)
 [PASS] Build (0.08s, exit 0)
 [PASS] Open Cloud Dry Run (0.03s, exit 0)
 Quality gate PASS

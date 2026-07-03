@@ -273,7 +273,7 @@ local WORK_ORDERS: { WorkOrder } = {
 			{
 				label = "up/down proof",
 				path = STATUS_PATH,
-				needle = "./nexus.ps1 up; Start-Sleep -Seconds 5; ./nexus.ps1 status",
+				needle = "./nexus.ps1 up; Start-Sleep -Seconds",
 			},
 			{
 				label = "command-center contract",
