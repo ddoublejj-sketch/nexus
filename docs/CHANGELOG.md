@@ -20,3 +20,4 @@
 - [WO-4/WO-10] Added generated Gate Status note and dashboard embed for current human-gate state - 2026-07-03.
 - [WO-6] Added command-surface self-test for Cmdr definitions, handlers, tiers, and profilewipe guards - 2026-07-03.
 - [WO-9] Added automated Nexus/vault secret-history scan to the shared quality gate - 2026-07-03.
+- [WO-7] Added Net contract self-test for declared remotes, validators, snapshot exposure, and server-owned mutation boundaries - 2026-07-03.

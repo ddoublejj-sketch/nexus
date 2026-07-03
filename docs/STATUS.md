@@ -832,6 +832,12 @@ Build health PASS; wrote C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center
   - `SystemMessage`
 - `DataService` handles `RequestProfileSnapshot` with a sanitized read-only profile snapshot.
 - Added Lune migration fixture test at `tools/test_migrations.luau`.
+- Added Lune Net contract test at `tools/test_net_contract.luau`, now part of the shared quality gate:
+  - declared remotes, kinds, directions, validator counts
+  - vault networking note coverage
+  - `RequestProfileSnapshot` handler ownership
+  - sanitized snapshot exposure
+  - no unguarded `SetDebugFlag` client-to-server mutation handler
 - Updated vault notes:
   - `02_Systems/Save Data.md`
   - `02_Systems/Networking.md`
@@ -857,6 +863,13 @@ Migration fixture test:
 ```powershell
 $env:ROKIT_PROBE='1'; lune run tools/test_migrations.luau
 Migration fixtures passed
+```
+
+Net contract test:
+
+```powershell
+lune run tools/test_net_contract.luau
+Net contract tests passed
 ```
 
 ```powershell
@@ -918,11 +931,17 @@ Build Health vault note reports:
 
 ```text
 Overall: PASS
+Wally Install: PASS
 StyLua: PASS
 Selene: PASS
 Sourcemap: PASS
+Migration Tests: PASS
+Command Surface Tests: PASS
+Net Contract Tests: PASS
+Secret Scan: PASS
 Analyze: PASS
 Build: PASS
+Open Cloud Dry Run: PASS
 ```
 
 ### Session Lock Notes
@@ -1261,7 +1280,7 @@ NexusAutomationLoop Stopped
 | WO-4 Automation Loop | Exact local launcher proof passed | Sourcemap, vault sync, dummy/stale-note demo, command registry, gate status, asset manifest, `./nexus.ps1 loop --once`, Build Health outputs | Dashboard render needs G3 |
 | WO-5 Asset Pipeline | Implemented with seed assets | Manifest, orphan repair, vault asset notes | Blender thumbnail rendering still waits on G1 Blender path; dashboard render needs G3 |
 | WO-6 Cmdr | Implemented and analyzed | Cmdr service/controller, commands, generated command docs | G2 Studio playtest for command execution |
-| WO-7 Data/Networking | Implemented and tested locally | ProfileStore wrapper, migration tests, typed Net, Build Health | G2 Studio playtest for session/runtime behavior |
+| WO-7 Data/Networking | Implemented and tested locally | ProfileStore wrapper, migration tests, Net contract tests, typed Net, Build Health | G2 Studio playtest for session/runtime behavior |
 | WO-8 CI | Local workflow committed | Shared gate output, workflow, runbook | G4: `gh auth`, remote repo, branch protection, real CI run |
 | WO-9 Release Path | Dry-run accepted locally | Fixture dry-run, `./nexus.ps1 release --dry-run --fixture`, secret-history scan, release checklist | G5 for live publish only |
 | WO-10 Hardening | Up/down smoke test passed locally | Task JSON parse, dev log writes, Gate Status dashboard embed, `./nexus.ps1 up/status/down`, full gate | G2 Studio connect and G3 dashboard render for cold-boot acceptance |
@@ -1270,14 +1289,15 @@ NexusAutomationLoop Stopped
 
 ```powershell
 ./nexus.ps1 check
-[PASS] Wally Install (0.72s, exit 0)
+[PASS] Wally Install (0.71s, exit 0)
 [PASS] StyLua (0.05s, exit 0)
 [PASS] Selene (0.08s, exit 0)
-[PASS] Sourcemap (0.08s, exit 0)
+[PASS] Sourcemap (0.09s, exit 0)
 [PASS] Migration Tests (0.03s, exit 0)
 [PASS] Command Surface Tests (0.03s, exit 0)
+[PASS] Net Contract Tests (0.03s, exit 0)
 [PASS] Secret Scan (0.34s, exit 0)
-[PASS] Analyze (2.01s, exit 0)
+[PASS] Analyze (1.97s, exit 0)
 [PASS] Build (0.08s, exit 0)
 [PASS] Open Cloud Dry Run (0.03s, exit 0)
 Quality gate PASS
