@@ -1289,15 +1289,15 @@ NexusAutomationLoop Stopped
 
 ```powershell
 ./nexus.ps1 check
-[PASS] Wally Install (0.71s, exit 0)
+[PASS] Wally Install (0.75s, exit 0)
 [PASS] StyLua (0.05s, exit 0)
 [PASS] Selene (0.08s, exit 0)
 [PASS] Sourcemap (0.09s, exit 0)
 [PASS] Migration Tests (0.03s, exit 0)
 [PASS] Command Surface Tests (0.03s, exit 0)
 [PASS] Net Contract Tests (0.03s, exit 0)
-[PASS] Secret Scan (0.34s, exit 0)
-[PASS] Analyze (1.97s, exit 0)
+[PASS] Secret Scan (0.35s, exit 0)
+[PASS] Analyze (1.99s, exit 0)
 [PASS] Build (0.08s, exit 0)
 [PASS] Open Cloud Dry Run (0.03s, exit 0)
 Quality gate PASS
