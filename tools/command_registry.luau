@@ -39,7 +39,10 @@ local function listCommandFiles(root: string): { string }
 			for _, nested in listCommandFiles(path) do
 				table.insert(files, nested)
 			end
-		elseif entry:match("%.luau$") or entry:match("%.lua$") then
+		elseif
+			(entry:match("%.luau$") or entry:match("%.lua$"))
+			and not entry:match("Server%.lua[u]?$")
+		then
 			table.insert(files, path)
 		end
 	end

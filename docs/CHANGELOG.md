@@ -8,3 +8,4 @@
 - [WO-4] Generated initial vault automation notes and wired stale-source dashboard section - 2026-07-03.
 - [WO-5] Migrated four seed FBX assets into source/export lanes and generated manifest-backed vault asset notes - 2026-07-03.
 - [WO-5] Added deterministic asset manifest reconciliation, placeholder thumbnail backlog, orphan repair proof, and Blender export runbook - 2026-07-03.
+- [WO-6] Added Cmdr via Wally with server/client bootstrap, permission tiers, seven command modules, and generated command docs - 2026-07-03.

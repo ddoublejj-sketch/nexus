@@ -4,7 +4,7 @@ Last updated: 2026-07-03
 
 ## Current Phase
 
-WO-0 is in progress and blocked on **G1 - GUI installs**. WO-1 bootstrap work is partially complete, but WO-1 cannot be marked complete until the exact `./nexus.ps1 check` acceptance command can run. WO-3 vault scaffolding has started and is blocked on **G3 - Obsidian plugins + REST key** for end-to-end REST verification. WO-4 automation scripts have partial direct-run proof, but WO-4 remains incomplete until dependency gates and exact acceptance tests clear. WO-5 asset pipeline has direct-run proof with seed assets, but remains downstream of the still-open WO-4 formal acceptance.
+WO-0 is in progress and blocked on **G1 - GUI installs**. WO-1 bootstrap work is partially complete, but WO-1 cannot be marked complete until the exact `./nexus.ps1 check` acceptance command can run. WO-3 vault scaffolding has started and is blocked on **G3 - Obsidian plugins + REST key** for end-to-end REST verification. WO-4 automation scripts have partial direct-run proof, but WO-4 remains incomplete until dependency gates and exact acceptance tests clear. WO-5 asset pipeline has direct-run proof with seed assets, but remains downstream of the still-open WO-4 formal acceptance. WO-6 Cmdr integration has build/analyze proof, but in-Studio command execution remains gated.
 
 ## WO-0 - Close the Tool Gaps
 
@@ -541,3 +541,111 @@ Build health PASS; wrote C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center
 
 - Blender is still not resolved from WO-0, so real thumbnail rendering is replaced with placeholder thumbnail notes and `Asset Thumbnail Backlog.md`.
 - WO-5 is downstream of WO-4 in the master dependency graph. The asset pipeline evidence above is present, but the work order is **not marked complete** until WO-4 formal acceptance clears.
+
+## WO-6 - In-Game Developer Console
+
+### Shipped So Far
+
+- Added Cmdr through Wally:
+  - `Cmdr = "evaera/cmdr@1.12.0"`
+- Restored Rojo mapping for `ReplicatedStorage.Packages` now that `wally install` creates real package files.
+- Added `Shared/Config/Permissions.luau` with tiers:
+  - `Owner > Dev > Tester > Player`
+- Added `CmdrService` server bootstrap:
+  - requires Cmdr
+  - registers default utility commands
+  - installs a `BeforeRun` permission hook
+  - registers command modules from `Server/Commands`
+- Added `CmdrController` client bootstrap:
+  - waits for replicated `CmdrClient`
+  - binds Cmdr to `F2`
+  - labels the console `Nexus`
+- Added seven command definition/server-handler pairs:
+  - `tp`
+  - `spawn`
+  - `give`
+  - `setstat`
+  - `reloadmap`
+  - `profilewipe`
+  - `debugtag`
+- `profilewipe` is Owner-tier and also refuses unless the confirm argument is `CONFIRM_WIPE`.
+- Updated `tools/command_registry.luau` so it skips `*Server` implementation modules and documents only command definitions.
+
+### Direct-Run Evidence
+
+```powershell
+$env:ROKIT_PROBE='1'; wally install
+<exit 0; no output>
+```
+
+Wally lock:
+
+```toml
+[[package]]
+name = "evaera/cmdr"
+version = "1.12.0"
+dependencies = []
+```
+
+```powershell
+$env:ROKIT_PROBE='1'; rojo build default.project.json -o build/nexus.rbxl
+Building project 'Nexus'
+Built project to nexus.rbxl
+```
+
+Build artifact:
+
+```text
+C:\Users\jackw\Roblox\nexus\build\nexus.rbxl
+Length: 60268 bytes
+```
+
+```powershell
+$env:ROKIT_PROBE='1'; lune run tools/command_registry.luau
+Wrote 7 command rows to C:/Users/jackw/Roblox/RobloxGameVault/02_Systems/Commands.md
+```
+
+Commands.md rows:
+
+```text
+debugtag | Tester | player targetPlayer, string tagName, boolean enabled?
+give | Dev | players targetPlayers, string itemKey, number amount
+profilewipe | Owner | player targetPlayer, string confirm
+reloadmap | Dev | string mapName?
+setstat | Dev | players targetPlayers, string statKey, number value
+spawn | Dev | string assetName, vector3 position?
+tp | Dev | players fromPlayers, player @ vector3 destination
+```
+
+Quality checks:
+
+```powershell
+$env:ROKIT_PROBE='1'; stylua --check src tools
+<exit 0; no output>
+```
+
+```powershell
+$env:ROKIT_PROBE='1'; selene src tools
+Results:
+0 errors
+0 warnings
+0 parse errors
+```
+
+```powershell
+$env:ROKIT_PROBE='1'; luau-lsp analyze --definitions types/globalTypes.d.luau --sourcemap sourcemap.json src
+[INFO] Loading definitions file: @roblox - types/globalTypes.d.luau
+[WARN] client does not allow didChangeWatchedFiles registration - automatic updating on sourcemap changes disabled
+[INFO] Loading Luau configuration from c:\Users\jackw\Roblox\nexus\.luaurc
+```
+
+```powershell
+$env:ROKIT_PROBE='1'; lune run tools/build_health.luau
+Build health PASS; wrote C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Build Health.md
+```
+
+### Open Blockers
+
+- Studio playtest execution is still blocked by G2 / Studio connect. Command execution has not been human-verified in a local playtest.
+- `profilewipe` permission and confirm behavior is implemented in code, but runtime refusal still needs Studio playtest proof.
+- WO-6 is downstream of the still-open formal WO-4/WO-5 acceptance chain, so it is **not marked complete** yet.
