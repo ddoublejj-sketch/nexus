@@ -80,17 +80,7 @@ switch ($Command.ToLowerInvariant()) {
 		}
 	}
 	"check" {
-		Invoke-Tool "stylua" @("--check", "src", "tools")
-		Invoke-Tool "selene" @("src")
-		Invoke-Tool "rojo" @("sourcemap", "default.project.json", "-o", "sourcemap.json")
-		Invoke-Tool "luau-lsp" @(
-			"analyze",
-			"--definitions",
-			"types/globalTypes.d.luau",
-			"--sourcemap",
-			"sourcemap.json",
-			"src"
-		)
+		Invoke-Tool "lune" @("run", "tools/quality_gate.luau")
 	}
 	"fix" {
 		Invoke-Tool "stylua" @("src", "tools")

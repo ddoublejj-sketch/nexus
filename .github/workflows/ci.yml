@@ -1,0 +1,43 @@
+name: Nexus CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  quality:
+    name: Quality Gate
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Rokit
+        shell: pwsh
+        run: |
+          Invoke-RestMethod https://raw.githubusercontent.com/rojo-rbx/rokit/main/scripts/install.ps1 | Invoke-Expression
+          "$env:USERPROFILE\.rokit\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+      - name: Trust Rokit Tools
+        shell: pwsh
+        run: |
+          rokit trust rojo-rbx/rojo UpliftGames/wally lune-org/lune Kampfkarren/selene JohnnyMorganz/StyLua JohnnyMorganz/luau-lsp
+
+      - name: Install Project Tools
+        shell: pwsh
+        run: rokit install
+
+      - name: Run Shared Quality Gate
+        shell: pwsh
+        run: lune run tools/quality_gate.luau
+
+      - name: Upload Place Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: nexus-rbxl
+          path: build/nexus.rbxl
+          if-no-files-found: error

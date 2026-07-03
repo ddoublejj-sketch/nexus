@@ -3,25 +3,10 @@
 local fs = require("@lune/fs")
 local process = require("@lune/process")
 
+local QualityGate = require("./lib/QualityGate")
+
 local VAULT_ROOT = "C:/Users/jackw/Roblox/RobloxGameVault"
 local OUTPUT_PATH = VAULT_ROOT .. "/00_Command_Center/Build Health.md"
-
-type CommandResult = {
-	label: string,
-	command: string,
-	ok: boolean,
-	code: number,
-	stdout: string,
-	stderr: string,
-	duration: number,
-}
-
-local TOOL_EXES = {
-	["rojo"] = "rojo.exe",
-	["stylua"] = "stylua.exe",
-	["selene"] = "selene.exe",
-	["luau-lsp"] = "luau-lsp.exe",
-}
 
 local function isoTimestamp(): string
 	return os.date("!%Y-%m-%dT%H:%M:%SZ")
@@ -40,72 +25,8 @@ local function markdownFence(value: string): string
 	return sanitized
 end
 
-local function parseToolSpec(name: string): (string?, string?, string?)
-	for line in fs.readFile("rokit.toml"):gmatch("[^\r\n]+") do
-		local manifestName, owner, tool, version =
-			line:match('^%s*([%w_%-]+)%s*=%s*"([^/]+)/([^@]+)@([^"]+)"')
-		if manifestName == name and owner and tool and version then
-			return owner:lower(), tool:lower(), version
-		end
-	end
-
-	return nil
-end
-
-local function toolPath(name: string): string
-	local owner, tool, version = parseToolSpec(name)
-	if not owner or not tool or not version then
-		error("Missing tool pin for " .. name)
-	end
-
-	local userProfile = (process.env.USERPROFILE or ""):gsub("\\", "/")
-	return ("%s/.rokit/tool-storage/%s/%s/%s/%s"):format(
-		userProfile,
-		owner,
-		tool,
-		version,
-		TOOL_EXES[name]
-	)
-end
-
-local function runTool(label: string, name: string, args: { string }): CommandResult
-	local started = os.clock()
-	local exePath = toolPath(name)
-	local result = process.exec(exePath, args)
-	local duration = os.clock() - started
-
-	return {
-		label = label,
-		command = exePath .. " " .. table.concat(args, " "),
-		ok = result.ok,
-		code = result.code,
-		stdout = result.stdout,
-		stderr = result.stderr,
-		duration = duration,
-	}
-end
-
-local checks = {
-	runTool("StyLua", "stylua", { "--check", "src", "tools" }),
-	runTool("Selene", "selene", { "src", "tools" }),
-	runTool("Sourcemap", "rojo", { "sourcemap", "default.project.json", "-o", "sourcemap.json" }),
-	runTool("Analyze", "luau-lsp", {
-		"analyze",
-		"--definitions",
-		"types/globalTypes.d.luau",
-		"--sourcemap",
-		"sourcemap.json",
-		"src",
-	}),
-	runTool("Build", "rojo", { "build", "default.project.json", "-o", "build/nexus.rbxl" }),
-}
-
-local passed = true
-for _, check in checks do
-	if not check.ok then
-		passed = false
-	end
-end
+local checks = QualityGate.runAll()
+local passed = QualityGate.allPassed(checks)
 
 local timestamp = isoTimestamp()
 local lines = {

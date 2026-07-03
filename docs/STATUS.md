@@ -4,7 +4,7 @@ Last updated: 2026-07-03
 
 ## Current Phase
 
-WO-0 is in progress and blocked on **G1 - GUI installs**. WO-1 bootstrap work is partially complete, but WO-1 cannot be marked complete until the exact `./nexus.ps1 check` acceptance command can run. WO-3 vault scaffolding has started and is blocked on **G3 - Obsidian plugins + REST key** for end-to-end REST verification. WO-4 automation scripts have partial direct-run proof, but WO-4 remains incomplete until dependency gates and exact acceptance tests clear. WO-5 asset pipeline has direct-run proof with seed assets, but remains downstream of the still-open WO-4 formal acceptance. WO-6 Cmdr integration has build/analyze proof, but in-Studio command execution remains gated. WO-7 data/networking baseline has direct local proof, but live ProfileStore session behavior remains Studio-gated.
+WO-0 is in progress and blocked on **G1 - GUI installs**. WO-1 bootstrap work is partially complete, but WO-1 cannot be marked complete until the exact `./nexus.ps1 check` acceptance command can run. WO-3 vault scaffolding has started and is blocked on **G3 - Obsidian plugins + REST key** for end-to-end REST verification. WO-4 automation scripts have partial direct-run proof, but WO-4 remains incomplete until dependency gates and exact acceptance tests clear. WO-5 asset pipeline has direct-run proof with seed assets, but remains downstream of the still-open WO-4 formal acceptance. WO-6 Cmdr integration has build/analyze proof, but in-Studio command execution remains gated. WO-7 data/networking baseline has direct local proof, but live ProfileStore session behavior remains Studio-gated. WO-8 CI workflow and shared local/CI gate are created, but remote GitHub setup is blocked on **G4 - GitHub auth**.
 
 ## WO-0 - Close the Tool Gaps
 
@@ -781,3 +781,101 @@ Actual Studio/runtime observation is still pending G2.
 - Profile load/save and duplicate-session behavior need a Studio/server playtest after G2.
 - Live DataStore access is intentionally not used in Studio because `DataService` selects `ProfileStore.Mock`.
 - WO-7 is downstream of still-open formal WO-4/WO-5/WO-6 acceptance, so it is **not marked complete** yet.
+
+## WO-8 - CI
+
+### Shipped So Far
+
+- Added shared local/CI gate:
+  - `tools/lib/QualityGate.luau`
+  - `tools/quality_gate.luau`
+- The shared gate creates `build/` before the Rojo build so fresh CI checkouts do not rely on a local output directory.
+- Updated `./nexus.ps1 check` so it calls the same shared gate.
+- Refactored `tools/build_health.luau` so Build Health also uses the shared gate.
+- Added `.github/workflows/ci.yml`.
+- Added `docs/runbooks/github-ci.md`.
+
+### Workflow Shape
+
+`.github/workflows/ci.yml` runs on `windows-latest` and:
+
+1. Checks out the repo.
+2. Installs Rokit from the official Rokit PowerShell installer.
+3. Trusts the pinned project tool providers.
+4. Runs `rokit install`.
+5. Runs `lune run tools/quality_gate.luau`.
+6. Uploads `build/nexus.rbxl`.
+
+### Shared Gate Evidence
+
+```powershell
+$env:ROKIT_PROBE='1'; lune run tools/quality_gate.luau
+[PASS] Wally Install (0.86s, exit 0)
+[PASS] StyLua (0.04s, exit 0)
+[PASS] Selene (0.08s, exit 0)
+[PASS] Sourcemap (0.08s, exit 0)
+[PASS] Migration Tests (0.03s, exit 0)
+[PASS] Analyze (1.98s, exit 0)
+[PASS] Build (0.08s, exit 0)
+Quality gate PASS
+```
+
+Individual checks after CI work:
+
+```powershell
+$env:ROKIT_PROBE='1'; stylua --check src tools
+<exit 0; no output>
+```
+
+```powershell
+$env:ROKIT_PROBE='1'; selene src tools
+Results:
+0 errors
+0 warnings
+0 parse errors
+```
+
+```powershell
+$env:ROKIT_PROBE='1'; luau-lsp analyze --definitions types/globalTypes.d.luau --sourcemap sourcemap.json src
+[INFO] Loading definitions file: @roblox - types/globalTypes.d.luau
+[WARN] client does not allow didChangeWatchedFiles registration - automatic updating on sourcemap changes disabled
+[INFO] Loading Luau configuration from c:\Users\jackw\Roblox\nexus\.luaurc
+```
+
+Build artifact after shared gate:
+
+```text
+C:\Users\jackw\Roblox\nexus\build\nexus.rbxl
+Length: 88295 bytes
+```
+
+Build Health vault note now reports:
+
+```text
+Overall: PASS
+Wally Install: PASS
+StyLua: PASS
+Selene: PASS
+Sourcemap: PASS
+Migration Tests: PASS
+Analyze: PASS
+Build: PASS
+```
+
+### Human Gate G4 Request
+
+Please complete when ready:
+
+1. Install GitHub CLI from G1 if it is not yet available.
+2. Run `gh auth login`.
+3. Create/push private repos for:
+   - `nexus`
+   - `RobloxGameVault`
+4. Enable branch protection on `main` so the Nexus CI quality gate is required before merge.
+
+### Open Blockers
+
+- `gh` is still unavailable from WO-0/G1, so GitHub auth, repo creation, push, and branch protection cannot be completed.
+- The workflow has not run on GitHub yet.
+- The deliberate failing/fixed PR acceptance check cannot be demonstrated until the remote repo exists and G4 is complete.
+- WO-8 is **not marked complete** until CI has a real GitHub run and branch protection evidence.
