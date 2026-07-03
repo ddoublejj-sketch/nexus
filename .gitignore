@@ -5,6 +5,8 @@ secrets/*
 !secrets/.gitkeep
 Packages/*
 !Packages/.gitkeep
+ServerPackages/*
+!ServerPackages/.gitkeep
 *.rbxl
 *.rbxlx
 .DS_Store

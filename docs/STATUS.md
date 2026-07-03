@@ -4,7 +4,7 @@ Last updated: 2026-07-03
 
 ## Current Phase
 
-WO-0 is in progress and blocked on **G1 - GUI installs**. WO-1 bootstrap work is partially complete, but WO-1 cannot be marked complete until the exact `./nexus.ps1 check` acceptance command can run. WO-3 vault scaffolding has started and is blocked on **G3 - Obsidian plugins + REST key** for end-to-end REST verification. WO-4 automation scripts have partial direct-run proof, but WO-4 remains incomplete until dependency gates and exact acceptance tests clear. WO-5 asset pipeline has direct-run proof with seed assets, but remains downstream of the still-open WO-4 formal acceptance. WO-6 Cmdr integration has build/analyze proof, but in-Studio command execution remains gated.
+WO-0 is in progress and blocked on **G1 - GUI installs**. WO-1 bootstrap work is partially complete, but WO-1 cannot be marked complete until the exact `./nexus.ps1 check` acceptance command can run. WO-3 vault scaffolding has started and is blocked on **G3 - Obsidian plugins + REST key** for end-to-end REST verification. WO-4 automation scripts have partial direct-run proof, but WO-4 remains incomplete until dependency gates and exact acceptance tests clear. WO-5 asset pipeline has direct-run proof with seed assets, but remains downstream of the still-open WO-4 formal acceptance. WO-6 Cmdr integration has build/analyze proof, but in-Studio command execution remains gated. WO-7 data/networking baseline has direct local proof, but live ProfileStore session behavior remains Studio-gated.
 
 ## WO-0 - Close the Tool Gaps
 
@@ -649,3 +649,135 @@ Build health PASS; wrote C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center
 - Studio playtest execution is still blocked by G2 / Studio connect. Command execution has not been human-verified in a local playtest.
 - `profilewipe` permission and confirm behavior is implemented in code, but runtime refusal still needs Studio playtest proof.
 - WO-6 is downstream of the still-open formal WO-4/WO-5 acceptance chain, so it is **not marked complete** yet.
+
+## WO-7 - Data & Networking Baseline
+
+### Shipped So Far
+
+- Added ProfileStore through Wally as a server dependency:
+  - `ProfileStore = "lm-loleris/profilestore@1.0.3"`
+- Added `ServerPackages` Rojo mapping and `.gitignore` rules so Wally regenerates server packages while `wally.lock` stays tracked.
+- Added shared data modules:
+  - `Shared/Data/ProfileSchema.luau`
+  - `Shared/Data/MigrationLogic.luau`
+  - `Shared/Data/Migrations.luau`
+- Added `DataService`:
+  - `StartSessionAsync(tostring(player.UserId), { Cancel = ... })`
+  - `AddUserId`
+  - `Reconcile`
+  - schema migration
+  - `OnSessionEnd` cleanup/kick path
+  - `PlayerRemoving` release with `EndSession`
+  - `getProfile`, `setKey`, `release`, `isMockMode`
+  - `ProfileStore.Mock` in Studio
+- Upgraded `Shared/Net` into a declared remote boundary with argument validators:
+  - `Ping`
+  - `RequestProfileSnapshot`
+  - `SetDebugFlag`
+  - `SystemMessage`
+- `DataService` handles `RequestProfileSnapshot` with a sanitized read-only profile snapshot.
+- Added Lune migration fixture test at `tools/test_migrations.luau`.
+- Updated vault notes:
+  - `02_Systems/Save Data.md`
+  - `02_Systems/Networking.md`
+
+### Direct-Run Evidence
+
+```powershell
+$env:ROKIT_PROBE='1'; wally install
+<exit 0; no output>
+```
+
+Wally lock:
+
+```toml
+[[package]]
+name = "lm-loleris/profilestore"
+version = "1.0.3"
+dependencies = []
+```
+
+Migration fixture test:
+
+```powershell
+$env:ROKIT_PROBE='1'; lune run tools/test_migrations.luau
+Migration fixtures passed
+```
+
+```powershell
+$env:ROKIT_PROBE='1'; rojo build default.project.json -o build/nexus.rbxl
+Building project 'Nexus'
+Built project to nexus.rbxl
+```
+
+Build artifact:
+
+```text
+C:\Users\jackw\Roblox\nexus\build\nexus.rbxl
+Length: 88295 bytes
+```
+
+```powershell
+$env:ROKIT_PROBE='1'; lune run tools/vault_sync.luau
+Wrote 12 module notes under C:/Users/jackw/Roblox/RobloxGameVault/02_Systems/Generated Modules and refreshed stale-source report
+```
+
+Generated module notes include:
+
+```text
+Services/DataService.md
+Shared/MigrationLogic.md
+Shared/Migrations.md
+Shared/Net.md
+Shared/ProfileSchema.md
+```
+
+Quality checks:
+
+```powershell
+$env:ROKIT_PROBE='1'; stylua --check src tools
+<exit 0; no output>
+```
+
+```powershell
+$env:ROKIT_PROBE='1'; selene src tools
+Results:
+0 errors
+0 warnings
+0 parse errors
+```
+
+```powershell
+$env:ROKIT_PROBE='1'; luau-lsp analyze --definitions types/globalTypes.d.luau --sourcemap sourcemap.json src
+[INFO] Loading definitions file: @roblox - types/globalTypes.d.luau
+[WARN] client does not allow didChangeWatchedFiles registration - automatic updating on sourcemap changes disabled
+[INFO] Loading Luau configuration from c:\Users\jackw\Roblox\nexus\.luaurc
+```
+
+```powershell
+$env:ROKIT_PROBE='1'; lune run tools/build_health.luau
+Build health PASS; wrote C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Build Health.md
+```
+
+Build Health vault note reports:
+
+```text
+Overall: PASS
+StyLua: PASS
+Selene: PASS
+Sourcemap: PASS
+Analyze: PASS
+Build: PASS
+```
+
+### Session Lock Notes
+
+ProfileStore docs state `StartSessionAsync()` can return `nil` if another remote server attempts to start a session for the same profile at the same time. Nexus handles that case by kicking with a rejoin message instead of exposing unsafe shared profile access.
+
+Actual Studio/runtime observation is still pending G2.
+
+### Open Blockers
+
+- Profile load/save and duplicate-session behavior need a Studio/server playtest after G2.
+- Live DataStore access is intentionally not used in Studio because `DataService` selects `ProfileStore.Mock`.
+- WO-7 is downstream of still-open formal WO-4/WO-5/WO-6 acceptance, so it is **not marked complete** yet.

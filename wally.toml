@@ -6,3 +6,6 @@ realm = "shared"
 
 [dependencies]
 Cmdr = "evaera/cmdr@1.12.0"
+
+[server-dependencies]
+ProfileStore = "lm-loleris/profilestore@1.0.3"
