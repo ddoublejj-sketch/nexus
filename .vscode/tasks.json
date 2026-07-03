@@ -2,6 +2,18 @@
   "version": "2.0.0",
   "tasks": [
     {
+      "label": "Nexus: Up",
+      "type": "shell",
+      "command": "./nexus.ps1 up",
+      "problemMatcher": []
+    },
+    {
+      "label": "Nexus: Down",
+      "type": "shell",
+      "command": "./nexus.ps1 down",
+      "problemMatcher": []
+    },
+    {
       "label": "Nexus: Serve",
       "type": "shell",
       "command": "./nexus.ps1 serve",
@@ -41,6 +53,12 @@
       "label": "Nexus: Health",
       "type": "shell",
       "command": "./nexus.ps1 health",
+      "problemMatcher": []
+    },
+    {
+      "label": "Nexus: Release Dry Run",
+      "type": "shell",
+      "command": "./nexus.ps1 release --dry-run --fixture",
       "problemMatcher": []
     },
     {

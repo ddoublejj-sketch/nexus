@@ -4,7 +4,7 @@ Last updated: 2026-07-03
 
 ## Current Phase
 
-WO-0 is in progress and blocked on **G1 - GUI installs**. WO-1 bootstrap work is partially complete, but WO-1 cannot be marked complete until the exact `./nexus.ps1 check` acceptance command can run. WO-3 vault scaffolding has started and is blocked on **G3 - Obsidian plugins + REST key** for end-to-end REST verification. WO-4 automation scripts have partial direct-run proof, but WO-4 remains incomplete until dependency gates and exact acceptance tests clear. WO-5 asset pipeline has direct-run proof with seed assets, but remains downstream of the still-open WO-4 formal acceptance. WO-6 Cmdr integration has build/analyze proof, but in-Studio command execution remains gated. WO-7 data/networking baseline has direct local proof, but live ProfileStore session behavior remains Studio-gated. WO-8 CI workflow and shared local/CI gate are created, but remote GitHub setup is blocked on **G4 - GitHub auth**. WO-9 release-path dry-run tooling is created and locally verified; live publish remains gated on **G5 - Open Cloud key**.
+WO-0 is in progress and blocked on **G1 - GUI installs**. WO-1 bootstrap work is partially complete, but WO-1 cannot be marked complete until the exact `./nexus.ps1 check` acceptance command can run. WO-3 vault scaffolding has started and is blocked on **G3 - Obsidian plugins + REST key** for end-to-end REST verification. WO-4 automation scripts have partial direct-run proof, but WO-4 remains incomplete until dependency gates and exact acceptance tests clear. WO-5 asset pipeline has direct-run proof with seed assets, but remains downstream of the still-open WO-4 formal acceptance. WO-6 Cmdr integration has build/analyze proof, but in-Studio command execution remains gated. WO-7 data/networking baseline has direct local proof, but live ProfileStore session behavior remains Studio-gated. WO-8 CI workflow and shared local/CI gate are created, but remote GitHub setup is blocked on **G4 - GitHub auth**. WO-9 release-path dry-run tooling is created and locally verified; live publish remains gated on **G5 - Open Cloud key**. WO-10 daily-driver hardening is implemented locally; exact `./nexus.ps1 up/down` and cold-boot Studio acceptance remain blocked by PowerShell policy and G2.
 
 ## WO-0 - Close the Tool Gaps
 
@@ -953,3 +953,99 @@ When ready to publish for real:
 
 - G5 is not complete, so live publish was intentionally not attempted.
 - `./nexus.ps1 release` cannot be run exactly until the PowerShell execution-policy blocker from WO-1 is cleared.
+
+## WO-10 - Command Center Hardening
+
+### Shipped So Far
+
+- Added `./nexus.ps1 up`.
+- Added `./nexus.ps1 down`.
+- Added job status table output to `./nexus.ps1 status`.
+- Added `tools/dev_log.luau` for session start/end/snapshot logging into the vault Daily Dev Log.
+- Added VS Code tasks for Up, Down, and Release Dry Run.
+- Added `docs/runbooks/fresh-machine-setup.md`.
+- Added `docs/runbooks/disaster-recovery.md`.
+
+### Verification Evidence
+
+PowerShell syntax parse only, without executing the blocked launcher:
+
+```powershell
+$errors = $null; [void][System.Management.Automation.PSParser]::Tokenize((Get-Content -LiteralPath ".\nexus.ps1" -Raw), [ref]$errors); if ($errors -and $errors.Count -gt 0) { $errors | ForEach-Object { "$($_.Message) at $($_.StartLine):$($_.StartColumn)" }; exit 1 } else { "PowerShell parse PASS" }
+PowerShell parse PASS
+```
+
+VS Code task file parse:
+
+```powershell
+Get-Content -LiteralPath ".\.vscode\tasks.json" -Raw | ConvertFrom-Json | Out-Null; "tasks.json parse PASS"
+tasks.json parse PASS
+```
+
+Direct daily log verification:
+
+```powershell
+$env:ROKIT_PROBE='1'; lune run tools/dev_log.luau start
+Dev log appended: C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Daily Dev Log.md (Session Start)
+```
+
+```powershell
+$env:ROKIT_PROBE='1'; lune run tools/dev_log.luau end
+Dev log appended: C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Daily Dev Log.md (Session End)
+```
+
+```powershell
+$env:ROKIT_PROBE='1'; lune run tools/dev_log.luau snapshot
+Dev log appended: C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Daily Dev Log.md (Snapshot)
+```
+
+Full gate after WO-10:
+
+```powershell
+$env:ROKIT_PROBE='1'; lune run tools/quality_gate.luau
+[PASS] Wally Install (0.72s, exit 0)
+[PASS] StyLua (0.05s, exit 0)
+[PASS] Selene (0.08s, exit 0)
+[PASS] Sourcemap (0.09s, exit 0)
+[PASS] Migration Tests (0.03s, exit 0)
+[PASS] Analyze (1.99s, exit 0)
+[PASS] Build (0.08s, exit 0)
+[PASS] Open Cloud Dry Run (0.03s, exit 0)
+Quality gate PASS
+```
+
+Build Health vault note after WO-10:
+
+```text
+Overall: PASS
+Wally Install: PASS
+StyLua: PASS
+Selene: PASS
+Sourcemap: PASS
+Migration Tests: PASS
+Analyze: PASS
+Build: PASS
+Open Cloud Dry Run: PASS
+```
+
+### Exact Acceptance Blockers
+
+- `./nexus.ps1 up` and `./nexus.ps1 down` cannot be executed exactly until the PowerShell execution-policy blocker from WO-1 is cleared.
+- The cold-boot flow cannot prove Studio updates until G2 Studio plugin connect is complete.
+- Vault dashboard rendering still needs G3 Obsidian plugins.
+
+## Acceptance Matrix
+
+| Work Order | Local Status | Evidence In This File | Remaining Gate / Blocker |
+| --- | --- | --- | --- |
+| WO-0 Tool Gaps | Partial | Audit output under WO-0 | G1: `winget`, `code`, `gh`, Obsidian, Blender on PATH/install path |
+| WO-1 Bootstrap | Implemented, exact launcher blocked | Repo scaffold, tool pins, direct quality outputs | PowerShell execution policy blocks exact `./nexus.ps1 check` |
+| WO-2 Studio Bridge | Blocked | Rojo project/build exists | G2: Studio plugin connect and live sync proof |
+| WO-3 Vault | Scaffolded, REST blocked | Vault repo, templates, dry-run failure output | G3: Obsidian install, plugins, Local REST API key |
+| WO-4 Automation Loop | Implemented with direct-run proof | Sourcemap, vault sync, command registry, asset manifest, Build Health outputs | Exact `./nexus.ps1 loop --once` blocked by PowerShell policy; dashboard render needs G3 |
+| WO-5 Asset Pipeline | Implemented with seed assets | Manifest, orphan repair, vault asset notes | Formal acceptance downstream of WO-4/G3 visual checks |
+| WO-6 Cmdr | Implemented and analyzed | Cmdr service/controller, commands, generated command docs | G2 Studio playtest for command execution |
+| WO-7 Data/Networking | Implemented and tested locally | ProfileStore wrapper, migration tests, typed Net, Build Health | G2 Studio playtest for session/runtime behavior |
+| WO-8 CI | Local workflow committed | Shared gate output, workflow, runbook | G4: `gh auth`, remote repo, branch protection, real CI run |
+| WO-9 Release Path | Dry-run accepted locally | Fixture dry-run, secret-history scan, release checklist | G5 for live publish only |
+| WO-10 Hardening | Implemented locally | Parse check, task JSON parse, dev log writes, full gate | PowerShell policy, G2 Studio connect, G3 dashboard render for cold-boot acceptance |

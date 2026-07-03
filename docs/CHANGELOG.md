@@ -12,3 +12,4 @@
 - [WO-7] Added ProfileStore dependency, profile schema/migrations, DataService mock-mode wrapper, typed Net boundary, migration tests, and vault docs - 2026-07-03.
 - [WO-8] Added shared local/CI quality gate, GitHub Actions workflow, CI runbook, and Build Health integration - 2026-07-03.
 - [WO-9] Added Open Cloud publish dry-run tooling, release checklist, fixture config, and secret-history scan evidence - 2026-07-03.
+- [WO-10] Added up/down launcher jobs, daily dev log automation, VS Code tasks, setup/recovery runbooks, and acceptance matrix - 2026-07-03.
