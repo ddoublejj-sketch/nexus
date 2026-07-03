@@ -27,6 +27,7 @@ local GATES: { Gate } = {
 			"Install a standard Blender build or provide the absolute path to `blender.exe`.",
 		},
 		codex = {
+			"Run `./nexus.ps1 g1` to refresh the exact local tool audit and install/PATH repair note.",
 			"Run `./nexus.ps1 receipts` to refresh the pending proof receipt templates.",
 			"Rerun WO-0 acceptance from the Nexus repo.",
 			"Replace the placeholder thumbnail backlog with real Blender thumbnail renders if `blender.exe` is available.",
@@ -37,6 +38,7 @@ local GATES: { Gate } = {
 			"rojo --version",
 			"code --version",
 			"gh --version",
+			"./nexus.ps1 g1",
 			"Get-Command blender -ErrorAction SilentlyContinue",
 			"./nexus.ps1 gatecheck --gate G1",
 		},

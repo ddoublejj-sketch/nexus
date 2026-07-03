@@ -6,6 +6,9 @@ Use this when setting up Nexus on a new Windows machine.
 
 Complete G1 first:
 
+Use `docs/runbooks/g1-tool-closure.md` and `./nexus.ps1 g1` for the exact
+local audit and closeout commands.
+
 - Git
 - Rokit
 - VS Code with `code` on PATH

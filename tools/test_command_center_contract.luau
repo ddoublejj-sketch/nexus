@@ -24,6 +24,7 @@ local EXPECTED_TASKS = {
 	["Nexus: Health"] = "./nexus.ps1 health",
 	["Nexus: Human Gates"] = "./nexus.ps1 gates",
 	["Nexus: Gate Acceptance Probe"] = "./nexus.ps1 gatecheck --self-test",
+	["Nexus: G1 Tool Closure"] = "./nexus.ps1 g1",
 	["Nexus: Human Gate Receipts"] = "./nexus.ps1 receipts",
 	["Nexus: Founder Sign-Off Audit"] = "./nexus.ps1 audit",
 	["Nexus: Release Dry Run"] = "./nexus.ps1 release --dry-run --fixture",
@@ -93,6 +94,7 @@ for _, command in
 		'"health"',
 		'"gates"',
 		'"gatecheck"',
+		'"g1"',
 		'"receipts"',
 		'"audit"',
 		'"release"',
@@ -186,6 +188,7 @@ assertContains(devLog, 'runGit({ "log", "--oneline", "-5" })', "dev_log must rec
 assertContains(devLog, "collectOpenTasks", "dev_log must capture open gates/tasks")
 
 assertContains(freshSetup, "Complete G1 first", "fresh setup must call out G1")
+assertContains(freshSetup, "g1-tool-closure.md", "fresh setup must link G1 closure runbook")
 assertContains(freshSetup, "rokit install", "fresh setup must install Rokit tools")
 assertContains(freshSetup, "wally install", "fresh setup must install Wally packages")
 assertContains(freshSetup, "./nexus.ps1 check", "fresh setup must run the quality gate")

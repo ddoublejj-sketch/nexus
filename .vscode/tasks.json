@@ -68,6 +68,12 @@
       "problemMatcher": []
     },
     {
+      "label": "Nexus: G1 Tool Closure",
+      "type": "shell",
+      "command": "./nexus.ps1 g1",
+      "problemMatcher": []
+    },
+    {
       "label": "Nexus: Human Gate Receipts",
       "type": "shell",
       "command": "./nexus.ps1 receipts",

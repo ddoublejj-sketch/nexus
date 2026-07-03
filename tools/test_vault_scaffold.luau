@@ -141,6 +141,7 @@ else
 		"![[Human Gate Readiness]]",
 		"Dashboard missing Human Gate Readiness embed"
 	)
+	assertContains(dashboard, "![[G1 Tool Closure]]", "Dashboard missing G1 Tool Closure embed")
 	assertContains(
 		dashboard,
 		"![[Human Gate Proof Receipts]]",
@@ -186,6 +187,16 @@ else
 		humanGateReadiness,
 		"Open Cloud config",
 		"Readiness missing Open Cloud config audit"
+	)
+
+	local g1ToolClosure = read("00_Command_Center/G1 Tool Closure.md")
+	assertFrontmatter(g1ToolClosure, "G1 Tool Closure")
+	assertContains(g1ToolClosure, "VS Code code CLI", "G1 Tool Closure missing VS Code row")
+	assertContains(g1ToolClosure, "GitHub CLI", "G1 Tool Closure missing GitHub CLI row")
+	assertContains(
+		g1ToolClosure,
+		"Blender Store Package",
+		"G1 Tool Closure missing Store Blender row"
 	)
 
 	local humanGateReceipts = read("00_Command_Center/Human Gate Proof Receipts.md")

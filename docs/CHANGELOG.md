@@ -36,3 +36,4 @@
 - [WO-10] Added generated Founder Sign-Off Audit vault note, launcher/task wiring, dashboard embed, and contract self-test - 2026-07-03.
 - [WO-9/WO-10] Narrowed secret-history scan allowlist for quoted negative-test env-name literals - 2026-07-03.
 - [WO-10] Added pending human-gate proof receipts, gatecheck receipt support, dashboard embed, and contract self-test - 2026-07-03.
+- [WO-0/WO-10] Added G1 tool-closure audit note, runbook, launcher/task wiring, dashboard embed, and contract self-test - 2026-07-03.

@@ -1243,6 +1243,7 @@ $env:ROKIT_PROBE='1'; lune run tools/quality_gate.luau
 [PASS] Selene (0.09s, exit 0)
 [PASS] Sourcemap (0.09s, exit 0)
 [PASS] Tool Gap Contract Tests (0.03s, exit 0)
+[PASS] G1 Tool Closure Tests (0.03s, exit 0)
 [PASS] Rojo Bridge Tests (0.03s, exit 0)
 [PASS] Migration Tests (0.03s, exit 0)
 [PASS] DataService Contract Tests (0.03s, exit 0)
@@ -1573,7 +1574,7 @@ NexusAutomationLoop Stopped
 
 | Work Order | Local Status | Evidence In This File | Remaining Gate / Blocker |
 | --- | --- | --- | --- |
-| WO-0 Tool Gaps | Partial | Audit output and tool-gap contract tests under WO-0 | G1: `code`, `gh`, Obsidian, Blender on PATH/install path |
+| WO-0 Tool Gaps | Partial | Audit output, G1 Tool Closure note/runbook, and tool-gap contract tests under WO-0 | G1: `code`, `gh`, Obsidian, Blender on PATH/install path |
 | WO-1 Bootstrap | Exact local acceptance passed | Repo scaffold, tool pins, `rokit install`, `wally install`, `rojo build`, `rojo sourcemap`, `./nexus.ps1 check` | None locally |
 | WO-2 Studio Bridge | Runbook added, live bridge blocked | Sourcemap-aware analyze output, Rojo bridge tests, and `docs/runbooks/rojo-sync-rules.md` | G2: Studio plugin connect and live sync proof |
 | WO-3 Vault | Scaffolded, REST blocked | Vault repo, templates, vault scaffold tests, pending queue output | G3: Obsidian install, plugins, Local REST API key, pending flush |
@@ -1596,11 +1597,12 @@ Acceptance matrix contract tests passed
 
 ```powershell
 ./nexus.ps1 check
-[PASS] Wally Install (0.72s, exit 0)
-[PASS] StyLua (0.07s, exit 0)
+[PASS] Wally Install (0.70s, exit 0)
+[PASS] StyLua (0.08s, exit 0)
 [PASS] Selene (0.10s, exit 0)
-[PASS] Sourcemap (0.09s, exit 0)
+[PASS] Sourcemap (0.08s, exit 0)
 [PASS] Tool Gap Contract Tests (0.03s, exit 0)
+[PASS] G1 Tool Closure Tests (0.03s, exit 0)
 [PASS] Rojo Bridge Tests (0.03s, exit 0)
 [PASS] Migration Tests (0.03s, exit 0)
 [PASS] DataService Contract Tests (0.03s, exit 0)
@@ -1611,17 +1613,26 @@ Acceptance matrix contract tests passed
 [PASS] CI Contract Tests (0.03s, exit 0)
 [PASS] Command Center Contract Tests (0.03s, exit 0)
 [PASS] Human Gate Checklist Tests (0.03s, exit 0)
-[PASS] Human Gate Readiness Tests (0.03s, exit 0)
-[PASS] Human Gate Acceptance Tests (2.05s, exit 0)
-[PASS] Human Gate Receipt Tests (1.03s, exit 0)
-[PASS] Founder Sign-Off Audit Tests (0.03s, exit 0)
+[PASS] Human Gate Readiness Tests (0.02s, exit 0)
+[PASS] Human Gate Acceptance Tests (2.06s, exit 0)
+[PASS] Human Gate Receipt Tests (1.05s, exit 0)
+[PASS] Founder Sign-Off Audit Tests (0.02s, exit 0)
 [PASS] Acceptance Matrix Contract Tests (0.03s, exit 0)
 [PASS] Release Contract Tests (0.03s, exit 0)
-[PASS] Secret Scan (0.48s, exit 0)
-[PASS] Analyze (2.01s, exit 0)
+[PASS] Secret Scan (0.39s, exit 0)
+[PASS] Analyze (2.03s, exit 0)
 [PASS] Build (0.08s, exit 0)
 [PASS] Open Cloud Dry Run (0.03s, exit 0)
 Quality gate PASS
+```
+
+```powershell
+./nexus.ps1 gates
+Wrote gate status for 11 work orders to C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Gate Status.md
+Wrote human gate checklist to C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Human Gate Checklist.md
+Wrote human gate readiness to C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Human Gate Readiness.md
+Wrote human gate proof receipts to C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Human Gate Proof Receipts.md
+Wrote G1 tool closure note to C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/G1 Tool Closure.md
 ```
 
 ```powershell

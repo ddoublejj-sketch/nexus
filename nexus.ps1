@@ -201,9 +201,13 @@ switch ($Command.ToLowerInvariant()) {
 		Invoke-Tool "lune" @("run", "tools/human_gate_checklist.luau")
 		Invoke-Tool "lune" @("run", "tools/human_gate_readiness.luau")
 		Invoke-Tool "lune" @("run", "tools/human_gate_receipts.luau")
+		Invoke-Tool "lune" @("run", "tools/g1_tool_closure.luau")
 	}
 	"gatecheck" {
 		Invoke-Tool "lune" (@("run", "tools/human_gate_acceptance.luau") + $Rest)
+	}
+	"g1" {
+		Invoke-Tool "lune" @("run", "tools/g1_tool_closure.luau")
 	}
 	"receipts" {
 		Invoke-Tool "lune" @("run", "tools/human_gate_receipts.luau")
@@ -255,6 +259,6 @@ switch ($Command.ToLowerInvariant()) {
 		Write-NexusJobTable
 	}
 	default {
-		throw "Unknown command '$Command'. Use up, down, serve, build, map, check, fix, sync, health, gates, gatecheck, receipts, audit, release, loop, or status."
+		throw "Unknown command '$Command'. Use up, down, serve, build, map, check, fix, sync, health, gates, gatecheck, g1, receipts, audit, release, loop, or status."
 	}
 }

@@ -23,6 +23,7 @@ local REQUIRED_PROOF_COMMANDS = {
 	"code --version",
 	"gh --version",
 	"Get-Command blender -ErrorAction SilentlyContinue",
+	"./nexus.ps1 g1",
 	"./nexus.ps1 up",
 	"lune run tools/vault_ping.luau",
 	"gh auth status",
