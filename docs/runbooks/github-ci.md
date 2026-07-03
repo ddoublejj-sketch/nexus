@@ -12,11 +12,7 @@ Local launcher path:
 ./nexus.ps1 check
 ```
 
-Direct path while PowerShell script execution is blocked:
-
-```powershell
-$env:ROKIT_PROBE='1'; lune run tools/quality_gate.luau
-```
+Direct path for CI and troubleshooting: `lune run tools/quality_gate.luau`.
 
 CI path:
 

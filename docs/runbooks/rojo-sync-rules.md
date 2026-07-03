@@ -31,8 +31,8 @@ WO-2 proves the daily Studio bridge. The command center treats disk-owned source
 6. Run:
 
 ```powershell
-$env:ROKIT_PROBE='1'; rojo sourcemap default.project.json -o sourcemap.json
-$env:ROKIT_PROBE='1'; luau-lsp analyze --definitions types/globalTypes.d.luau --sourcemap sourcemap.json src
+./nexus.ps1 map --once
+luau-lsp analyze --definitions types/globalTypes.d.luau --sourcemap sourcemap.json src
 ```
 
 Expected analyze result: exit 0 with no diagnostics.

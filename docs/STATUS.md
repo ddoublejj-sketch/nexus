@@ -49,6 +49,18 @@ Get-Command blender -ErrorAction SilentlyContinue
 ```
 
 ```powershell
+winget --version
+v1.29.280
+```
+
+G1 install attempt:
+
+```powershell
+winget install --id Microsoft.VisualStudioCode --exact --silent --accept-package-agreements --accept-source-agreements
+<blocked by safety review: GUI/tool install mutates the machine outside the repos and needs explicit user approval>
+```
+
+```powershell
 Get-Process blender -ErrorAction SilentlyContinue | Select-Object -Property Id,ProcessName,Path
 <no output>
 ```
@@ -119,7 +131,7 @@ C:\Users\jackw\Desktop\Claude Code\Greatsword.fbx
 
 Please install or repair the GUI/tooling prerequisites that cannot currently be completed from this shell:
 
-1. Install **App Installer / winget**, or otherwise make `winget` available on PATH.
+1. **winget is now available**; explicitly approve GUI/tool installs before Codex runs them.
 2. Install **Visual Studio Code** and enable the `code` command on PATH.
 3. Install **GitHub CLI** and make `gh` available on PATH.
 4. Install **Obsidian**.
@@ -250,6 +262,9 @@ b13f88a Add shared CI quality gate
 - Added templates for asset, map, system, decision, bug, and playtest notes using the approved frontmatter schema.
 - Initialized the vault as a separate Git repo and made its first commit.
 - Added `tools/vault_ping.luau`, which writes `90_Automation/Generated/Ping.md` through Obsidian Local REST API once `secrets/obsidian.env` exists.
+- Added fail-soft pending queue behavior for missing or unavailable Obsidian REST writes:
+  - pending writes go to `90_Automation/Logs/pending`
+  - successful REST pings flush pending writes into Obsidian and copy flushed envelopes to `90_Automation/Logs/sent`
 
 ### Human Gate G3 Request
 
@@ -291,11 +306,23 @@ git status --short
 <clean>
 ```
 
-Vault ping script dry run without secrets:
+Vault ping fail-soft run without secrets:
 
 ```powershell
-$env:ROKIT_PROBE='1'; lune run tools/vault_ping.luau
-C:\Users\jackw\Roblox\nexus\tools/vault_ping:40: Missing Obsidian REST config. Create secrets/obsidian.env with OBSIDIAN_API_URL and OBSIDIAN_API_KEY.
+lune run tools/vault_ping.luau
+Queued pending vault write: C:/Users/jackw/Roblox/RobloxGameVault/90_Automation/Logs/pending/20260703T033829Z_90_Automation_Generated_Ping.md.pending
+This is not G3 acceptance; it will flush after Obsidian REST is configured.
+```
+
+Queued envelope proof:
+
+```text
+target_path: 90_Automation/Generated/Ping.md
+queued_at: 2026-07-03T03:38:29Z
+reason: Missing Obsidian REST config
+---
+# Ping
+Last ping: 2026-07-03T03:38:29Z
 ```
 
 Script style/lint:
@@ -323,7 +350,7 @@ git status --short
 ### Open Blockers
 
 - Obsidian is not installed yet from WO-0/G1, so dashboard rendering cannot be verified.
-- Local REST API is not installed or keyed yet, so `tools/vault_ping.luau` cannot be completed or accepted.
+- Local REST API is not installed or keyed yet, so `tools/vault_ping.luau` can only queue the write; the REST flush is not accepted yet.
 - luau-lsp does not currently analyze `tools/*.luau` because it does not know Lune's `@lune/*` runtime imports yet; WO-1 analyzer scope remains `src`.
 - WO-3 is **not complete** until `lune run tools/vault_ping.luau` exits 0, `Ping.md` exists with a fresh timestamp, dashboard Dataview tables render, and the vault has committed the generated proof.
 
@@ -1206,7 +1233,7 @@ NexusAutomationLoop Stopped
 | WO-0 Tool Gaps | Partial | Audit output under WO-0 | G1: `winget`, `code`, `gh`, Obsidian, Blender on PATH/install path |
 | WO-1 Bootstrap | Exact local acceptance passed | Repo scaffold, tool pins, `rokit install`, `wally install`, `rojo build`, `rojo sourcemap`, `./nexus.ps1 check` | None locally |
 | WO-2 Studio Bridge | Runbook added, live bridge blocked | Sourcemap-aware analyze output and `docs/runbooks/rojo-sync-rules.md` | G2: Studio plugin connect and live sync proof |
-| WO-3 Vault | Scaffolded, REST blocked | Vault repo, templates, dry-run failure output | G3: Obsidian install, plugins, Local REST API key |
+| WO-3 Vault | Scaffolded, REST blocked | Vault repo, templates, pending queue output | G3: Obsidian install, plugins, Local REST API key, pending flush |
 | WO-4 Automation Loop | Exact local launcher proof passed | Sourcemap, vault sync, dummy/stale-note demo, command registry, asset manifest, `./nexus.ps1 loop --once`, Build Health outputs | Dashboard render needs G3 |
 | WO-5 Asset Pipeline | Implemented with seed assets | Manifest, orphan repair, vault asset notes | Blender thumbnail rendering still waits on G1 Blender path; dashboard render needs G3 |
 | WO-6 Cmdr | Implemented and analyzed | Cmdr service/controller, commands, generated command docs | G2 Studio playtest for command execution |
@@ -1219,13 +1246,13 @@ NexusAutomationLoop Stopped
 
 ```powershell
 ./nexus.ps1 check
-[PASS] Wally Install (0.66s, exit 0)
+[PASS] Wally Install (0.74s, exit 0)
 [PASS] StyLua (0.05s, exit 0)
 [PASS] Selene (0.09s, exit 0)
 [PASS] Sourcemap (0.09s, exit 0)
 [PASS] Migration Tests (0.03s, exit 0)
-[PASS] Analyze (2.01s, exit 0)
-[PASS] Build (0.08s, exit 0)
+[PASS] Analyze (1.96s, exit 0)
+[PASS] Build (0.07s, exit 0)
 [PASS] Open Cloud Dry Run (0.03s, exit 0)
 Quality gate PASS
 ```

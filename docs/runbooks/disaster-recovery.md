@@ -37,8 +37,8 @@ cd C:\Users\jackw\Roblox
 git clone <private-nexus-url> nexus-recovery
 cd nexus-recovery
 rokit install
-$env:ROKIT_PROBE='1'; wally install
-$env:ROKIT_PROBE='1'; lune run tools/quality_gate.luau
+wally install
+./nexus.ps1 check
 ```
 
 Do not copy files from a damaged repo until `git status --short` has been reviewed.
@@ -53,6 +53,6 @@ git clone <private-vault-url> RobloxGameVault-recovery
 Copy generated notes only after rerunning:
 
 ```powershell
-$env:ROKIT_PROBE='1'; lune run tools/vault_sync.luau
-$env:ROKIT_PROBE='1'; lune run tools/build_health.luau
+./nexus.ps1 sync
+./nexus.ps1 health
 ```

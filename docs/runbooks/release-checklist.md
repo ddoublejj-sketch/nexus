@@ -5,9 +5,9 @@ WO-9 keeps publish one explicit step away. Dry-run is safe to run without an Ope
 ## Dry Run
 
 ```powershell
-$env:ROKIT_PROBE='1'; lune run tools/quality_gate.luau
-$env:ROKIT_PROBE='1'; lune run tools/build_health.luau
-$env:ROKIT_PROBE='1'; lune run tools/open_cloud_publish.luau --dry-run --fixture
+./nexus.ps1 check
+./nexus.ps1 health
+./nexus.ps1 release --dry-run --fixture
 ```
 
 Expected result:
@@ -34,7 +34,7 @@ ROBLOX_PLACE_ID=replace_with_numeric_place_id
 6. Run the live command only after a fixture dry-run passes:
 
 ```powershell
-$env:ROKIT_PROBE='1'; lune run tools/open_cloud_publish.luau --live
+./nexus.ps1 release --live
 ```
 
 ## Secret Safety Check

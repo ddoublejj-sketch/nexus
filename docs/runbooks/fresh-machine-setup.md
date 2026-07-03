@@ -30,8 +30,8 @@ git clone <private-nexus-url> nexus
 git clone <private-vault-url> RobloxGameVault
 cd C:\Users\jackw\Roblox\nexus
 rokit install
-$env:ROKIT_PROBE='1'; wally install
-$env:ROKIT_PROBE='1'; lune run tools/quality_gate.luau
+wally install
+./nexus.ps1 check
 ```
 
 Expected final line:
@@ -52,7 +52,7 @@ secrets/opencloud.env
 Never commit either file. The release dry-run works before `secrets/opencloud.env` exists:
 
 ```powershell
-$env:ROKIT_PROBE='1'; lune run tools/open_cloud_publish.luau --dry-run --fixture
+./nexus.ps1 release --dry-run --fixture
 ```
 
 ## Studio And Vault
@@ -64,6 +64,6 @@ $env:ROKIT_PROBE='1'; lune run tools/open_cloud_publish.luau --dry-run --fixture
 5. Open `C:\Users\jackw\Roblox\RobloxGameVault` as an Obsidian vault.
 6. Enable the Local REST API, Obsidian Git, Dataview, Tasks, Kanban, Templater, QuickAdd, and Omnisearch plugins.
 
-## PowerShell Launcher
+## Launcher Check
 
-`nexus.ps1` requires the local PowerShell execution-policy gate to be cleared. Until then, use the direct Lune/Rokit commands recorded in `docs/STATUS.md`.
+Run `./nexus.ps1 status` after setup. It should print Git status, pinned tool versions, the last build, and the command-center job table.
