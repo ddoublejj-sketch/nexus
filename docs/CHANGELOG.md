@@ -29,3 +29,4 @@
 - [WO-9] Added release contract self-test for dry-run defaults, live publish guards, fixture safety, artifact checks, and secret hygiene - 2026-07-03.
 - [WO-7] Added DataService contract self-test for ProfileStore dependency, session lifecycle, Studio mock mode, migrations, snapshots, and Save Data docs - 2026-07-03.
 - [WO-0] Added tool-gap contract self-test for current G1 evidence, fresh-machine setup, Blender CLI caveat, and honest acceptance status - 2026-07-03.
+- [WO-10] Added acceptance-matrix contract self-test for work-order rows, latest gate evidence, and human-gate blocker honesty - 2026-07-03.

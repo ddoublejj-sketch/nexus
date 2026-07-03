@@ -1094,6 +1094,7 @@ $env:ROKIT_PROBE='1'; lune run tools/quality_gate.luau
 [PASS] Net Contract Tests (0.03s, exit 0)
 [PASS] CI Contract Tests (0.03s, exit 0)
 [PASS] Command Center Contract Tests (0.03s, exit 0)
+[PASS] Acceptance Matrix Contract Tests (0.03s, exit 0)
 [PASS] Secret Scan (0.37s, exit 0)
 [PASS] Analyze (2.04s, exit 0)
 [PASS] Build (0.08s, exit 0)
@@ -1155,6 +1156,7 @@ Command Surface Tests: PASS
 Net Contract Tests: PASS
 CI Contract Tests: PASS
 Command Center Contract Tests: PASS
+Acceptance Matrix Contract Tests: PASS
 Secret Scan: PASS
 Analyze: PASS
 Build: PASS
@@ -1244,6 +1246,7 @@ $env:ROKIT_PROBE='1'; lune run tools/quality_gate.luau
 [PASS] Net Contract Tests (0.03s, exit 0)
 [PASS] CI Contract Tests (0.03s, exit 0)
 [PASS] Command Center Contract Tests (0.03s, exit 0)
+[PASS] Acceptance Matrix Contract Tests (0.03s, exit 0)
 [PASS] Release Contract Tests (0.03s, exit 0)
 [PASS] Secret Scan (0.40s, exit 0)
 [PASS] Analyze (2.05s, exit 0)
@@ -1270,6 +1273,7 @@ Command Surface Tests: PASS
 Net Contract Tests: PASS
 CI Contract Tests: PASS
 Command Center Contract Tests: PASS
+Acceptance Matrix Contract Tests: PASS
 Release Contract Tests: PASS
 Secret Scan: PASS
 Analyze: PASS
@@ -1377,6 +1381,7 @@ $env:ROKIT_PROBE='1'; lune run tools/quality_gate.luau
 [PASS] Net Contract Tests (0.03s, exit 0)
 [PASS] CI Contract Tests (0.03s, exit 0)
 [PASS] Command Center Contract Tests (0.03s, exit 0)
+[PASS] Acceptance Matrix Contract Tests (0.03s, exit 0)
 [PASS] Release Contract Tests (0.03s, exit 0)
 [PASS] Secret Scan (0.37s, exit 0)
 [PASS] Analyze (2.04s, exit 0)
@@ -1403,6 +1408,7 @@ Command Surface Tests: PASS
 Net Contract Tests: PASS
 CI Contract Tests: PASS
 Command Center Contract Tests: PASS
+Acceptance Matrix Contract Tests: PASS
 Release Contract Tests: PASS
 Secret Scan: PASS
 Analyze: PASS
@@ -1470,11 +1476,18 @@ NexusAutomationLoop Stopped
 | WO-9 Release Path | Dry-run accepted locally | Fixture dry-run, `./nexus.ps1 release --dry-run --fixture`, release contract tests, secret-history scan, release checklist | G5 for live publish only |
 | WO-10 Hardening | Up/down smoke test passed locally | Task JSON parse, command-center contract tests, dev log writes, Gate Status dashboard embed, `./nexus.ps1 up/status/down`, full gate | G2 Studio connect and G3 dashboard render for cold-boot acceptance |
 
+Acceptance Matrix contract self-test:
+
+```powershell
+lune run tools/test_acceptance_matrix_contract.luau
+Acceptance matrix contract tests passed
+```
+
 ## Latest Whole-Repo Verification
 
 ```powershell
 ./nexus.ps1 check
-[PASS] Wally Install (0.72s, exit 0)
+[PASS] Wally Install (0.82s, exit 0)
 [PASS] StyLua (0.06s, exit 0)
 [PASS] Selene (0.09s, exit 0)
 [PASS] Sourcemap (0.09s, exit 0)
@@ -1485,12 +1498,13 @@ NexusAutomationLoop Stopped
 [PASS] Vault Scaffold Tests (0.06s, exit 0)
 [PASS] Asset Manifest Tests (0.03s, exit 0)
 [PASS] Command Surface Tests (0.03s, exit 0)
-[PASS] Net Contract Tests (0.03s, exit 0)
-[PASS] CI Contract Tests (0.03s, exit 0)
+[PASS] Net Contract Tests (0.02s, exit 0)
+[PASS] CI Contract Tests (0.02s, exit 0)
 [PASS] Command Center Contract Tests (0.03s, exit 0)
+[PASS] Acceptance Matrix Contract Tests (0.03s, exit 0)
 [PASS] Release Contract Tests (0.03s, exit 0)
 [PASS] Secret Scan (0.40s, exit 0)
-[PASS] Analyze (1.97s, exit 0)
+[PASS] Analyze (2.05s, exit 0)
 [PASS] Build (0.08s, exit 0)
 [PASS] Open Cloud Dry Run (0.03s, exit 0)
 Quality gate PASS
