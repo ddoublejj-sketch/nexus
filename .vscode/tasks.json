@@ -1,0 +1,47 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Nexus: Serve",
+      "type": "shell",
+      "command": "./nexus.ps1 serve",
+      "problemMatcher": []
+    },
+    {
+      "label": "Nexus: Build",
+      "type": "shell",
+      "command": "./nexus.ps1 build",
+      "problemMatcher": []
+    },
+    {
+      "label": "Nexus: Sourcemap Watch",
+      "type": "shell",
+      "command": "./nexus.ps1 map",
+      "problemMatcher": []
+    },
+    {
+      "label": "Nexus: Check",
+      "type": "shell",
+      "command": "./nexus.ps1 check",
+      "problemMatcher": []
+    },
+    {
+      "label": "Nexus: Format",
+      "type": "shell",
+      "command": "./nexus.ps1 fix",
+      "problemMatcher": []
+    },
+    {
+      "label": "Nexus: Vault Sync",
+      "type": "shell",
+      "command": "./nexus.ps1 sync",
+      "problemMatcher": []
+    },
+    {
+      "label": "Nexus: Health",
+      "type": "shell",
+      "command": "./nexus.ps1 health",
+      "problemMatcher": []
+    }
+  ]
+}

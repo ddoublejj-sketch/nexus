@@ -1,0 +1,10 @@
+build/
+sourcemap.json
+.env
+secrets/*
+!secrets/.gitkeep
+Packages/*
+!Packages/.gitkeep
+*.rbxl
+*.rbxlx
+.DS_Store
