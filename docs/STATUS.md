@@ -193,6 +193,21 @@ gh --version
 gh : The term 'gh' is not recognized as the name of a cmdlet, function, script file, or operable program.
 ```
 
+Obsidian install attempt downloaded and verified the installer, but the installer failed and did not register the app:
+
+```powershell
+winget install --id Obsidian.Obsidian --source winget --accept-source-agreements --accept-package-agreements --silent
+Found Obsidian [Obsidian.Obsidian] Version 1.12.7
+Successfully verified installer hash
+Starting package install...
+Installer failed with exit code: 3221225477
+```
+
+```powershell
+winget list --id Obsidian.Obsidian --source winget
+No installed package found matching input criteria.
+```
+
 Current G1 probe after VS Code install and PATH refresh:
 
 ```powershell
@@ -1644,9 +1659,9 @@ Acceptance matrix contract tests passed
 
 ```powershell
 ./nexus.ps1 check
-[PASS] Wally Install (1.16s, exit 0)
+[PASS] Wally Install (0.82s, exit 0)
 [PASS] StyLua (0.08s, exit 0)
-[PASS] Selene (0.26s, exit 0)
+[PASS] Selene (0.09s, exit 0)
 [PASS] Sourcemap (0.09s, exit 0)
 [PASS] Tool Gap Contract Tests (0.03s, exit 0)
 [PASS] G1 Tool Closure Tests (0.03s, exit 0)
@@ -1661,13 +1676,13 @@ Acceptance matrix contract tests passed
 [PASS] Command Center Contract Tests (0.03s, exit 0)
 [PASS] Human Gate Checklist Tests (0.03s, exit 0)
 [PASS] Human Gate Readiness Tests (0.02s, exit 0)
-[PASS] Human Gate Acceptance Tests (3.71s, exit 0)
-[PASS] Human Gate Receipt Tests (1.82s, exit 0)
+[PASS] Human Gate Acceptance Tests (3.72s, exit 0)
+[PASS] Human Gate Receipt Tests (1.86s, exit 0)
 [PASS] Founder Sign-Off Audit Tests (0.03s, exit 0)
 [PASS] Acceptance Matrix Contract Tests (0.03s, exit 0)
 [PASS] Release Contract Tests (0.03s, exit 0)
-[PASS] Secret Scan (0.48s, exit 0)
-[PASS] Analyze (2.10s, exit 0)
+[PASS] Secret Scan (0.43s, exit 0)
+[PASS] Analyze (2.00s, exit 0)
 [PASS] Build (0.08s, exit 0)
 [PASS] Open Cloud Dry Run (0.03s, exit 0)
 Quality gate PASS
