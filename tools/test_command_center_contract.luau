@@ -24,6 +24,7 @@ local EXPECTED_TASKS = {
 	["Nexus: Health"] = "./nexus.ps1 health",
 	["Nexus: Human Gates"] = "./nexus.ps1 gates",
 	["Nexus: Gate Acceptance Probe"] = "./nexus.ps1 gatecheck --self-test",
+	["Nexus: Human Gate Receipts"] = "./nexus.ps1 receipts",
 	["Nexus: Founder Sign-Off Audit"] = "./nexus.ps1 audit",
 	["Nexus: Release Dry Run"] = "./nexus.ps1 release --dry-run --fixture",
 	["Nexus: Loop Once"] = "./nexus.ps1 loop --once",
@@ -44,6 +45,7 @@ local LOOP_SCRIPTS = {
 	"tools/gate_status.luau",
 	"tools/human_gate_checklist.luau",
 	"tools/human_gate_readiness.luau",
+	"tools/human_gate_receipts.luau",
 	"tools/founder_signoff_audit.luau",
 	"tools/build_health.luau",
 }
@@ -91,6 +93,7 @@ for _, command in
 		'"health"',
 		'"gates"',
 		'"gatecheck"',
+		'"receipts"',
 		'"audit"',
 		'"release"',
 		'"loop"',

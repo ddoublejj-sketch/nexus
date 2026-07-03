@@ -26,6 +26,7 @@ local REQUIRED_GATE_LABELS = {
 	"Human Gate Checklist Tests",
 	"Human Gate Readiness Tests",
 	"Human Gate Acceptance Tests",
+	"Human Gate Receipt Tests",
 	"Founder Sign-Off Audit Tests",
 	"Acceptance Matrix Contract Tests",
 	"Release Contract Tests",

@@ -5,6 +5,7 @@ local process = require("@lune/process")
 
 local VAULT_ROOT = "C:/Users/jackw/Roblox/RobloxGameVault"
 local PENDING_ROOT = VAULT_ROOT .. "/90_Automation/Logs/pending"
+local RECEIPT_ROOT = "docs/gate-proofs"
 
 type Options = {
 	selfTest: boolean,
@@ -138,12 +139,31 @@ local function fileCheck(gate: string, name: string, path: string, presentDetail
 	}
 end
 
-local function humanCheck(gate: string, name: string, detail: string): Check
+local function receiptCheck(gate: string, name: string, receiptPath: string, marker: string): Check
+	if not fs.isFile(receiptPath) then
+		return {
+			gate = gate,
+			name = name,
+			status = "NEEDS HUMAN",
+			detail = "missing receipt: " .. receiptPath,
+		}
+	end
+
+	local contents = fs.readFile(receiptPath)
+	if contents:find(marker .. ": PASS", 1, true) then
+		return {
+			gate = gate,
+			name = name,
+			status = "PASS",
+			detail = "accepted by " .. receiptPath,
+		}
+	end
+
 	return {
 		gate = gate,
 		name = name,
 		status = "NEEDS HUMAN",
-		detail = detail,
+		detail = "receipt pending: " .. receiptPath .. " needs `" .. marker .. ": PASS`",
 	}
 end
 
@@ -188,8 +208,18 @@ local function allChecks(): { Check }
 		commandCheck("G1", "gh available", "gh", { "--version" }),
 		pathCommandCheck("G1", "blender CLI available", "blender"),
 		pathCommandCheck("G1", "obsidian command available", "obsidian"),
-		humanCheck("G2", "Studio plugin connected", "Record G2 proof in docs/STATUS.md."),
-		humanCheck("G2", "Studio playtest observed", "Record Cmdr/DataService runtime proof."),
+		receiptCheck(
+			"G2",
+			"Studio plugin connected",
+			RECEIPT_ROOT .. "/G2-studio-connect.md",
+			"Studio plugin connected"
+		),
+		receiptCheck(
+			"G2",
+			"Studio playtest observed",
+			RECEIPT_ROOT .. "/G2-studio-connect.md",
+			"Studio playtest observed"
+		),
 		fileCheck(
 			"G2",
 			"Rojo sync runbook present",
@@ -203,10 +233,11 @@ local function allChecks(): { Check }
 			"values not printed"
 		),
 		pendingCheck(),
-		humanCheck(
+		receiptCheck(
 			"G3",
 			"Dashboard rendered in Obsidian",
-			"Record visual/plugin proof in docs/STATUS.md."
+			RECEIPT_ROOT .. "/G3-obsidian-dashboard.md",
+			"Dashboard rendered in Obsidian"
 		),
 		commandCheck("G4", "GitHub auth active", "gh", { "auth", "status" }),
 		commandOutputRequired(
@@ -216,17 +247,19 @@ local function allChecks(): { Check }
 			{ "remote", "-v" },
 			"no remote"
 		),
-		humanCheck(
+		receiptCheck(
 			"G4",
 			"CI branch protection confirmed",
-			"Record GitHub branch protection proof."
+			RECEIPT_ROOT .. "/G4-github-ci.md",
+			"CI branch protection confirmed"
 		),
 		fileCheck("G5", "Open Cloud config present", "secrets/opencloud.env", "values not printed"),
 		fileCheck("G5", "Build artifact present", "build/nexus.rbxl", "build artifact present"),
-		humanCheck(
+		receiptCheck(
 			"G5",
 			"Live publish approval recorded",
-			"Live publish requires explicit approval."
+			RECEIPT_ROOT .. "/G5-open-cloud-publish.md",
+			"Live publish approval recorded"
 		),
 	}
 end

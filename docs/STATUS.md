@@ -1583,7 +1583,7 @@ NexusAutomationLoop Stopped
 | WO-7 Data/Networking | Implemented and tested locally | ProfileStore wrapper, migration tests, DataService contract tests, Net contract tests, typed Net, Build Health | G2 Studio playtest for session/runtime behavior |
 | WO-8 CI | Local workflow committed | Shared gate output, CI contract tests, workflow, runbook | G4: `gh auth`, remote repo, branch protection, real CI run |
 | WO-9 Release Path | Dry-run accepted locally | Fixture dry-run, `./nexus.ps1 release --dry-run --fixture`, release contract tests, secret-history scan, release checklist | G5 for live publish only |
-| WO-10 Hardening | Up/down smoke test passed locally | Task JSON parse, command-center contract tests, human gate checklist/readiness/acceptance/founder sign-off tests, dev log writes, Gate Status and Founder Sign-Off dashboard embeds, `./nexus.ps1 up/status/down`, full gate | G2 Studio connect and G3 dashboard render for cold-boot acceptance |
+| WO-10 Hardening | Up/down smoke test passed locally | Task JSON parse, command-center contract tests, human gate checklist/readiness/acceptance/receipt/founder sign-off tests, dev log writes, Gate Status, Human Gate Proof Receipts, and Founder Sign-Off dashboard embeds, `./nexus.ps1 up/status/down`, full gate | G2 Studio connect and G3 dashboard render for cold-boot acceptance |
 
 Acceptance Matrix contract self-test:
 
@@ -1596,27 +1596,28 @@ Acceptance matrix contract tests passed
 
 ```powershell
 ./nexus.ps1 check
-[PASS] Wally Install (0.81s, exit 0)
-[PASS] StyLua (0.08s, exit 0)
-[PASS] Selene (0.09s, exit 0)
-[PASS] Sourcemap (0.08s, exit 0)
+[PASS] Wally Install (0.72s, exit 0)
+[PASS] StyLua (0.07s, exit 0)
+[PASS] Selene (0.10s, exit 0)
+[PASS] Sourcemap (0.09s, exit 0)
 [PASS] Tool Gap Contract Tests (0.03s, exit 0)
 [PASS] Rojo Bridge Tests (0.03s, exit 0)
 [PASS] Migration Tests (0.03s, exit 0)
-[PASS] DataService Contract Tests (0.02s, exit 0)
+[PASS] DataService Contract Tests (0.03s, exit 0)
 [PASS] Vault Scaffold Tests (0.06s, exit 0)
 [PASS] Asset Manifest Tests (0.03s, exit 0)
 [PASS] Command Surface Tests (0.03s, exit 0)
-[PASS] Net Contract Tests (0.03s, exit 0)
+[PASS] Net Contract Tests (0.02s, exit 0)
 [PASS] CI Contract Tests (0.03s, exit 0)
 [PASS] Command Center Contract Tests (0.03s, exit 0)
 [PASS] Human Gate Checklist Tests (0.03s, exit 0)
-[PASS] Human Gate Readiness Tests (0.04s, exit 0)
-[PASS] Human Gate Acceptance Tests (2.07s, exit 0)
+[PASS] Human Gate Readiness Tests (0.03s, exit 0)
+[PASS] Human Gate Acceptance Tests (2.05s, exit 0)
+[PASS] Human Gate Receipt Tests (1.03s, exit 0)
 [PASS] Founder Sign-Off Audit Tests (0.03s, exit 0)
 [PASS] Acceptance Matrix Contract Tests (0.03s, exit 0)
 [PASS] Release Contract Tests (0.03s, exit 0)
-[PASS] Secret Scan (0.52s, exit 0)
+[PASS] Secret Scan (0.48s, exit 0)
 [PASS] Analyze (2.01s, exit 0)
 [PASS] Build (0.08s, exit 0)
 [PASS] Open Cloud Dry Run (0.03s, exit 0)
@@ -1632,8 +1633,14 @@ Asset manifest reconciled 4 assets; auto-added 0; missing sources 0; missing exp
 Wrote gate status for 11 work orders to C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Gate Status.md
 Wrote human gate checklist to C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Human Gate Checklist.md
 Wrote human gate readiness to C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Human Gate Readiness.md
+Wrote human gate proof receipts to C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Human Gate Proof Receipts.md
 Build health PASS; wrote C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Build Health.md
 Wrote founder sign-off audit to C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Founder Sign-Off Audit.md
+```
+
+```powershell
+./nexus.ps1 receipts
+Wrote human gate proof receipts to C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Human Gate Proof Receipts.md
 ```
 
 ```powershell

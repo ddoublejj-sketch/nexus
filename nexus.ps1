@@ -153,6 +153,7 @@ switch ($Command.ToLowerInvariant()) {
 				Invoke-LoopScript "tools/gate_status.luau"
 				Invoke-LoopScript "tools/human_gate_checklist.luau"
 				Invoke-LoopScript "tools/human_gate_readiness.luau"
+				Invoke-LoopScript "tools/human_gate_receipts.luau"
 				& $Lune run tools/build_health.luau --skip-install
 				if ($LASTEXITCODE -ne 0) {
 					throw "tools/build_health.luau --skip-install failed with exit code $LASTEXITCODE"
@@ -199,9 +200,13 @@ switch ($Command.ToLowerInvariant()) {
 		Invoke-Tool "lune" @("run", "tools/gate_status.luau")
 		Invoke-Tool "lune" @("run", "tools/human_gate_checklist.luau")
 		Invoke-Tool "lune" @("run", "tools/human_gate_readiness.luau")
+		Invoke-Tool "lune" @("run", "tools/human_gate_receipts.luau")
 	}
 	"gatecheck" {
 		Invoke-Tool "lune" (@("run", "tools/human_gate_acceptance.luau") + $Rest)
+	}
+	"receipts" {
+		Invoke-Tool "lune" @("run", "tools/human_gate_receipts.luau")
 	}
 	"audit" {
 		Invoke-Tool "lune" @("run", "tools/founder_signoff_audit.luau")
@@ -218,6 +223,7 @@ switch ($Command.ToLowerInvariant()) {
 			Invoke-Tool "lune" @("run", "tools/gate_status.luau")
 			Invoke-Tool "lune" @("run", "tools/human_gate_checklist.luau")
 			Invoke-Tool "lune" @("run", "tools/human_gate_readiness.luau")
+			Invoke-Tool "lune" @("run", "tools/human_gate_receipts.luau")
 			Invoke-Tool "lune" @("run", "tools/build_health.luau")
 			Invoke-Tool "lune" @("run", "tools/founder_signoff_audit.luau")
 
@@ -249,6 +255,6 @@ switch ($Command.ToLowerInvariant()) {
 		Write-NexusJobTable
 	}
 	default {
-		throw "Unknown command '$Command'. Use up, down, serve, build, map, check, fix, sync, health, gates, gatecheck, audit, release, loop, or status."
+		throw "Unknown command '$Command'. Use up, down, serve, build, map, check, fix, sync, health, gates, gatecheck, receipts, audit, release, loop, or status."
 	}
 }

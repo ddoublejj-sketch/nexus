@@ -143,6 +143,11 @@ else
 	)
 	assertContains(
 		dashboard,
+		"![[Human Gate Proof Receipts]]",
+		"Dashboard missing Human Gate Proof Receipts embed"
+	)
+	assertContains(
+		dashboard,
 		"![[Founder Sign-Off Audit]]",
 		"Dashboard missing Founder Sign-Off Audit embed"
 	)
@@ -181,6 +186,19 @@ else
 		humanGateReadiness,
 		"Open Cloud config",
 		"Readiness missing Open Cloud config audit"
+	)
+
+	local humanGateReceipts = read("00_Command_Center/Human Gate Proof Receipts.md")
+	assertFrontmatter(humanGateReceipts, "Human Gate Proof Receipts")
+	assertContains(
+		humanGateReceipts,
+		"Pending receipts are not completion evidence.",
+		"Human Gate Proof Receipts must reject pending proof"
+	)
+	assertContains(
+		humanGateReceipts,
+		"docs/gate-proofs/G2-studio-connect.md",
+		"Human Gate Proof Receipts missing G2 receipt"
 	)
 
 	local founderSignoffAudit = read("00_Command_Center/Founder Sign-Off Audit.md")
