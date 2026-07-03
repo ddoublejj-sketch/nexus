@@ -4,7 +4,7 @@ Last updated: 2026-07-03
 
 ## Current Phase
 
-WO-0 is in progress and blocked on **G1 - GUI installs**. VS Code is now installed and `code --version` passes through refreshed PATH, but `gh`, Obsidian, and Blender CLI are still missing. WO-1 exact local acceptance now passes through `./nexus.ps1 check`. WO-2 now has the sync-rules runbook and sourcemap-aware analyze proof, but live Studio sync remains blocked on **G2 - Studio connect**. WO-3 vault scaffolding has started and is blocked on **G3 - Obsidian plugins + REST key** for end-to-end REST verification. WO-4 automation scripts now pass through exact `./nexus.ps1 loop --once` and include dummy-service/stale-note evidence, but dashboard rendering remains gated. WO-5 asset pipeline has direct-run proof with seed assets. WO-6 Cmdr integration has build/analyze proof, but in-Studio command execution remains gated. WO-7 data/networking baseline has direct local proof, but live ProfileStore session behavior remains Studio-gated. WO-8 CI workflow and shared local/CI gate are created, but remote GitHub setup is blocked on **G4 - GitHub auth**. WO-9 release-path dry-run now passes through `./nexus.ps1 release --dry-run --fixture`; live publish remains gated on **G5 - Open Cloud key**. WO-10 `up/status/down` now starts and stops watcher jobs cleanly; full cold-boot Studio acceptance remains blocked on G2/G3.
+WO-0 G1 tool closure now passes locally: Git, Rokit, Rojo, VS Code `code`, GitHub CLI `gh`, Blender CLI, and Obsidian command are all available through refreshed PATH/shims. WO-1 exact local acceptance now passes through `./nexus.ps1 check`. WO-2 now has the sync-rules runbook and sourcemap-aware analyze proof, but live Studio sync remains blocked on **G2 - Studio connect**. WO-3 vault scaffolding has started and is blocked on **G3 - Obsidian plugins + REST key** for end-to-end REST verification. WO-4 automation scripts now pass through exact `./nexus.ps1 loop --once` and include dummy-service/stale-note evidence, but dashboard rendering remains gated. WO-5 asset pipeline has direct-run proof with seed assets. WO-6 Cmdr integration has build/analyze proof, but in-Studio command execution remains gated. WO-7 data/networking baseline has direct local proof, but live ProfileStore session behavior remains Studio-gated. WO-8 CI workflow and shared local/CI gate are created, but remote GitHub auth/remote setup remains blocked on **G4 - GitHub auth**. WO-9 release-path dry-run now passes through `./nexus.ps1 release --dry-run --fixture`; live publish remains gated on **G5 - Open Cloud key**. WO-10 `up/status/down` now starts and stops watcher jobs cleanly; full cold-boot Studio acceptance remains blocked on G2/G3.
 
 ## WO-0 - Close the Tool Gaps
 
@@ -224,6 +224,48 @@ Current G1 probe after VS Code install and PATH refresh:
 Human gate acceptance BLOCKED: 3 check(s) are not accepted.
 ```
 
+### G1 Closure - 2026-07-03
+
+GitHub CLI was installed as an official portable release in `C:\Users\jackw\.local\bin` after the MSI path stalled:
+
+```powershell
+gh --version
+gh version 2.96.0 (2026-07-02)
+https://github.com/cli/cli/releases/tag/v2.96.0
+```
+
+Portable Blender 5.1.2 was installed under `C:\Users\jackw\Tools\blender-5.1.2-windows-x64`, and the PATH shim now forwards CLI arguments correctly:
+
+```powershell
+blender --background --version
+Blender 5.1.2 (hash ec6e62d40fa9 built 2026-05-19 01:37:34)
+```
+
+Obsidian was installed by running the cached Nullsoft installer directly after winget failed:
+
+```powershell
+Start-Process Obsidian-1.12.7.exe -ArgumentList '/S' -Wait -PassThru -WindowStyle Hidden
+Obsidian installer exit code: 0
+```
+
+An `obsidian.cmd` shim was added to `C:\Users\jackw\.local\bin` because the installer registers the app but does not add an `obsidian` command.
+
+Final G1 acceptance:
+
+```powershell
+./nexus.ps1 gatecheck --gate G1
+| Gate | Check | Status | Detail |
+| --- | --- | --- | --- |
+| G1 | git available | PASS | git version 2.54.0.windows.1 |
+| G1 | rokit available | PASS | rokit 1.2.0 |
+| G1 | rojo available | PASS | Rojo 7.7.0 |
+| G1 | code available | PASS | 1.126.0 7e7950df89d055b5a378379db9ee14290772148a x64 |
+| G1 | gh available | PASS | gh version 2.96.0 (2026-07-02) https://github.com/cli/cli/releases/tag/v2.96.0 |
+| G1 | blender CLI available | PASS | C:\Users\jackw\.local\bin\blender.cmd |
+| G1 | obsidian command available | PASS | C:\Users\jackw\.local\bin\obsidian.cmd |
+Human gate acceptance PASS
+```
+
 WO-0/G1 contract guard:
 
 ```powershell
@@ -240,14 +282,14 @@ C:\Users\jackw\Desktop\Claude Code\GlowRing_B.fbx
 C:\Users\jackw\Desktop\Claude Code\Greatsword.fbx
 ```
 
-### Human Gate G1 Request
+### Human Gate G1 Closure
 
-Please install or repair the GUI/tooling prerequisites that cannot currently be completed from this shell:
+G1 is closed locally. The tool closure path now uses a mix of normal installers and user-local shims:
 
 1. **VS Code is installed**; `code --version` passes through refreshed PATH.
-2. Install or repair **GitHub CLI** and make `gh` available on PATH. The first silent winget attempt timed out and left an elevated `msiexec` process.
-3. Install **Obsidian**.
-4. Install a standard Blender build, repair Blender PATH, or provide the absolute path to `blender.exe`. The current Windows Store `blender-launcher.exe` alias is not enough for CLI thumbnail rendering.
+2. **GitHub CLI is installed** as a portable official release at `C:\Users\jackw\.local\bin\gh.exe`; `gh auth login` remains G4.
+3. **Obsidian is installed** and exposed through `C:\Users\jackw\.local\bin\obsidian.cmd`; plugin/API setup remains G3.
+4. **Blender CLI is installed** as a portable official Blender build exposed through `C:\Users\jackw\.local\bin\blender.cmd`.
 
 After this, rerun WO-0 acceptance:
 
@@ -263,9 +305,8 @@ Get-Command blender -ErrorAction SilentlyContinue
 ### Open Notes
 
 - `rojo`, Wally, Lune, StyLua, Selene, and luau-lsp are now available through the Nexus Rokit project.
-- VS Code CLI is now available after PATH refresh.
-- GitHub CLI, Obsidian, and an automatable Blender CLI path are still not available.
-- No WO-0 acceptance item is marked complete yet because the full command list has not passed.
+- VS Code CLI, GitHub CLI, Obsidian command, and Blender CLI are now available after PATH refresh/shims.
+- WO-0 still has historical installer failure notes above, but the final G1 acceptance probe passes.
 
 ## WO-1 - Bootstrap the Nexus Repo
 
@@ -383,7 +424,7 @@ b13f88a Add shared CI quality gate
 
 ### Human Gate G3 Request
 
-Please complete Obsidian setup when G1 installs are done:
+Please complete Obsidian setup when ready:
 
 1. Open `C:\Users\jackw\Roblox\RobloxGameVault` as an Obsidian vault.
 2. Enable community plugins.
@@ -471,7 +512,7 @@ git status --short
 
 ### Open Blockers
 
-- Obsidian is not installed yet from WO-0/G1, so dashboard rendering cannot be verified.
+- Obsidian is installed, but dashboard rendering still cannot be accepted until the required plugins are enabled and checked in the vault.
 - Local REST API is not installed or keyed yet, so `tools/vault_ping.luau` can only queue the write; the REST flush is not accepted yet.
 - luau-lsp does not currently analyze `tools/*.luau` because it does not know Lune's `@lune/*` runtime imports yet; WO-1 analyzer scope remains `src`.
 - WO-3 is **not complete** until `lune run tools/vault_ping.luau` exits 0, `Ping.md` exists with a fresh timestamp, dashboard Dataview tables render, and the vault has committed the generated proof.
@@ -1235,16 +1276,15 @@ Open Cloud Dry Run: PASS
 
 Please complete when ready:
 
-1. Install GitHub CLI from G1 if it is not yet available.
-2. Run `gh auth login`.
-3. Create/push private repos for:
+1. Run `gh auth login`.
+2. Create/push private repos for:
    - `nexus`
    - `RobloxGameVault`
-4. Enable branch protection on `main` so the Nexus CI quality gate is required before merge.
+3. Enable branch protection on `main` so the Nexus CI quality gate is required before merge.
 
 ### Open Blockers
 
-- `gh` is still unavailable from WO-0/G1, so GitHub auth, repo creation, push, and branch protection cannot be completed.
+- `gh` is installed, but GitHub auth, repo creation, push, and branch protection still require G4.
 - The workflow has not run on GitHub yet.
 - The deliberate failing/fixed PR acceptance check cannot be demonstrated until the remote repo exists and G4 is complete.
 - WO-8 is **not marked complete** until CI has a real GitHub run and branch protection evidence.
@@ -1459,23 +1499,23 @@ Human gate acceptance probe self-test:
 | G1 | git available | PASS | git version 2.54.0.windows.1 |
 | G1 | rokit available | PASS | rokit 1.2.0 |
 | G1 | rojo available | PASS | Rojo 7.7.0 |
-| G1 | code available | FAIL | program not found |
-| G1 | gh available | FAIL | program not found |
-| G1 | blender CLI available | FAIL | blender not found on PATH |
-| G1 | obsidian command available | FAIL | obsidian not found on PATH |
-| G2 | Studio plugin connected | NEEDS HUMAN | Record G2 proof in docs/STATUS.md. |
-| G2 | Studio playtest observed | NEEDS HUMAN | Record Cmdr/DataService runtime proof. |
+| G1 | code available | PASS | 1.126.0 7e7950df89d055b5a378379db9ee14290772148a x64 |
+| G1 | gh available | PASS | gh version 2.96.0 (2026-07-02) https://github.com/cli/cli/releases/tag/v2.96.0 |
+| G1 | blender CLI available | PASS | C:\Users\jackw\.local\bin\blender.cmd |
+| G1 | obsidian command available | PASS | C:\Users\jackw\.local\bin\obsidian.cmd |
+| G2 | Studio plugin connected | NEEDS HUMAN | receipt pending: docs/gate-proofs/G2-studio-connect.md needs `Studio plugin connected: PASS` |
+| G2 | Studio playtest observed | NEEDS HUMAN | receipt pending: docs/gate-proofs/G2-studio-connect.md needs `Studio playtest observed: PASS` |
 | G2 | Rojo sync runbook present | PASS | runbook present |
 | G3 | Obsidian REST config present | FAIL | secrets/obsidian.env |
 | G3 | pending Obsidian REST writes flushed | FAIL | 1 pending write(s) |
-| G3 | Dashboard rendered in Obsidian | NEEDS HUMAN | Record visual/plugin proof in docs/STATUS.md. |
-| G4 | GitHub auth active | FAIL | program not found |
+| G3 | Dashboard rendered in Obsidian | NEEDS HUMAN | receipt pending: docs/gate-proofs/G3-obsidian-dashboard.md needs `Dashboard rendered in Obsidian: PASS` |
+| G4 | GitHub auth active | FAIL | You are not logged into any GitHub hosts. To log in, run: gh auth login |
 | G4 | Git remote configured | FAIL | no remote |
-| G4 | CI branch protection confirmed | NEEDS HUMAN | Record GitHub branch protection proof. |
+| G4 | CI branch protection confirmed | NEEDS HUMAN | receipt pending: docs/gate-proofs/G4-github-ci.md needs `CI branch protection confirmed: PASS` |
 | G5 | Open Cloud config present | FAIL | secrets/opencloud.env |
 | G5 | Build artifact present | PASS | build artifact present |
-| G5 | Live publish approval recorded | NEEDS HUMAN | Live publish requires explicit approval. |
-Human gate acceptance probe self-test PASS; current blocked checks: 14
+| G5 | Live publish approval recorded | NEEDS HUMAN | receipt pending: docs/gate-proofs/G5-open-cloud-publish.md needs `Live publish approval recorded: PASS` |
+Human gate acceptance probe self-test PASS; current blocked checks: 10
 ```
 
 Human gate acceptance probe blocked-path sample:
@@ -1636,12 +1676,12 @@ NexusAutomationLoop Stopped
 
 | Work Order | Local Status | Evidence In This File | Remaining Gate / Blocker |
 | --- | --- | --- | --- |
-| WO-0 Tool Gaps | Partial | Audit output, VS Code install proof, G1 Tool Closure note/runbook, and tool-gap contract tests under WO-0 | G1: `gh`, Obsidian, Blender on PATH/install path |
+| WO-0 Tool Gaps | Exact G1 acceptance passed | Audit output, VS Code install proof, portable gh/Blender/Obsidian shim proof, G1 Tool Closure note/runbook, and tool-gap contract tests under WO-0 | None locally |
 | WO-1 Bootstrap | Exact local acceptance passed | Repo scaffold, tool pins, `rokit install`, `wally install`, `rojo build`, `rojo sourcemap`, `./nexus.ps1 check` | None locally |
 | WO-2 Studio Bridge | Runbook added, live bridge blocked | Sourcemap-aware analyze output, Rojo bridge tests, and `docs/runbooks/rojo-sync-rules.md` | G2: Studio plugin connect and live sync proof |
 | WO-3 Vault | Scaffolded, REST blocked | Vault repo, templates, vault scaffold tests, pending queue output | G3: Obsidian install, plugins, Local REST API key, pending flush |
 | WO-4 Automation Loop | Exact local launcher proof passed | Sourcemap, vault sync, dummy/stale-note demo, command registry, gate status, vault scaffold tests, asset manifest, `./nexus.ps1 loop --once`, Build Health outputs | Dashboard render needs G3 |
-| WO-5 Asset Pipeline | Implemented with seed assets | Manifest, orphan repair, asset manifest tests, vault asset notes | Blender thumbnail rendering still waits on G1 Blender path; dashboard render needs G3 |
+| WO-5 Asset Pipeline | Implemented with seed assets | Manifest, orphan repair, asset manifest tests, vault asset notes, Blender CLI-ready seed catalog | Dashboard render needs G3 |
 | WO-6 Cmdr | Implemented and analyzed | Cmdr service/controller, commands, generated command docs | G2 Studio playtest for command execution |
 | WO-7 Data/Networking | Implemented and tested locally | ProfileStore wrapper, migration tests, DataService contract tests, Net contract tests, typed Net, Build Health | G2 Studio playtest for session/runtime behavior |
 | WO-8 CI | Local workflow committed | Shared gate output, CI contract tests, workflow, runbook | G4: `gh auth`, remote repo, branch protection, real CI run |
@@ -1659,30 +1699,30 @@ Acceptance matrix contract tests passed
 
 ```powershell
 ./nexus.ps1 check
-[PASS] Wally Install (0.82s, exit 0)
+[PASS] Wally Install (0.76s, exit 0)
 [PASS] StyLua (0.08s, exit 0)
 [PASS] Selene (0.09s, exit 0)
-[PASS] Sourcemap (0.09s, exit 0)
+[PASS] Sourcemap (0.08s, exit 0)
 [PASS] Tool Gap Contract Tests (0.03s, exit 0)
 [PASS] G1 Tool Closure Tests (0.03s, exit 0)
 [PASS] Rojo Bridge Tests (0.03s, exit 0)
 [PASS] Migration Tests (0.03s, exit 0)
 [PASS] DataService Contract Tests (0.03s, exit 0)
-[PASS] Vault Scaffold Tests (0.07s, exit 0)
+[PASS] Vault Scaffold Tests (0.06s, exit 0)
 [PASS] Asset Manifest Tests (0.03s, exit 0)
 [PASS] Command Surface Tests (0.03s, exit 0)
-[PASS] Net Contract Tests (0.02s, exit 0)
-[PASS] CI Contract Tests (0.03s, exit 0)
+[PASS] Net Contract Tests (0.03s, exit 0)
+[PASS] CI Contract Tests (0.02s, exit 0)
 [PASS] Command Center Contract Tests (0.03s, exit 0)
 [PASS] Human Gate Checklist Tests (0.03s, exit 0)
-[PASS] Human Gate Readiness Tests (0.02s, exit 0)
-[PASS] Human Gate Acceptance Tests (3.72s, exit 0)
-[PASS] Human Gate Receipt Tests (1.86s, exit 0)
+[PASS] Human Gate Readiness Tests (0.03s, exit 0)
+[PASS] Human Gate Acceptance Tests (2.15s, exit 0)
+[PASS] Human Gate Receipt Tests (1.08s, exit 0)
 [PASS] Founder Sign-Off Audit Tests (0.03s, exit 0)
 [PASS] Acceptance Matrix Contract Tests (0.03s, exit 0)
 [PASS] Release Contract Tests (0.03s, exit 0)
-[PASS] Secret Scan (0.43s, exit 0)
-[PASS] Analyze (2.00s, exit 0)
+[PASS] Secret Scan (0.42s, exit 0)
+[PASS] Analyze (2.05s, exit 0)
 [PASS] Build (0.08s, exit 0)
 [PASS] Open Cloud Dry Run (0.03s, exit 0)
 Quality gate PASS

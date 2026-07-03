@@ -65,7 +65,7 @@ local RECEIPTS: { Receipt } = {
 			"CI branch protection confirmed",
 		},
 		humanSteps = {
-			"Install GitHub CLI and complete `gh auth login`.",
+			"Complete `gh auth login`.",
 			"Approve private repo creation for Nexus and RobloxGameVault.",
 			"Confirm branch protection requires the Nexus CI quality gate.",
 		},

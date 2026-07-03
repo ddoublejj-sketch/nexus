@@ -80,7 +80,8 @@ for _, criterion in CRITERIA do
 	assertContains(script, criterion, "Audit generator missing criterion: " .. criterion)
 end
 
-for _, gate in { "G1", "G2", "G3", "G4", "G5" } do
+assertContains(script, '"G1"', "Audit generator must still inspect G1 in the acceptance matrix")
+for _, gate in { "G2", "G3", "G4", "G5" } do
 	assertContains(script, gate .. ":", "Audit generator missing human gate " .. gate)
 end
 
@@ -127,7 +128,17 @@ if fs.isDir(VAULT_ROOT) then
 	for _, criterion in CRITERIA do
 		assertContains(audit, criterion, "Audit note missing criterion: " .. criterion)
 	end
-	for _, gate in { "G1:", "G2:", "G3:", "G4:", "G5:" } do
+	assertNotContains(
+		audit,
+		"- G1: GUI installs and PATH repair.",
+		"Audit note must not list closed G1 as a final sign-off blocker"
+	)
+	assertNotContains(
+		audit,
+		"Open gate evidence remains in STATUS.md: G1,",
+		"Audit blocker summary must not list closed G1"
+	)
+	for _, gate in { "G2:", "G3:", "G4:", "G5:" } do
 		assertContains(audit, gate, "Audit note missing gate blocker " .. gate)
 	end
 	assertNotContains(audit, "OBSIDIAN_API_KEY=", "Audit note must not expose Obsidian key values")

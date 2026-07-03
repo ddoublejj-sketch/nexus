@@ -19,17 +19,15 @@ local GATES: { Gate } = {
 	{
 		id = "G1",
 		title = "GUI Installs",
-		state = "Blocked on local app/tool installation",
+		state = "Closed locally; tool install and PATH repair proof is recorded",
 		human = {
-			"Install Visual Studio Code and enable the `code` command on PATH.",
-			"Install GitHub CLI and make `gh` available on PATH.",
-			"Install Obsidian and open the vault once.",
-			"Install a standard Blender build or provide the absolute path to `blender.exe`.",
+			"No current G1 install action remains.",
+			"Use `docs/runbooks/g1-tool-closure.md` if this machine loses `code`, `gh`, `obsidian`, or `blender` on PATH.",
 		},
 		codex = {
 			"Run `./nexus.ps1 g1` to refresh the exact local tool audit and install/PATH repair note.",
 			"Run `./nexus.ps1 receipts` to refresh the pending proof receipt templates.",
-			"Rerun WO-0 acceptance from the Nexus repo.",
+			"Rerun WO-0 acceptance from the Nexus repo if a tool path changes.",
 			"Replace the placeholder thumbnail backlog with real Blender thumbnail renders if `blender.exe` is available.",
 		},
 		proof = {
@@ -71,7 +69,7 @@ local GATES: { Gate } = {
 	{
 		id = "G3",
 		title = "Obsidian REST And Plugins",
-		state = "Blocked on Obsidian installation, plugins, and Local REST API key",
+		state = "Blocked on Obsidian plugins, dashboard proof, and Local REST API key",
 		human = {
 			"Open `C:\\Users\\jackw\\Roblox\\RobloxGameVault` as an Obsidian vault.",
 			"Enable Local REST API, Obsidian Git, Dataview, Tasks, Kanban, Templater, QuickAdd, and Omnisearch.",
@@ -94,9 +92,8 @@ local GATES: { Gate } = {
 	{
 		id = "G4",
 		title = "GitHub Auth And CI",
-		state = "Blocked on GitHub CLI installation/authentication and remote repository setup",
+		state = "Blocked on GitHub authentication and remote repository setup",
 		human = {
-			"Install GitHub CLI if G1 has not already provided it.",
 			"Run `gh auth login` and complete the browser/device flow.",
 			"Approve private repo creation for Nexus and RobloxGameVault.",
 		},

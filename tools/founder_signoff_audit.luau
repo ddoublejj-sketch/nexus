@@ -53,13 +53,24 @@ local function countMatrixRows(status: string): number
 end
 
 local function gateBlockerSummary(status: string): string
+	local matrix = status:match("## Acceptance Matrix%s*(.-)%s*## Latest Whole%-Repo Verification")
+		or ""
+	local blockerCells = {}
+
+	for line in matrix:gmatch("[^\r\n]+") do
+		if line:match("^| WO%-") then
+			local _, _, _, blocker =
+				line:match("^|%s*(.-)%s*|%s*(.-)%s*|%s*(.-)%s*|%s*(.-)%s*|%s*$")
+			if blocker ~= nil and blocker ~= "None locally" then
+				table.insert(blockerCells, blocker)
+			end
+		end
+	end
+
+	local blockers = table.concat(blockerCells, " ")
 	local openGates = {}
 	for _, gate in { "G1", "G2", "G3", "G4", "G5" } do
-		if
-			contains(status, gate .. " -")
-			or contains(status, gate .. ":")
-			or contains(status, gate .. " ")
-		then
+		if contains(blockers, gate) then
 			table.insert(openGates, gate)
 		end
 	end
@@ -116,7 +127,7 @@ local criteria: { Criterion } = {
 			then "Acceptance Matrix has 11 work-order rows and the latest whole-repo verification includes Quality gate PASS. "
 				.. blockers
 			else "STATUS.md is missing the complete matrix or latest passing gate output.",
-		nextAction = "Complete G1-G5 human gates, rerun the gate-specific acceptance probes, and paste the final outputs.",
+		nextAction = "Complete remaining human gates, rerun the gate-specific acceptance probes, and paste the final outputs.",
 	},
 	{
 		id = "2",
@@ -160,7 +171,7 @@ local criteria: { Criterion } = {
 		evidence = if runbookCoverage(readme, freshSetup, disasterRecovery)
 			then "README plus fresh-machine and disaster-recovery runbooks cover setup, quality gate, release dry-run, and Studio snapshots; installer/auth gates remain human-owned."
 			else "README or runbooks are missing required setup evidence.",
-		nextAction = "Complete G1 and G4, then do a clean setup rehearsal from the docs.",
+		nextAction = "Complete G4, then do a clean setup rehearsal from the docs.",
 	},
 }
 
@@ -218,7 +229,6 @@ table.insert(lines, "## Human Gates Holding Final Sign-Off")
 table.insert(lines, "")
 table.insert(lines, blockers)
 table.insert(lines, "")
-table.insert(lines, "- G1: GUI installs and PATH repair.")
 table.insert(lines, "- G2: Roblox Studio Rojo plugin connect and live sync proof.")
 table.insert(
 	lines,

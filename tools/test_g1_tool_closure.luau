@@ -87,7 +87,10 @@ if fs.isDir(VAULT_ROOT) then
 	assertContains(note, "Obsidian command", "G1 note missing Obsidian row")
 	assertContains(note, "Blender CLI", "G1 note missing Blender CLI row")
 	assertContains(note, "Blender Store Package", "G1 note missing Store Blender row")
-	assertContains(note, "not found on PATH", "G1 note must show missing PATH state")
+	assertContains(note, "| VS Code code CLI | FOUND |", "G1 note must show VS Code found")
+	assertContains(note, "| GitHub CLI | FOUND |", "G1 note must show GitHub CLI found")
+	assertContains(note, "| Obsidian command | FOUND |", "G1 note must show Obsidian found")
+	assertContains(note, "| Blender CLI | FOUND |", "G1 note must show Blender CLI found")
 	assertContains(
 		note,
 		"winget install --id Microsoft.VisualStudioCode",

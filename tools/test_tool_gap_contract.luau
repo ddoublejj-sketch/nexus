@@ -31,8 +31,8 @@ local gateStatus = read(GATE_STATUS_PATH)
 
 assertContains(
 	status,
-	"WO-0 is in progress and blocked on **G1 - GUI installs**",
-	"Current phase must keep WO-0/G1 visible"
+	"WO-0 G1 tool closure now passes locally",
+	"Current phase must show WO-0/G1 closed"
 )
 assertContains(status, "### Current Re-Audit - 2026-07-03", "Missing current audit")
 assertContains(status, "git version 2.54.0.windows.1", "Missing Git audit output")
@@ -49,6 +49,17 @@ assertContains(
 )
 assertContains(status, "1.126.0", "Missing VS Code version proof")
 assertContains(status, "| G1 | code available | PASS |", "G1 probe must show code passing")
+assertContains(status, "| G1 | gh available | PASS |", "G1 probe must show gh passing")
+assertContains(
+	status,
+	"| G1 | blender CLI available | PASS |",
+	"G1 probe must show Blender passing"
+)
+assertContains(
+	status,
+	"| G1 | obsidian command available | PASS |",
+	"G1 probe must show Obsidian passing"
+)
 assertContains(
 	status,
 	"gh : The term 'gh' is not recognized",
@@ -61,11 +72,11 @@ assertContains(
 	"Windows Store launcher alias is present, but no reliable `blender.exe` CLI path is exposed yet.",
 	"STATUS must distinguish Blender app presence from CLI readiness"
 )
-assertContains(status, "### Human Gate G1 Request", "Missing G1 request")
+assertContains(status, "### Human Gate G1 Closure", "Missing G1 closure section")
 assertContains(status, "**VS Code is installed**", "Missing VS Code installed G1 evidence")
-assertContains(status, "Install or repair **GitHub CLI**", "Missing GitHub CLI G1 request")
-assertContains(status, "Install **Obsidian**", "Missing Obsidian G1 request")
-assertContains(status, "standard Blender build", "Missing Blender G1 wording")
+assertContains(status, "**GitHub CLI is installed**", "Missing GitHub CLI G1 closure")
+assertContains(status, "**Obsidian is installed**", "Missing Obsidian G1 closure")
+assertContains(status, "**Blender CLI is installed**", "Missing Blender G1 closure")
 assertContains(
 	status,
 	"lune run tools/test_tool_gap_contract.luau",
@@ -74,8 +85,8 @@ assertContains(
 assertContains(status, "Tool gap contract tests passed", "Missing WO-0 contract output")
 assertContains(
 	status,
-	"| WO-0 Tool Gaps | Partial | Audit output, VS Code install proof, G1 Tool Closure note/runbook, and tool-gap contract tests under WO-0 | G1: `gh`, Obsidian, Blender",
-	"Acceptance matrix must keep WO-0 partial and G1-gated"
+	"| WO-0 Tool Gaps | Exact G1 acceptance passed | Audit output, VS Code install proof, portable gh/Blender/Obsidian shim proof, G1 Tool Closure note/runbook, and tool-gap contract tests under WO-0 | None locally |",
+	"Acceptance matrix must mark WO-0 locally accepted"
 )
 
 assertContains(freshSetup, "rojo --version", "Fresh setup must verify Rojo")

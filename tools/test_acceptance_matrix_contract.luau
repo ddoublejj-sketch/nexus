@@ -37,9 +37,9 @@ local REQUIRED_GATE_LABELS = {
 local EXPECTED_ROWS = {
 	{
 		id = "WO-0 Tool Gaps",
-		status = "Partial",
-		evidence = "tool-gap contract tests",
-		blocker = "G1:",
+		status = "Exact G1 acceptance passed",
+		evidence = "portable gh/Blender/Obsidian shim proof",
+		blocker = "None locally",
 	},
 	{
 		id = "WO-1 Bootstrap",
@@ -69,7 +69,7 @@ local EXPECTED_ROWS = {
 		id = "WO-5 Asset Pipeline",
 		status = "Implemented with seed assets",
 		evidence = "asset manifest tests",
-		blocker = "G1 Blender path",
+		blocker = "Dashboard render needs G3",
 	},
 	{
 		id = "WO-6 Cmdr",
@@ -185,11 +185,7 @@ for _, expected in EXPECTED_ROWS do
 	assertContains(row.blocker, expected.blocker, "Missing blocker in " .. expected.id)
 end
 
-assertContains(
-	status,
-	"WO-0 is in progress and blocked on **G1 - GUI installs**",
-	"Current phase must preserve G1"
-)
+assertContains(status, "WO-0 G1 tool closure now passes locally", "Current phase must close G1")
 assertContains(status, "blocked on **G2 - Studio connect**", "Current phase must preserve G2")
 assertContains(
 	status,
