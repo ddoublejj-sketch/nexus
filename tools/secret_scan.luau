@@ -67,6 +67,10 @@ end
 local function isAllowed(line: string): boolean
 	local lower = line:lower()
 
+	if lower:find("pattern =", 1, true) then
+		return true
+	end
+
 	for _, fragment in ALLOWED_VALUE_FRAGMENTS do
 		if lower:find(fragment, 1, true) then
 			return true
