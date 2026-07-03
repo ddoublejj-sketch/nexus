@@ -19,6 +19,7 @@ local REQUIRED_GATE_LABELS = {
 	"Command Surface Tests",
 	"Net Contract Tests",
 	"CI Contract Tests",
+	"Command Center Contract Tests",
 	"Secret Scan",
 	"Analyze",
 	"Build",

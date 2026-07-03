@@ -1069,6 +1069,7 @@ Asset Manifest Tests: PASS
 Command Surface Tests: PASS
 Net Contract Tests: PASS
 CI Contract Tests: PASS
+Command Center Contract Tests: PASS
 Secret Scan: PASS
 Analyze: PASS
 Build: PASS
@@ -1145,10 +1146,11 @@ $env:ROKIT_PROBE='1'; lune run tools/quality_gate.luau
 [PASS] Asset Manifest Tests (0.03s, exit 0)
 [PASS] Command Surface Tests (0.03s, exit 0)
 [PASS] Net Contract Tests (0.03s, exit 0)
-[PASS] CI Contract Tests (0.02s, exit 0)
-[PASS] Secret Scan (0.35s, exit 0)
-[PASS] Analyze (2.01s, exit 0)
-[PASS] Build (0.08s, exit 0)
+[PASS] CI Contract Tests (0.03s, exit 0)
+[PASS] Command Center Contract Tests (0.03s, exit 0)
+[PASS] Secret Scan (0.36s, exit 0)
+[PASS] Analyze (1.99s, exit 0)
+[PASS] Build (0.09s, exit 0)
 [PASS] Open Cloud Dry Run (0.03s, exit 0)
 Quality gate PASS
 ```
@@ -1167,6 +1169,7 @@ Asset Manifest Tests: PASS
 Command Surface Tests: PASS
 Net Contract Tests: PASS
 CI Contract Tests: PASS
+Command Center Contract Tests: PASS
 Secret Scan: PASS
 Analyze: PASS
 Build: PASS
@@ -1213,6 +1216,7 @@ When ready to publish for real:
 - Added `docs/runbooks/disaster-recovery.md`.
 - Added vault snapshot archive placeholder at `80_Archives/StudioSnapshots/.gitkeep`.
 - Updated the `up` automation loop to run Build Health in watcher-safe mode so it does not run `wally install` while Rojo is serving `Packages/`.
+- Added `tools/test_command_center_contract.luau` to the shared quality gate. It verifies launcher subcommands, background job names, watcher-safe health mode, VS Code tasks/settings/extensions, daily dev log behavior, and setup/recovery runbook requirements.
 
 ### Verification Evidence
 
@@ -1228,6 +1232,13 @@ VS Code task file parse:
 ```powershell
 Get-Content -LiteralPath ".\.vscode\tasks.json" -Raw | ConvertFrom-Json | Out-Null; "tasks.json parse PASS"
 tasks.json parse PASS
+```
+
+Command-center contract self-test:
+
+```powershell
+lune run tools/test_command_center_contract.luau
+Command center contract tests passed
 ```
 
 Direct daily log verification:
@@ -1251,7 +1262,7 @@ Full gate after WO-10:
 
 ```powershell
 $env:ROKIT_PROBE='1'; lune run tools/quality_gate.luau
-[PASS] Wally Install (0.71s, exit 0)
+[PASS] Wally Install (0.73s, exit 0)
 [PASS] StyLua (0.06s, exit 0)
 [PASS] Selene (0.09s, exit 0)
 [PASS] Sourcemap (0.09s, exit 0)
@@ -1260,10 +1271,11 @@ $env:ROKIT_PROBE='1'; lune run tools/quality_gate.luau
 [PASS] Asset Manifest Tests (0.03s, exit 0)
 [PASS] Command Surface Tests (0.03s, exit 0)
 [PASS] Net Contract Tests (0.03s, exit 0)
-[PASS] CI Contract Tests (0.02s, exit 0)
-[PASS] Secret Scan (0.35s, exit 0)
-[PASS] Analyze (2.01s, exit 0)
-[PASS] Build (0.08s, exit 0)
+[PASS] CI Contract Tests (0.03s, exit 0)
+[PASS] Command Center Contract Tests (0.03s, exit 0)
+[PASS] Secret Scan (0.36s, exit 0)
+[PASS] Analyze (1.99s, exit 0)
+[PASS] Build (0.09s, exit 0)
 [PASS] Open Cloud Dry Run (0.03s, exit 0)
 Quality gate PASS
 ```
@@ -1282,6 +1294,7 @@ Asset Manifest Tests: PASS
 Command Surface Tests: PASS
 Net Contract Tests: PASS
 CI Contract Tests: PASS
+Command Center Contract Tests: PASS
 Secret Scan: PASS
 Analyze: PASS
 Build: PASS
@@ -1346,25 +1359,26 @@ NexusAutomationLoop Stopped
 | WO-7 Data/Networking | Implemented and tested locally | ProfileStore wrapper, migration tests, Net contract tests, typed Net, Build Health | G2 Studio playtest for session/runtime behavior |
 | WO-8 CI | Local workflow committed | Shared gate output, CI contract tests, workflow, runbook | G4: `gh auth`, remote repo, branch protection, real CI run |
 | WO-9 Release Path | Dry-run accepted locally | Fixture dry-run, `./nexus.ps1 release --dry-run --fixture`, secret-history scan, release checklist | G5 for live publish only |
-| WO-10 Hardening | Up/down smoke test passed locally | Task JSON parse, dev log writes, Gate Status dashboard embed, `./nexus.ps1 up/status/down`, full gate | G2 Studio connect and G3 dashboard render for cold-boot acceptance |
+| WO-10 Hardening | Up/down smoke test passed locally | Task JSON parse, command-center contract tests, dev log writes, Gate Status dashboard embed, `./nexus.ps1 up/status/down`, full gate | G2 Studio connect and G3 dashboard render for cold-boot acceptance |
 
 ## Latest Whole-Repo Verification
 
 ```powershell
 ./nexus.ps1 check
-[PASS] Wally Install (0.80s, exit 0)
+[PASS] Wally Install (0.75s, exit 0)
 [PASS] StyLua (0.06s, exit 0)
 [PASS] Selene (0.08s, exit 0)
-[PASS] Sourcemap (0.08s, exit 0)
+[PASS] Sourcemap (0.09s, exit 0)
 [PASS] Migration Tests (0.03s, exit 0)
 [PASS] Vault Scaffold Tests (0.06s, exit 0)
-[PASS] Asset Manifest Tests (0.04s, exit 0)
+[PASS] Asset Manifest Tests (0.03s, exit 0)
 [PASS] Command Surface Tests (0.03s, exit 0)
 [PASS] Net Contract Tests (0.03s, exit 0)
-[PASS] CI Contract Tests (0.03s, exit 0)
+[PASS] CI Contract Tests (0.02s, exit 0)
+[PASS] Command Center Contract Tests (0.03s, exit 0)
 [PASS] Secret Scan (0.37s, exit 0)
-[PASS] Analyze (2.03s, exit 0)
-[PASS] Build (0.09s, exit 0)
+[PASS] Analyze (2.00s, exit 0)
+[PASS] Build (0.08s, exit 0)
 [PASS] Open Cloud Dry Run (0.03s, exit 0)
 Quality gate PASS
 ```

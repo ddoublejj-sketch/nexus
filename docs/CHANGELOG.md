@@ -24,3 +24,4 @@
 - [WO-5] Added asset manifest self-test for seed assets, source/export files, generated notes, and thumbnail backlog coverage - 2026-07-03.
 - [WO-3/WO-4] Added vault scaffold self-test for folder layout, templates, dashboard embeds, and generated command-center notes - 2026-07-03.
 - [WO-8] Added CI contract self-test for shared-gate parity, workflow artifact upload, and G4 runbook requirements - 2026-07-03.
+- [WO-10] Added command-center contract self-test for launcher jobs, VS Code tasks/settings, dev log, and setup/recovery runbooks - 2026-07-03.
