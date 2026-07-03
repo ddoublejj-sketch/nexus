@@ -215,6 +215,19 @@ switch ($Command.ToLowerInvariant()) {
 	"health" {
 		Invoke-Tool "lune" @("run", "tools/build_health.luau")
 	}
+	"thumbnails" {
+		$blender = Get-Command blender -ErrorAction SilentlyContinue
+		if (-not $blender) {
+			throw "Blender CLI is not available. Run ./nexus.ps1 gatecheck --gate G1 first."
+		}
+
+		& $blender.Source --background --python tools/render_asset_thumbnails.py -- assets_export/manifests/assets.json
+		if ($LASTEXITCODE -ne 0) {
+			throw "Blender thumbnail render failed with exit code $LASTEXITCODE"
+		}
+
+		Invoke-Tool "lune" @("run", "tools/asset_manifest.luau")
+	}
 	"gates" {
 		Invoke-Tool "lune" @("run", "tools/gate_status.luau")
 		Invoke-Tool "lune" @("run", "tools/human_gate_checklist.luau")
@@ -293,6 +306,6 @@ switch ($Command.ToLowerInvariant()) {
 		Write-NexusJobTable
 	}
 	default {
-		throw "Unknown command '$Command'. Use up, down, serve, build, map, check, fix, sync, health, gates, gatecheck, g1, studio-bridge, receipts, obsidian-plugins, obsidian-rest, github-ci, open-cloud, audit, release, loop, or status."
+		throw "Unknown command '$Command'. Use up, down, serve, build, map, check, fix, sync, health, thumbnails, gates, gatecheck, g1, studio-bridge, receipts, obsidian-plugins, obsidian-rest, github-ci, open-cloud, audit, release, loop, or status."
 	}
 }

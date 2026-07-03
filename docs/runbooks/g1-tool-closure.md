@@ -14,7 +14,7 @@ Get-Command blender -ErrorAction SilentlyContinue
 ./nexus.ps1 gatecheck --gate G1
 ```
 
-Git, Rokit, and Rojo are already passing. The remaining blockers are VS Code `code`, GitHub CLI `gh`, Obsidian, and a PATH-visible Blender CLI.
+Git, Rokit, Rojo, VS Code `code`, GitHub CLI `gh`, Obsidian, and a PATH-visible Blender CLI are passing on the current machine.
 
 ## Human Install Commands
 
@@ -26,7 +26,7 @@ winget install --id GitHub.cli --source winget
 winget install --id Obsidian.Obsidian --source winget
 ```
 
-Blender currently exists as a Microsoft Store package on this machine, but `blender` is not visible on PATH. For WO-5 thumbnail rendering, install a standard Blender build that exposes `blender.exe`, add that directory to PATH, or provide the full `blender.exe` path for Nexus config work.
+Blender thumbnail rendering requires a real CLI path, not only the Microsoft Store launcher alias. The current machine exposes Blender through `C:\Users\jackw\.local\bin\blender.cmd`; if that disappears, install a standard Blender build that exposes `blender.exe` or restore the shim.
 
 ## After Installation
 

@@ -4,7 +4,7 @@ Last updated: 2026-07-03
 
 ## Current Phase
 
-WO-0 G1 tool closure now passes locally: Git, Rokit, Rojo, VS Code `code`, GitHub CLI `gh`, Blender CLI, and Obsidian command are all available through refreshed PATH/shims. WO-1 exact local acceptance now passes through `./nexus.ps1 check`. WO-2 now has the sync-rules runbook, sourcemap-aware analyze proof, and `./nexus.ps1 studio-bridge` for repeatable local G2 readiness evidence, but live Studio sync remains blocked on **G2 - Studio connect**. WO-3 vault plugin preinstall now passes locally with all eight required Obsidian plugins downloaded and enabled in vault config; `./nexus.ps1 obsidian-rest` now records non-secret bootstrap evidence and will write `secrets/obsidian.env` only after Obsidian generates Local REST settings, but REST/dashboard acceptance remains blocked on **G3 - Obsidian REST key + dashboard proof**. WO-4 automation scripts now pass through exact `./nexus.ps1 loop --once` and include dummy-service/stale-note evidence, but dashboard rendering remains gated. WO-5 asset pipeline has direct-run proof with seed assets. WO-6 Cmdr integration has build/analyze proof, but in-Studio command execution remains gated. WO-7 data/networking baseline has direct local proof, but live ProfileStore session behavior remains Studio-gated. WO-8 CI workflow and shared local/CI gate are created; `./nexus.ps1 github-ci` now records non-secret G4 readiness and can explicitly create/push the private remote after `gh auth login`, but remote GitHub auth/remote setup remains blocked on **G4 - GitHub auth**. WO-9 release-path dry-run now passes through `./nexus.ps1 release --dry-run --fixture`; `./nexus.ps1 open-cloud` records secret-safe G5 readiness, but live publish remains gated on **G5 - Open Cloud key**. WO-10 `up/status/down` now starts and stops watcher jobs cleanly; full cold-boot Studio acceptance remains blocked on G2/G3.
+WO-0 G1 tool closure now passes locally: Git, Rokit, Rojo, VS Code `code`, GitHub CLI `gh`, Blender CLI, and Obsidian command are all available through refreshed PATH/shims. WO-1 exact local acceptance now passes through `./nexus.ps1 check`. WO-2 now has the sync-rules runbook, sourcemap-aware analyze proof, and `./nexus.ps1 studio-bridge` for repeatable local G2 readiness evidence, but live Studio sync remains blocked on **G2 - Studio connect**. WO-3 vault plugin preinstall now passes locally with all eight required Obsidian plugins downloaded and enabled in vault config; `./nexus.ps1 obsidian-rest` now records non-secret bootstrap evidence and will write `secrets/obsidian.env` only after Obsidian generates Local REST settings, but REST/dashboard acceptance remains blocked on **G3 - Obsidian REST key + dashboard proof**. WO-4 automation scripts now pass through exact `./nexus.ps1 loop --once` and include dummy-service/stale-note evidence, but dashboard rendering remains gated. WO-5 asset pipeline now renders real Blender PNG thumbnails for the four seed assets through `./nexus.ps1 thumbnails`. WO-6 Cmdr integration has build/analyze proof, but in-Studio command execution remains gated. WO-7 data/networking baseline has direct local proof, but live ProfileStore session behavior remains Studio-gated. WO-8 CI workflow and shared local/CI gate are created; `./nexus.ps1 github-ci` now records non-secret G4 readiness and can explicitly create/push the private remote after `gh auth login`, but remote GitHub auth/remote setup remains blocked on **G4 - GitHub auth**. WO-9 release-path dry-run now passes through `./nexus.ps1 release --dry-run --fixture`; `./nexus.ps1 open-cloud` records secret-safe G5 readiness, but live publish remains gated on **G5 - Open Cloud key**. WO-10 `up/status/down` now starts and stops watcher jobs cleanly; full cold-boot Studio acceptance remains blocked on G2/G3.
 
 G3/G5 gate probes now parse local secret env files and only pass when Obsidian REST and Open Cloud values are present, non-placeholder, and valid enough to use; secret values are never printed.
 
@@ -814,7 +814,7 @@ WO-4 has local exact launcher proof, but final acceptance still needs the G3 das
   - `Greatsword.fbx`
 - Added source copies under `assets_src/imported`.
 - Added Roblox export copies under `assets_export/roblox`.
-- Added placeholder thumbnails under `assets_export/thumbnails`.
+- Added rendered PNG thumbnails under `assets_export/thumbnails`.
 - Upgraded `tools/asset_manifest.luau` from a skeleton into a deterministic reconciler that:
   - scans `assets_export/roblox`
   - pairs exports with `assets_src/imported`
@@ -824,8 +824,9 @@ WO-4 has local exact launcher proof, but final acceptance still needs the G3 das
   - writes `90_Automation/Generated/Asset Manifest.md`
   - writes `90_Automation/Generated/Asset Thumbnail Backlog.md`
   - repairs missing manifest rows
-- Added `tools/test_asset_manifest.luau` to the shared quality gate. It verifies seed manifest rows, real source/export files, placeholder thumbnails, generated vault asset notes, the generated asset index, and thumbnail backlog coverage.
+- Added `tools/test_asset_manifest.luau` to the shared quality gate. It verifies seed manifest rows, real source/export files, rendered PNG thumbnails, generated vault asset notes, the generated asset index, and thumbnail coverage.
 - Added `docs/runbooks/blender-export.md` with scale, origin, collision proxy, material, and tri-budget conventions.
+- Added `tools/render_asset_thumbnails.py`, `./nexus.ps1 thumbnails`, and the `Nexus: Render Thumbnails` VS Code task.
 
 ### Direct-Run Evidence
 
@@ -874,13 +875,36 @@ Vault asset notes:
 04_Assets/Models/Greatsword.md
 ```
 
-Placeholder thumbnails:
+Rendered thumbnails:
 
 ```text
-assets_export/thumbnails/energy_shard_01.placeholder.txt
-assets_export/thumbnails/glow_ring_a_01.placeholder.txt
-assets_export/thumbnails/glow_ring_b_01.placeholder.txt
-assets_export/thumbnails/greatsword_01.placeholder.txt
+assets_export/thumbnails/energy_shard_01.png
+assets_export/thumbnails/glow_ring_a_01.png
+assets_export/thumbnails/glow_ring_b_01.png
+assets_export/thumbnails/greatsword_01.png
+```
+
+Blender thumbnail render:
+
+```powershell
+./nexus.ps1 thumbnails
+00:02.015  render           | Saved: 'C:\Users\jackw\Roblox\nexus\assets_export\thumbnails\energy_shard_01.png'
+00:02.203  render           | Saved: 'C:\Users\jackw\Roblox\nexus\assets_export\thumbnails\glow_ring_a_01.png'
+00:02.390  render           | Saved: 'C:\Users\jackw\Roblox\nexus\assets_export\thumbnails\glow_ring_b_01.png'
+00:02.796  render           | Saved: 'C:\Users\jackw\Roblox\nexus\assets_export\thumbnails\greatsword_01.png'
+Blender 5.1.2 (hash ec6e62d40fa9 built 2026-05-19 01:37:34)
+BlenderMCP addon registered
+FBX version: 7400
+FBX version: 7400
+FBX version: 7400
+FBX version: 7400
+C:/Users/jackw/Roblox/nexus/assets_export/thumbnails/energy_shard_01.png
+C:/Users/jackw/Roblox/nexus/assets_export/thumbnails/glow_ring_a_01.png
+C:/Users/jackw/Roblox/nexus/assets_export/thumbnails/glow_ring_b_01.png
+C:/Users/jackw/Roblox/nexus/assets_export/thumbnails/greatsword_01.png
+Rendered 4 asset thumbnail(s)
+BlenderMCP addon unregistered
+Asset manifest reconciled 4 assets; auto-added 0; missing sources 0; missing exports 0
 ```
 
 Orphan repair demonstration:
@@ -940,7 +964,7 @@ Build health PASS; wrote C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center
 
 ### Open Blockers
 
-- Blender is still not resolved from WO-0, so real thumbnail rendering is replaced with placeholder thumbnail notes and `Asset Thumbnail Backlog.md`.
+- No local Blender thumbnail blocker remains; the seed catalog now has rendered PNG thumbnails.
 - WO-5 is downstream of WO-4 in the master dependency graph. The asset pipeline evidence above is present, but the work order is **not marked complete** until WO-4 formal acceptance clears.
 
 ## WO-6 - In-Game Developer Console
@@ -1809,7 +1833,7 @@ NexusAutomationLoop Stopped
 | WO-2 Studio Bridge | Runbook added, live bridge blocked | Sourcemap-aware analyze output, Rojo bridge tests, Studio bridge bootstrap proof, and `docs/runbooks/rojo-sync-rules.md` | G2: Studio plugin connect and live sync proof |
 | WO-3 Vault | Scaffolded, REST blocked | Vault repo, templates, vault scaffold tests, pending queue output, Obsidian plugin setup proof | G3: Local REST API key, pending flush, dashboard render |
 | WO-4 Automation Loop | Exact local launcher proof passed | Sourcemap, vault sync, dummy/stale-note demo, command registry, gate status, vault scaffold tests, asset manifest, `./nexus.ps1 loop --once`, Build Health outputs | Dashboard render needs G3 |
-| WO-5 Asset Pipeline | Implemented with seed assets | Manifest, orphan repair, asset manifest tests, vault asset notes, Blender CLI-ready seed catalog | Dashboard render needs G3 |
+| WO-5 Asset Pipeline | Implemented with seed assets | Manifest, orphan repair, asset manifest tests, vault asset notes, Blender-rendered PNG thumbnails, and seed catalog | Dashboard render needs G3 |
 | WO-6 Cmdr | Implemented and analyzed | Cmdr service/controller, commands, generated command docs | G2 Studio playtest for command execution |
 | WO-7 Data/Networking | Implemented and tested locally | ProfileStore wrapper, migration tests, DataService contract tests, Net contract tests, typed Net, Build Health | G2 Studio playtest for session/runtime behavior |
 | WO-8 CI | Local workflow committed | Shared gate output, CI contract tests, GitHub CI bootstrap proof, workflow, runbook | G4: `gh auth`, remote repo, branch protection, real CI run |
@@ -1827,35 +1851,35 @@ Acceptance matrix contract tests passed
 
 ```powershell
 ./nexus.ps1 check
-[PASS] Wally Install (0.69s, exit 0)
-[PASS] StyLua (0.09s, exit 0)
-[PASS] Selene (0.11s, exit 0)
-[PASS] Sourcemap (0.08s, exit 0)
+[PASS] Wally Install (0.82s, exit 0)
+[PASS] StyLua (0.10s, exit 0)
+[PASS] Selene (0.12s, exit 0)
+[PASS] Sourcemap (0.10s, exit 0)
 [PASS] Tool Gap Contract Tests (0.03s, exit 0)
 [PASS] G1 Tool Closure Tests (0.03s, exit 0)
 [PASS] Rojo Bridge Tests (0.03s, exit 0)
 [PASS] Studio Bridge Bootstrap Tests (0.03s, exit 0)
-[PASS] Migration Tests (0.03s, exit 0)
+[PASS] Migration Tests (0.04s, exit 0)
 [PASS] DataService Contract Tests (0.03s, exit 0)
-[PASS] Vault Scaffold Tests (0.07s, exit 0)
-[PASS] Obsidian Plugin Setup Tests (0.03s, exit 0)
+[PASS] Vault Scaffold Tests (0.08s, exit 0)
+[PASS] Obsidian Plugin Setup Tests (0.04s, exit 0)
 [PASS] Obsidian REST Bootstrap Tests (0.03s, exit 0)
-[PASS] GitHub CI Bootstrap Tests (0.03s, exit 0)
-[PASS] Asset Manifest Tests (0.03s, exit 0)
-[PASS] Command Surface Tests (0.03s, exit 0)
-[PASS] Net Contract Tests (0.03s, exit 0)
+[PASS] GitHub CI Bootstrap Tests (0.04s, exit 0)
+[PASS] Asset Manifest Tests (0.06s, exit 0)
+[PASS] Command Surface Tests (0.04s, exit 0)
+[PASS] Net Contract Tests (0.04s, exit 0)
 [PASS] CI Contract Tests (0.03s, exit 0)
 [PASS] Command Center Contract Tests (0.03s, exit 0)
 [PASS] Human Gate Checklist Tests (0.03s, exit 0)
 [PASS] Human Gate Readiness Tests (0.03s, exit 0)
-[PASS] Human Gate Acceptance Tests (2.10s, exit 0)
-[PASS] Human Gate Receipt Tests (1.07s, exit 0)
+[PASS] Human Gate Acceptance Tests (2.28s, exit 0)
+[PASS] Human Gate Receipt Tests (1.22s, exit 0)
 [PASS] Founder Sign-Off Audit Tests (0.03s, exit 0)
 [PASS] Acceptance Matrix Contract Tests (0.03s, exit 0)
 [PASS] Release Contract Tests (0.03s, exit 0)
 [PASS] Open Cloud Bootstrap Tests (0.03s, exit 0)
 [PASS] Secret Scan (0.55s, exit 0)
-[PASS] Analyze (2.01s, exit 0)
+[PASS] Analyze (1.96s, exit 0)
 [PASS] Build (0.08s, exit 0)
 [PASS] Open Cloud Dry Run (0.03s, exit 0)
 Quality gate PASS

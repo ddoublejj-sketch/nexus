@@ -1,5 +1,0 @@
-Placeholder thumbnail for GlowRing B
-
-Blender was not resolved during WO-0, so thumbnail rendering is backlogged.
-Source: assets_src/imported/GlowRing_B.fbx
-Export: assets_export/roblox/GlowRing_B.fbx

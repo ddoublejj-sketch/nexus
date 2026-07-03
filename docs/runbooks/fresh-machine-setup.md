@@ -28,8 +28,8 @@ Get-Command blender -ErrorAction SilentlyContinue
 ```
 
 For Blender automation, a Windows Store launcher alias is not enough. Nexus needs
-`blender.exe` on PATH or a standard install path that can be recorded for CLI
-thumbnail rendering.
+`blender.exe` on PATH or the local `C:\Users\jackw\.local\bin\blender.cmd` shim
+restored for CLI thumbnail rendering.
 
 ## Clone And Install
 
@@ -41,6 +41,7 @@ cd C:\Users\jackw\Roblox\nexus
 rokit install
 wally install
 ./nexus.ps1 obsidian-plugins
+./nexus.ps1 thumbnails
 ./nexus.ps1 check
 ```
 

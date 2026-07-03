@@ -8,7 +8,7 @@
     "tri_count": 0,
     "tags": [ "seed", "imported" ],
     "license": "original",
-    "thumbnail": "assets_export/thumbnails/energy_shard_01.placeholder.txt",
+    "thumbnail": "assets_export/thumbnails/energy_shard_01.png",
     "used_in": [],
     "updated": "2026-07-03T02:26:54Z"
   },
@@ -21,7 +21,7 @@
     "tri_count": 0,
     "tags": [ "seed", "imported" ],
     "license": "original",
-    "thumbnail": "assets_export/thumbnails/glow_ring_a_01.placeholder.txt",
+    "thumbnail": "assets_export/thumbnails/glow_ring_a_01.png",
     "used_in": [],
     "updated": "2026-07-03T02:25:51Z"
   },
@@ -34,7 +34,7 @@
     "tri_count": 0,
     "tags": [ "seed", "imported" ],
     "license": "original",
-    "thumbnail": "assets_export/thumbnails/glow_ring_b_01.placeholder.txt",
+    "thumbnail": "assets_export/thumbnails/glow_ring_b_01.png",
     "used_in": [],
     "updated": "2026-07-03T02:25:51Z"
   },
@@ -47,7 +47,7 @@
     "tri_count": 0,
     "tags": [ "seed", "imported" ],
     "license": "original",
-    "thumbnail": "assets_export/thumbnails/greatsword_01.placeholder.txt",
+    "thumbnail": "assets_export/thumbnails/greatsword_01.png",
     "used_in": [],
     "updated": "2026-07-03T02:25:51Z"
   }

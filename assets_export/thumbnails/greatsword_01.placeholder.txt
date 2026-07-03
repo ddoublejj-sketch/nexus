@@ -1,5 +1,0 @@
-Placeholder thumbnail for Greatsword
-
-Blender was not resolved during WO-0, so thumbnail rendering is backlogged.
-Source: assets_src/imported/Greatsword.fbx
-Export: assets_export/roblox/Greatsword.fbx

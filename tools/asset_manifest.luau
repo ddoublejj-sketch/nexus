@@ -107,8 +107,25 @@ local function assetIdForBase(baseName: string): string
 	return slug(baseName) .. "_01"
 end
 
-local function thumbnailPathFor(id: string): string
+local function placeholderThumbnailPathFor(id: string): string
 	return "assets_export/thumbnails/" .. id .. ".placeholder.txt"
+end
+
+local function isPlaceholderThumbnail(path: string): boolean
+	return path:match("%.placeholder%.txt$") ~= nil
+end
+
+local function bestThumbnailPath(id: string, existingPath: string?): string
+	local renderedPath = "assets_export/thumbnails/" .. id .. ".png"
+	if fs.isFile(renderedPath) then
+		return renderedPath
+	end
+
+	if existingPath and existingPath ~= "" and not isPlaceholderThumbnail(existingPath) then
+		return existingPath
+	end
+
+	return placeholderThumbnailPathFor(id)
 end
 
 local function jsonString(value: string): string
@@ -183,7 +200,7 @@ local function readManifest(): { AssetRow }
 			tri_count = raw.tri_count or 0,
 			tags = raw.tags or {},
 			license = raw.license or "original",
-			thumbnail = raw.thumbnail or thumbnailPathFor(raw.id),
+			thumbnail = bestThumbnailPath(raw.id, raw.thumbnail),
 			used_in = raw.used_in or {},
 			updated = raw.updated or isoTimestamp(),
 		})
@@ -227,21 +244,21 @@ local function buildRowForExport(exportPath: string, existing: AssetRow?): Asset
 		tri_count = if existing then existing.tri_count else 0,
 		tags = if existing then existing.tags else { "seed", "imported" },
 		license = if existing then existing.license else "original",
-		thumbnail = if existing then existing.thumbnail else thumbnailPathFor(id),
+		thumbnail = bestThumbnailPath(id, if existing then existing.thumbnail else nil),
 		used_in = if existing then existing.used_in else {},
 		updated = timestamp,
 	}
 end
 
 local function writeThumbnailPlaceholder(row: AssetRow)
-	if row.thumbnail == "" then
+	if row.thumbnail == "" or not isPlaceholderThumbnail(row.thumbnail) then
 		return
 	end
 
 	local contents = table.concat({
 		"Placeholder thumbnail for " .. row.name,
 		"",
-		"Blender was not resolved during WO-0, so thumbnail rendering is backlogged.",
+		"No rendered PNG exists yet. Run `./nexus.ps1 thumbnails` after adding or changing this asset.",
 		"Source: " .. row.source,
 		"Export: " .. row.export,
 		"",
@@ -414,10 +431,18 @@ end
 
 writeIfChanged(OUTPUT_PATH, table.concat(lines, "\n") .. "\n")
 
+local placeholderRows = {}
+for _, row in rows do
+	if isPlaceholderThumbnail(row.thumbnail) then
+		table.insert(placeholderRows, row)
+	end
+end
+
+local backlogStatus = if #placeholderRows == 0 then "active" else "blocked"
 local backlogLines = {
 	"---",
 	"type: asset",
-	"status: blocked",
+	"status: " .. backlogStatus,
 	"owner:",
 	"source_path: C:\\Users\\jackw\\Roblox\\nexus\\tools\\asset_manifest.luau",
 	"roblox_asset_id:",
@@ -429,11 +454,16 @@ local backlogLines = {
 	"",
 	"# Asset Thumbnail Backlog",
 	"",
-	"Blender was not resolved in WO-0, so real thumbnail renders are pending.",
-	"",
+	if #placeholderRows == 0
+		then "All manifest assets currently have rendered PNG thumbnails."
+		else "Some manifest assets still need rendered PNG thumbnails. Run `./nexus.ps1 thumbnails` after Blender is available.",
 }
 
-for _, row in rows do
+if #placeholderRows > 0 then
+	table.insert(backlogLines, "")
+end
+
+for _, row in placeholderRows do
 	table.insert(backlogLines, "- `" .. row.thumbnail .. "` for " .. row.name)
 end
 

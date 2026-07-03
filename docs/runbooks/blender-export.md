@@ -1,6 +1,6 @@
 # Blender Export Runbook
 
-Status: draft until Blender is located in WO-0.
+Status: active. Blender CLI is available through the Nexus G1 tool closure.
 
 ## Scale And Orientation
 
@@ -28,9 +28,15 @@ Status: draft until Blender is located in WO-0.
 
 - Export Roblox-ready files to `assets_export/roblox`.
 - Keep source files under `assets_src`.
-- Generate thumbnails into `assets_export/thumbnails` after Blender path is resolved.
+- Generate thumbnails into `assets_export/thumbnails` with `./nexus.ps1 thumbnails`.
 - Every export must have a manifest row in `assets_export/manifests/assets.json`.
 
-## Current Backlog
+## Thumbnail Rendering
 
-Blender is not on PATH yet. WO-5 uses placeholder thumbnail files until WO-0 records a usable `blender.exe` path.
+Run this after adding or changing exported model files:
+
+```powershell
+./nexus.ps1 thumbnails
+```
+
+The command runs Blender headless through `tools/render_asset_thumbnails.py`, writes PNG thumbnails, and refreshes the asset manifest plus generated vault asset notes.

@@ -101,8 +101,8 @@ assertContains(
 )
 assertContains(
 	blenderRunbook,
-	"Blender is not on PATH yet",
-	"Blender export runbook must preserve thumbnail blocker"
+	"./nexus.ps1 thumbnails",
+	"Blender export runbook must document thumbnail rendering"
 )
 assertContains(gateStatus, '{ id = "G1"', "Gate status generator must track G1")
 

@@ -73,7 +73,7 @@ local EXPECTED_ROWS = {
 	{
 		id = "WO-5 Asset Pipeline",
 		status = "Implemented with seed assets",
-		evidence = "asset manifest tests",
+		evidence = "Blender-rendered PNG thumbnails",
 		blocker = "Dashboard render needs G3",
 	},
 	{

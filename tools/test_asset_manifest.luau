@@ -8,6 +8,9 @@ local VAULT_ROOT = "C:/Users/jackw/Roblox/RobloxGameVault"
 local ASSET_INDEX_PATH = VAULT_ROOT .. "/90_Automation/Generated/Asset Manifest.md"
 local THUMBNAIL_BACKLOG_PATH = VAULT_ROOT .. "/90_Automation/Generated/Asset Thumbnail Backlog.md"
 local ASSET_NOTE_ROOT = VAULT_ROOT .. "/04_Assets/Models"
+local RENDER_SCRIPT_PATH = "tools/render_asset_thumbnails.py"
+local LAUNCHER_PATH = "nexus.ps1"
+local TASKS_PATH = ".vscode/tasks.json"
 
 type AssetRow = {
 	id: string,
@@ -68,6 +71,22 @@ local idsSeen: { [string]: boolean } = {}
 local vaultExists = fs.isDir(VAULT_ROOT)
 local assetIndex = if vaultExists then read(ASSET_INDEX_PATH) else ""
 local thumbnailBacklog = if vaultExists then read(THUMBNAIL_BACKLOG_PATH) else ""
+local renderScript = read(RENDER_SCRIPT_PATH)
+local launcher = read(LAUNCHER_PATH)
+local tasksJson = read(TASKS_PATH)
+
+assertTrue(
+	renderScript:find("bpy.ops.import_scene.fbx", 1, true) ~= nil,
+	"thumbnail renderer must import FBX seed assets"
+)
+assertTrue(
+	launcher:find('"thumbnails"', 1, true) ~= nil,
+	"launcher must expose thumbnail rendering"
+)
+assertTrue(
+	tasksJson:find("Nexus: Render Thumbnails", 1, true) ~= nil,
+	"VS Code tasks must expose thumbnail rendering"
+)
 
 for _, row in manifest do
 	assertTrue(row.id ~= nil and row.id ~= "", "Asset row missing id")
@@ -90,13 +109,16 @@ for _, row in manifest do
 	assertTrue(#read(row.source) > 0, row.id .. " source file is empty")
 	assertTrue(fs.isFile(row.export), row.id .. " export file missing: " .. row.export)
 	assertTrue(#read(row.export) > 0, row.id .. " export file is empty")
+	assertTrue(fs.isFile(row.thumbnail), row.id .. " thumbnail missing: " .. row.thumbnail)
+	local thumbnail = read(row.thumbnail)
 	assertTrue(
-		fs.isFile(row.thumbnail),
-		row.id .. " placeholder thumbnail missing: " .. row.thumbnail
+		row.thumbnail:match("%.png$") ~= nil,
+		row.id .. " thumbnail should be a rendered PNG"
 	)
+	local b1, b2, b3, b4 = thumbnail:byte(1, 4)
 	assertTrue(
-		read(row.thumbnail):find("Blender was not resolved during WO-0", 1, true) ~= nil,
-		row.id .. " thumbnail placeholder should reference WO-0 Blender gate"
+		b1 == 137 and b2 == 80 and b3 == 78 and b4 == 71,
+		row.id .. " thumbnail must have PNG signature"
 	)
 
 	if vaultExists then
@@ -122,8 +144,12 @@ for _, row in manifest do
 			row.id .. " missing from generated asset index"
 		)
 		assertTrue(
-			thumbnailBacklog:find(row.thumbnail, 1, true) ~= nil,
-			row.id .. " missing from thumbnail backlog"
+			thumbnailBacklog:find(
+				"All manifest assets currently have rendered PNG thumbnails.",
+				1,
+				true
+			) ~= nil,
+			"thumbnail backlog should report all rendered"
 		)
 	end
 end
