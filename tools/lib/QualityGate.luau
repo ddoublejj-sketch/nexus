@@ -104,6 +104,14 @@ function QualityGate.runAll(options: RunOptions?): { CommandResult }
 	table.insert(
 		results,
 		QualityGate.runTool(
+			"Tool Gap Contract Tests",
+			"lune",
+			{ "run", "tools/test_tool_gap_contract.luau" }
+		)
+	)
+	table.insert(
+		results,
+		QualityGate.runTool(
 			"Rojo Bridge Tests",
 			"lune",
 			{ "run", "tools/test_rojo_bridge_contract.luau" }

@@ -18,9 +18,15 @@ Then verify from a new terminal:
 ```powershell
 git --version
 rokit --version
+rojo --version
 code --version
 gh --version
+Get-Command blender -ErrorAction SilentlyContinue
 ```
+
+For Blender automation, a Windows Store launcher alias is not enough. Nexus needs
+`blender.exe` on PATH or a standard install path that can be recorded for CLI
+thumbnail rendering.
 
 ## Clone And Install
 

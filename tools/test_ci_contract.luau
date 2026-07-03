@@ -13,6 +13,7 @@ local REQUIRED_GATE_LABELS = {
 	"StyLua",
 	"Selene",
 	"Sourcemap",
+	"Tool Gap Contract Tests",
 	"Rojo Bridge Tests",
 	"Migration Tests",
 	"DataService Contract Tests",

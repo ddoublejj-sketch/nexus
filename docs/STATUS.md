@@ -118,6 +118,57 @@ Get-Command blender -ErrorAction SilentlyContinue
 <no output>
 ```
 
+```powershell
+winget --version
+v1.29.280
+```
+
+Pinned project tools resolved by Rokit:
+
+```powershell
+Get-Command wally,lune,stylua,selene,luau-lsp -ErrorAction SilentlyContinue | Select-Object Name,Source
+
+Name         Source
+----         ------
+wally.exe    C:\Users\jackw\.rokit\bin\wally.exe
+lune.exe     C:\Users\jackw\.rokit\bin\lune.exe
+stylua.exe   C:\Users\jackw\.rokit\bin\stylua.exe
+selene.exe   C:\Users\jackw\.rokit\bin\selene.exe
+luau-lsp.exe C:\Users\jackw\.rokit\bin\luau-lsp.exe
+```
+
+Current installed-app checks:
+
+```powershell
+Get-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*','HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*','HKLM:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*' -ErrorAction SilentlyContinue | Where-Object { $_.DisplayName -match 'Visual Studio Code|Obsidian|GitHub CLI|Blender' } | Select-Object DisplayName,DisplayVersion,InstallLocation,DisplayIcon
+<no output>
+```
+
+```powershell
+Get-AppxPackage BlenderFoundation.Blender | Select-Object Name,Version,InstallLocation
+
+Name                      Version InstallLocation
+----                      ------- ---------------
+BlenderFoundation.Blender 5.1.2.0 C:\Program Files\WindowsApps\BlenderFoundation.Blender_5.1.2.0_x64__ppwjx1n5r4v9t
+```
+
+```powershell
+Get-ChildItem -Path 'C:\Users\jackw\AppData\Local\Microsoft\WindowsApps' -Filter '*.exe' -ErrorAction SilentlyContinue | Where-Object { $_.Name -match 'code|obsidian|gh|blender' } | Select-Object Name,FullName
+
+Name                 FullName
+----                 --------
+blender-launcher.exe C:\Users\jackw\AppData\Local\Microsoft\WindowsApps\blender-launcher.exe
+```
+
+Windows Store launcher alias is present, but no reliable `blender.exe` CLI path is exposed yet.
+
+WO-0/G1 contract guard:
+
+```powershell
+lune run tools/test_tool_gap_contract.luau
+Tool gap contract tests passed
+```
+
 Seed asset files confirmed for WO-5:
 
 ```text
@@ -135,7 +186,7 @@ Please install or repair the GUI/tooling prerequisites that cannot currently be 
 2. Install **Visual Studio Code** and enable the `code` command on PATH.
 3. Install **GitHub CLI** and make `gh` available on PATH.
 4. Install **Obsidian**.
-5. Install **Blender**, or provide the absolute path to `blender.exe`.
+5. Install a standard Blender build, repair Blender PATH, or provide the absolute path to `blender.exe`. The current Windows Store `blender-launcher.exe` alias is not enough for CLI thumbnail rendering.
 
 After this, rerun WO-0 acceptance:
 
@@ -150,7 +201,8 @@ Get-Command blender -ErrorAction SilentlyContinue
 
 ### Open Notes
 
-- `rojo` is present as a Rokit-managed shim, but it cannot report a version until the Nexus repo has a Rokit project manifest. WO-1 will create that manifest and rerun the check inside the repo.
+- `rojo`, Wally, Lune, StyLua, Selene, and luau-lsp are now available through the Nexus Rokit project.
+- VS Code CLI, GitHub CLI, Obsidian, and an automatable Blender CLI path are still not available.
 - No WO-0 acceptance item is marked complete yet because the full command list has not passed.
 
 ## WO-1 - Bootstrap the Nexus Repo
@@ -975,6 +1027,7 @@ Wally Install: PASS
 StyLua: PASS
 Selene: PASS
 Sourcemap: PASS
+Tool Gap Contract Tests: PASS
 Rojo Bridge Tests: PASS
 Migration Tests: PASS
 DataService Contract Tests: PASS
@@ -1031,6 +1084,7 @@ $env:ROKIT_PROBE='1'; lune run tools/quality_gate.luau
 [PASS] StyLua (0.06s, exit 0)
 [PASS] Selene (0.10s, exit 0)
 [PASS] Sourcemap (0.08s, exit 0)
+[PASS] Tool Gap Contract Tests (0.03s, exit 0)
 [PASS] Rojo Bridge Tests (0.03s, exit 0)
 [PASS] Migration Tests (0.03s, exit 0)
 [PASS] DataService Contract Tests (0.03s, exit 0)
@@ -1091,6 +1145,7 @@ Wally Install: PASS
 StyLua: PASS
 Selene: PASS
 Sourcemap: PASS
+Tool Gap Contract Tests: PASS
 Rojo Bridge Tests: PASS
 Migration Tests: PASS
 DataService Contract Tests: PASS
@@ -1179,6 +1234,7 @@ $env:ROKIT_PROBE='1'; lune run tools/quality_gate.luau
 [PASS] StyLua (0.07s, exit 0)
 [PASS] Selene (0.09s, exit 0)
 [PASS] Sourcemap (0.09s, exit 0)
+[PASS] Tool Gap Contract Tests (0.03s, exit 0)
 [PASS] Rojo Bridge Tests (0.03s, exit 0)
 [PASS] Migration Tests (0.03s, exit 0)
 [PASS] DataService Contract Tests (0.03s, exit 0)
@@ -1204,6 +1260,7 @@ Wally Install: PASS
 StyLua: PASS
 Selene: PASS
 Sourcemap: PASS
+Tool Gap Contract Tests: PASS
 Rojo Bridge Tests: PASS
 Migration Tests: PASS
 DataService Contract Tests: PASS
@@ -1310,6 +1367,7 @@ $env:ROKIT_PROBE='1'; lune run tools/quality_gate.luau
 [PASS] StyLua (0.06s, exit 0)
 [PASS] Selene (0.10s, exit 0)
 [PASS] Sourcemap (0.08s, exit 0)
+[PASS] Tool Gap Contract Tests (0.03s, exit 0)
 [PASS] Rojo Bridge Tests (0.03s, exit 0)
 [PASS] Migration Tests (0.03s, exit 0)
 [PASS] DataService Contract Tests (0.03s, exit 0)
@@ -1335,6 +1393,7 @@ Wally Install: PASS
 StyLua: PASS
 Selene: PASS
 Sourcemap: PASS
+Tool Gap Contract Tests: PASS
 Rojo Bridge Tests: PASS
 Migration Tests: PASS
 DataService Contract Tests: PASS
@@ -1399,7 +1458,7 @@ NexusAutomationLoop Stopped
 
 | Work Order | Local Status | Evidence In This File | Remaining Gate / Blocker |
 | --- | --- | --- | --- |
-| WO-0 Tool Gaps | Partial | Audit output under WO-0 | G1: `code`, `gh`, Obsidian, Blender on PATH/install path |
+| WO-0 Tool Gaps | Partial | Audit output and tool-gap contract tests under WO-0 | G1: `code`, `gh`, Obsidian, Blender on PATH/install path |
 | WO-1 Bootstrap | Exact local acceptance passed | Repo scaffold, tool pins, `rokit install`, `wally install`, `rojo build`, `rojo sourcemap`, `./nexus.ps1 check` | None locally |
 | WO-2 Studio Bridge | Runbook added, live bridge blocked | Sourcemap-aware analyze output, Rojo bridge tests, and `docs/runbooks/rojo-sync-rules.md` | G2: Studio plugin connect and live sync proof |
 | WO-3 Vault | Scaffolded, REST blocked | Vault repo, templates, vault scaffold tests, pending queue output | G3: Obsidian install, plugins, Local REST API key, pending flush |
@@ -1415,24 +1474,25 @@ NexusAutomationLoop Stopped
 
 ```powershell
 ./nexus.ps1 check
-[PASS] Wally Install (0.78s, exit 0)
+[PASS] Wally Install (0.72s, exit 0)
 [PASS] StyLua (0.06s, exit 0)
 [PASS] Selene (0.09s, exit 0)
 [PASS] Sourcemap (0.09s, exit 0)
+[PASS] Tool Gap Contract Tests (0.03s, exit 0)
 [PASS] Rojo Bridge Tests (0.03s, exit 0)
 [PASS] Migration Tests (0.03s, exit 0)
 [PASS] DataService Contract Tests (0.03s, exit 0)
-[PASS] Vault Scaffold Tests (0.07s, exit 0)
+[PASS] Vault Scaffold Tests (0.06s, exit 0)
 [PASS] Asset Manifest Tests (0.03s, exit 0)
 [PASS] Command Surface Tests (0.03s, exit 0)
 [PASS] Net Contract Tests (0.03s, exit 0)
 [PASS] CI Contract Tests (0.03s, exit 0)
 [PASS] Command Center Contract Tests (0.03s, exit 0)
 [PASS] Release Contract Tests (0.03s, exit 0)
-[PASS] Secret Scan (0.42s, exit 0)
-[PASS] Analyze (2.12s, exit 0)
-[PASS] Build (0.10s, exit 0)
-[PASS] Open Cloud Dry Run (0.04s, exit 0)
+[PASS] Secret Scan (0.40s, exit 0)
+[PASS] Analyze (1.97s, exit 0)
+[PASS] Build (0.08s, exit 0)
+[PASS] Open Cloud Dry Run (0.03s, exit 0)
 Quality gate PASS
 ```
 
