@@ -17,3 +17,4 @@
 - [WO-1/WO-10] Added tracked placeholders for map/UI/asset lanes and Studio snapshot archive - 2026-07-03.
 - [WO-1/WO-4/WO-9/WO-10] Fixed launcher argument forwarding, added watcher-safe health mode, and recorded exact launcher acceptance output - 2026-07-03.
 - [WO-3] Added Obsidian REST fail-soft pending queue and recorded queued ping proof - 2026-07-03.
+- [WO-4/WO-10] Added generated Gate Status note and dashboard embed for current human-gate state - 2026-07-03.

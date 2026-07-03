@@ -395,10 +395,12 @@ Please complete when ready:
   - `tools/vault_sync.luau`
   - `tools/command_registry.luau`
   - `tools/build_health.luau`
+  - `tools/gate_status.luau`
   - `tools/asset_manifest.luau` skeleton
 - Added `./nexus.ps1 loop` and VS Code `Nexus: Loop Once` task. The loop sequence refreshes sourcemap summary, module notes, command registry, asset manifest skeleton, and build health.
 - Generated vault notes:
   - `90_Automation/Generated/Sourcemap.md`
+  - `00_Command_Center/Gate Status.md`
   - `02_Systems/Generated Modules/...`
   - `02_Systems/Commands.md`
   - `90_Automation/Generated/Stale Sources.md`
@@ -532,6 +534,7 @@ Wrote 132 sourcemap rows to C:/Users/jackw/Roblox/RobloxGameVault/90_Automation/
 Wrote 12 module notes under C:/Users/jackw/Roblox/RobloxGameVault/02_Systems/Generated Modules and refreshed stale-source report
 Wrote 7 command rows to C:/Users/jackw/Roblox/RobloxGameVault/02_Systems/Commands.md
 Asset manifest reconciled 4 assets; auto-added 0; missing sources 0; missing exports 0
+Wrote gate status for 11 work orders to C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Gate Status.md
 Build health PASS; wrote C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Build Health.md
 ```
 
@@ -1230,30 +1233,30 @@ NexusAutomationLoop Stopped
 
 | Work Order | Local Status | Evidence In This File | Remaining Gate / Blocker |
 | --- | --- | --- | --- |
-| WO-0 Tool Gaps | Partial | Audit output under WO-0 | G1: `winget`, `code`, `gh`, Obsidian, Blender on PATH/install path |
+| WO-0 Tool Gaps | Partial | Audit output under WO-0 | G1: `code`, `gh`, Obsidian, Blender on PATH/install path |
 | WO-1 Bootstrap | Exact local acceptance passed | Repo scaffold, tool pins, `rokit install`, `wally install`, `rojo build`, `rojo sourcemap`, `./nexus.ps1 check` | None locally |
 | WO-2 Studio Bridge | Runbook added, live bridge blocked | Sourcemap-aware analyze output and `docs/runbooks/rojo-sync-rules.md` | G2: Studio plugin connect and live sync proof |
 | WO-3 Vault | Scaffolded, REST blocked | Vault repo, templates, pending queue output | G3: Obsidian install, plugins, Local REST API key, pending flush |
-| WO-4 Automation Loop | Exact local launcher proof passed | Sourcemap, vault sync, dummy/stale-note demo, command registry, asset manifest, `./nexus.ps1 loop --once`, Build Health outputs | Dashboard render needs G3 |
+| WO-4 Automation Loop | Exact local launcher proof passed | Sourcemap, vault sync, dummy/stale-note demo, command registry, gate status, asset manifest, `./nexus.ps1 loop --once`, Build Health outputs | Dashboard render needs G3 |
 | WO-5 Asset Pipeline | Implemented with seed assets | Manifest, orphan repair, vault asset notes | Blender thumbnail rendering still waits on G1 Blender path; dashboard render needs G3 |
 | WO-6 Cmdr | Implemented and analyzed | Cmdr service/controller, commands, generated command docs | G2 Studio playtest for command execution |
 | WO-7 Data/Networking | Implemented and tested locally | ProfileStore wrapper, migration tests, typed Net, Build Health | G2 Studio playtest for session/runtime behavior |
 | WO-8 CI | Local workflow committed | Shared gate output, workflow, runbook | G4: `gh auth`, remote repo, branch protection, real CI run |
 | WO-9 Release Path | Dry-run accepted locally | Fixture dry-run, `./nexus.ps1 release --dry-run --fixture`, secret-history scan, release checklist | G5 for live publish only |
-| WO-10 Hardening | Up/down smoke test passed locally | Task JSON parse, dev log writes, `./nexus.ps1 up/status/down`, full gate | G2 Studio connect and G3 dashboard render for cold-boot acceptance |
+| WO-10 Hardening | Up/down smoke test passed locally | Task JSON parse, dev log writes, Gate Status dashboard embed, `./nexus.ps1 up/status/down`, full gate | G2 Studio connect and G3 dashboard render for cold-boot acceptance |
 
 ## Latest Whole-Repo Verification
 
 ```powershell
 ./nexus.ps1 check
-[PASS] Wally Install (0.74s, exit 0)
+[PASS] Wally Install (0.69s, exit 0)
 [PASS] StyLua (0.05s, exit 0)
 [PASS] Selene (0.09s, exit 0)
 [PASS] Sourcemap (0.09s, exit 0)
 [PASS] Migration Tests (0.03s, exit 0)
-[PASS] Analyze (1.96s, exit 0)
-[PASS] Build (0.07s, exit 0)
-[PASS] Open Cloud Dry Run (0.03s, exit 0)
+[PASS] Analyze (1.98s, exit 0)
+[PASS] Build (0.08s, exit 0)
+[PASS] Open Cloud Dry Run (0.04s, exit 0)
 Quality gate PASS
 ```
 
