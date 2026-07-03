@@ -4,7 +4,7 @@ Last updated: 2026-07-03
 
 ## Current Phase
 
-WO-0 is in progress and blocked on **G1 - GUI installs**. WO-1 bootstrap work is partially complete, but WO-1 cannot be marked complete until the exact `./nexus.ps1 check` acceptance command can run. WO-3 vault scaffolding has started and is blocked on **G3 - Obsidian plugins + REST key** for end-to-end REST verification. WO-4 automation scripts have partial direct-run proof, but WO-4 remains incomplete until dependency gates and exact acceptance tests clear. WO-5 asset pipeline has direct-run proof with seed assets, but remains downstream of the still-open WO-4 formal acceptance. WO-6 Cmdr integration has build/analyze proof, but in-Studio command execution remains gated. WO-7 data/networking baseline has direct local proof, but live ProfileStore session behavior remains Studio-gated. WO-8 CI workflow and shared local/CI gate are created, but remote GitHub setup is blocked on **G4 - GitHub auth**.
+WO-0 is in progress and blocked on **G1 - GUI installs**. WO-1 bootstrap work is partially complete, but WO-1 cannot be marked complete until the exact `./nexus.ps1 check` acceptance command can run. WO-3 vault scaffolding has started and is blocked on **G3 - Obsidian plugins + REST key** for end-to-end REST verification. WO-4 automation scripts have partial direct-run proof, but WO-4 remains incomplete until dependency gates and exact acceptance tests clear. WO-5 asset pipeline has direct-run proof with seed assets, but remains downstream of the still-open WO-4 formal acceptance. WO-6 Cmdr integration has build/analyze proof, but in-Studio command execution remains gated. WO-7 data/networking baseline has direct local proof, but live ProfileStore session behavior remains Studio-gated. WO-8 CI workflow and shared local/CI gate are created, but remote GitHub setup is blocked on **G4 - GitHub auth**. WO-9 release-path dry-run tooling is created and locally verified; live publish remains gated on **G5 - Open Cloud key**.
 
 ## WO-0 - Close the Tool Gaps
 
@@ -879,3 +879,77 @@ Please complete when ready:
 - The workflow has not run on GitHub yet.
 - The deliberate failing/fixed PR acceptance check cannot be demonstrated until the remote repo exists and G4 is complete.
 - WO-8 is **not marked complete** until CI has a real GitHub run and branch protection evidence.
+
+## WO-9 - Release Path
+
+### Shipped So Far
+
+- Added `tools/open_cloud_publish.luau`.
+- Added fixture config at `tools/fixtures/opencloud.env`.
+- Added `docs/runbooks/release-checklist.md`.
+- Added `./nexus.ps1 release`.
+- Added `Open Cloud Dry Run` to the shared quality gate, so local checks, CI, and Build Health verify the release path without a real key.
+
+### Dry-Run Evidence
+
+```powershell
+$env:ROKIT_PROBE='1'; lune run tools/open_cloud_publish.luau --dry-run --fixture
+Open Cloud publish dry-run PASS
+Mode: dry-run
+Config source: tools/fixtures/opencloud.env (fixture)
+Artifact: build/nexus.rbxl (88295 bytes)
+Universe ID: 1234567890
+Place ID: 9876543210
+Endpoint: https://apis.roblox.com/universes/v1/1234567890/places/9876543210/versions?versionType=Published
+Live request was not sent.
+```
+
+### Shared Gate Evidence After WO-9
+
+```powershell
+$env:ROKIT_PROBE='1'; lune run tools/quality_gate.luau
+[PASS] Wally Install (0.76s, exit 0)
+[PASS] StyLua (0.05s, exit 0)
+[PASS] Selene (0.08s, exit 0)
+[PASS] Sourcemap (0.09s, exit 0)
+[PASS] Migration Tests (0.03s, exit 0)
+[PASS] Analyze (1.99s, exit 0)
+[PASS] Build (0.08s, exit 0)
+[PASS] Open Cloud Dry Run (0.03s, exit 0)
+Quality gate PASS
+```
+
+Build Health vault note now reports:
+
+```text
+Overall: PASS
+Wally Install: PASS
+StyLua: PASS
+Selene: PASS
+Sourcemap: PASS
+Migration Tests: PASS
+Analyze: PASS
+Build: PASS
+Open Cloud Dry Run: PASS
+```
+
+### Secret History Scan
+
+```powershell
+git log -p -- secrets .env | Select-String -Pattern "key|token"
+<no output>
+```
+
+### Human Gate G5 Request
+
+When ready to publish for real:
+
+1. Create the minimally scoped Open Cloud key in Creator Hub.
+2. Place it only in `C:\Users\jackw\Roblox\nexus\secrets\opencloud.env`.
+3. Include numeric `ROBLOX_UNIVERSE_ID` and `ROBLOX_PLACE_ID` in that same local secret file.
+4. Run the fixture dry-run first, then run `lune run tools/open_cloud_publish.luau --live`.
+
+### Open Blockers
+
+- G5 is not complete, so live publish was intentionally not attempted.
+- `./nexus.ps1 release` cannot be run exactly until the PowerShell execution-policy blocker from WO-1 is cleared.

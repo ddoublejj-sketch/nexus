@@ -103,6 +103,11 @@ function QualityGate.runAll(): { CommandResult }
 			"rojo",
 			{ "build", "default.project.json", "-o", "build/nexus.rbxl" }
 		),
+		QualityGate.runTool(
+			"Open Cloud Dry Run",
+			"lune",
+			{ "run", "tools/open_cloud_publish.luau", "--dry-run", "--fixture" }
+		),
 	}
 end
 

@@ -91,6 +91,9 @@ switch ($Command.ToLowerInvariant()) {
 	"health" {
 		Invoke-Tool "lune" @("run", "tools/build_health.luau")
 	}
+	"release" {
+		Invoke-Tool "lune" (@("run", "tools/open_cloud_publish.luau") + $Rest)
+	}
 	"loop" {
 		do {
 			Invoke-Tool "lune" @("run", "tools/sourcemap_summary.luau")
@@ -125,6 +128,6 @@ switch ($Command.ToLowerInvariant()) {
 		}
 	}
 	default {
-		throw "Unknown command '$Command'. Use serve, build, map, check, fix, sync, health, loop, or status."
+		throw "Unknown command '$Command'. Use serve, build, map, check, fix, sync, health, release, loop, or status."
 	}
 }

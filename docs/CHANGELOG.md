@@ -11,3 +11,4 @@
 - [WO-6] Added Cmdr via Wally with server/client bootstrap, permission tiers, seven command modules, and generated command docs - 2026-07-03.
 - [WO-7] Added ProfileStore dependency, profile schema/migrations, DataService mock-mode wrapper, typed Net boundary, migration tests, and vault docs - 2026-07-03.
 - [WO-8] Added shared local/CI quality gate, GitHub Actions workflow, CI runbook, and Build Health integration - 2026-07-03.
+- [WO-9] Added Open Cloud publish dry-run tooling, release checklist, fixture config, and secret-history scan evidence - 2026-07-03.
