@@ -1,0 +1,5 @@
+Placeholder thumbnail for EnergyShard
+
+Blender was not resolved during WO-0, so thumbnail rendering is backlogged.
+Source: assets_src/imported/EnergyShard.fbx
+Export: assets_export/roblox/EnergyShard.fbx

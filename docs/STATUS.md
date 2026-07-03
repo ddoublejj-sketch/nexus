@@ -4,7 +4,7 @@ Last updated: 2026-07-03
 
 ## Current Phase
 
-WO-0 is in progress and blocked on **G1 - GUI installs**. WO-1 bootstrap work is partially complete, but WO-1 cannot be marked complete until the exact `./nexus.ps1 check` acceptance command can run. WO-3 vault scaffolding has started and is blocked on **G3 - Obsidian plugins + REST key** for end-to-end REST verification. WO-4 automation scripts have partial direct-run proof, but WO-4 remains incomplete until dependency gates and exact acceptance tests clear.
+WO-0 is in progress and blocked on **G1 - GUI installs**. WO-1 bootstrap work is partially complete, but WO-1 cannot be marked complete until the exact `./nexus.ps1 check` acceptance command can run. WO-3 vault scaffolding has started and is blocked on **G3 - Obsidian plugins + REST key** for end-to-end REST verification. WO-4 automation scripts have partial direct-run proof, but WO-4 remains incomplete until dependency gates and exact acceptance tests clear. WO-5 asset pipeline has direct-run proof with seed assets, but remains downstream of the still-open WO-4 formal acceptance.
 
 ## WO-0 - Close the Tool Gaps
 
@@ -409,3 +409,135 @@ No stale generated module notes found.
 - Dashboard rendering still cannot be visually verified until Obsidian is installed and G3 plugins are enabled.
 
 WO-4 is **not complete** until its exact acceptance tests run and pass.
+
+## WO-5 - Asset Pipeline
+
+### Shipped So Far
+
+- Migrated four seed assets from `C:\Users\jackw\Desktop\Claude Code` into Nexus:
+  - `EnergyShard.fbx`
+  - `GlowRing_A.fbx`
+  - `GlowRing_B.fbx`
+  - `Greatsword.fbx`
+- Added source copies under `assets_src/imported`.
+- Added Roblox export copies under `assets_export/roblox`.
+- Added placeholder thumbnails under `assets_export/thumbnails`.
+- Upgraded `tools/asset_manifest.luau` from a skeleton into a deterministic reconciler that:
+  - scans `assets_export/roblox`
+  - pairs exports with `assets_src/imported`
+  - preserves existing manifest metadata
+  - writes `assets_export/manifests/assets.json`
+  - writes one vault note per asset in `04_Assets/Models`
+  - writes `90_Automation/Generated/Asset Manifest.md`
+  - writes `90_Automation/Generated/Asset Thumbnail Backlog.md`
+  - repairs missing manifest rows
+- Added `docs/runbooks/blender-export.md` with scale, origin, collision proxy, material, and tri-budget conventions.
+
+### Direct-Run Evidence
+
+Seed asset file sizes:
+
+```text
+assets_src/imported/EnergyShard.fbx   12524
+assets_src/imported/GlowRing_A.fbx    24972
+assets_src/imported/GlowRing_B.fbx    22636
+assets_src/imported/Greatsword.fbx   165852
+assets_export/roblox/EnergyShard.fbx  12524
+assets_export/roblox/GlowRing_A.fbx   24972
+assets_export/roblox/GlowRing_B.fbx   22636
+assets_export/roblox/Greatsword.fbx  165852
+```
+
+Manifest reconciliation:
+
+```powershell
+$env:ROKIT_PROBE='1'; lune run tools/asset_manifest.luau
+Asset manifest reconciled 4 assets; auto-added 4; missing sources 0; missing exports 0
+```
+
+Second steady-state run:
+
+```powershell
+$env:ROKIT_PROBE='1'; lune run tools/asset_manifest.luau
+Asset manifest reconciled 4 assets; auto-added 0; missing sources 0; missing exports 0
+```
+
+Manifest rows:
+
+```text
+energy_shard_01
+glow_ring_a_01
+glow_ring_b_01
+greatsword_01
+```
+
+Vault asset notes:
+
+```text
+04_Assets/Models/EnergyShard.md
+04_Assets/Models/GlowRing A.md
+04_Assets/Models/GlowRing B.md
+04_Assets/Models/Greatsword.md
+```
+
+Placeholder thumbnails:
+
+```text
+assets_export/thumbnails/energy_shard_01.placeholder.txt
+assets_export/thumbnails/glow_ring_a_01.placeholder.txt
+assets_export/thumbnails/glow_ring_b_01.placeholder.txt
+assets_export/thumbnails/greatsword_01.placeholder.txt
+```
+
+Orphan repair demonstration:
+
+```powershell
+# Temporarily removed the energy_shard_01 row from assets_export/manifests/assets.json, then ran:
+$env:ROKIT_PROBE='1'; lune run tools/asset_manifest.luau
+Asset manifest reconciled 4 assets; auto-added 1; missing sources 0; missing exports 0
+```
+
+Idempotence hash check after the repair settled:
+
+```text
+Before and after hashes matched for:
+assets_export/manifests/assets.json
+90_Automation/Generated/Asset Manifest.md
+90_Automation/Generated/Asset Thumbnail Backlog.md
+04_Assets/Models/EnergyShard.md
+04_Assets/Models/GlowRing A.md
+04_Assets/Models/GlowRing B.md
+04_Assets/Models/Greatsword.md
+```
+
+Quality checks after asset pipeline work:
+
+```powershell
+$env:ROKIT_PROBE='1'; stylua --check src tools
+<exit 0; no output>
+```
+
+```powershell
+$env:ROKIT_PROBE='1'; selene src tools
+Results:
+0 errors
+0 warnings
+0 parse errors
+```
+
+```powershell
+$env:ROKIT_PROBE='1'; luau-lsp analyze --definitions types/globalTypes.d.luau --sourcemap sourcemap.json src
+[INFO] Loading definitions file: @roblox - types/globalTypes.d.luau
+[WARN] client does not allow didChangeWatchedFiles registration - automatic updating on sourcemap changes disabled
+[INFO] Loading Luau configuration from c:\Users\jackw\Roblox\nexus\.luaurc
+```
+
+```powershell
+$env:ROKIT_PROBE='1'; lune run tools/build_health.luau
+Build health PASS; wrote C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Build Health.md
+```
+
+### Open Blockers
+
+- Blender is still not resolved from WO-0, so real thumbnail rendering is replaced with placeholder thumbnail notes and `Asset Thumbnail Backlog.md`.
+- WO-5 is downstream of WO-4 in the master dependency graph. The asset pipeline evidence above is present, but the work order is **not marked complete** until WO-4 formal acceptance clears.

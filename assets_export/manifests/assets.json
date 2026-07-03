@@ -1,1 +1,54 @@
-{}
+[
+  {
+    "id": "energy_shard_01",
+    "name": "EnergyShard",
+    "source": "assets_src/imported/EnergyShard.fbx",
+    "export": "assets_export/roblox/EnergyShard.fbx",
+    "roblox_asset_id": null,
+    "tri_count": 0,
+    "tags": [ "seed", "imported" ],
+    "license": "original",
+    "thumbnail": "assets_export/thumbnails/energy_shard_01.placeholder.txt",
+    "used_in": [],
+    "updated": "2026-07-03T02:26:54Z"
+  },
+  {
+    "id": "glow_ring_a_01",
+    "name": "GlowRing A",
+    "source": "assets_src/imported/GlowRing_A.fbx",
+    "export": "assets_export/roblox/GlowRing_A.fbx",
+    "roblox_asset_id": null,
+    "tri_count": 0,
+    "tags": [ "seed", "imported" ],
+    "license": "original",
+    "thumbnail": "assets_export/thumbnails/glow_ring_a_01.placeholder.txt",
+    "used_in": [],
+    "updated": "2026-07-03T02:25:51Z"
+  },
+  {
+    "id": "glow_ring_b_01",
+    "name": "GlowRing B",
+    "source": "assets_src/imported/GlowRing_B.fbx",
+    "export": "assets_export/roblox/GlowRing_B.fbx",
+    "roblox_asset_id": null,
+    "tri_count": 0,
+    "tags": [ "seed", "imported" ],
+    "license": "original",
+    "thumbnail": "assets_export/thumbnails/glow_ring_b_01.placeholder.txt",
+    "used_in": [],
+    "updated": "2026-07-03T02:25:51Z"
+  },
+  {
+    "id": "greatsword_01",
+    "name": "Greatsword",
+    "source": "assets_src/imported/Greatsword.fbx",
+    "export": "assets_export/roblox/Greatsword.fbx",
+    "roblox_asset_id": null,
+    "tri_count": 0,
+    "tags": [ "seed", "imported" ],
+    "license": "original",
+    "thumbnail": "assets_export/thumbnails/greatsword_01.placeholder.txt",
+    "used_in": [],
+    "updated": "2026-07-03T02:25:51Z"
+  }
+]
