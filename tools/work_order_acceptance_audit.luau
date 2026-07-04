@@ -279,7 +279,7 @@ local WORK_ORDERS: { WorkOrder } = {
 			{
 				label = "up/down proof",
 				path = STATUS_PATH,
-				needle = "./nexus.ps1 up; Start-Sleep -Seconds",
+				needle = "persistent child processes tracked in `.nexus/pids`",
 			},
 			{
 				label = "command-center contract",
