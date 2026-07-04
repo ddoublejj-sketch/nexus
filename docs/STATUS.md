@@ -4,7 +4,7 @@ Last updated: 2026-07-04
 
 ## Current Phase
 
-WO-0 G1 tool closure passes locally: Git, Rokit, Rojo, VS Code `code`, GitHub CLI `gh`, Blender CLI, and Obsidian command are all available through refreshed PATH/shims. WO-1 exact local acceptance passes through `./nexus.ps1 check`. WO-2 has the sync-rules runbook, sourcemap-aware analyze proof, Rojo-managed `ServerStorage.Maps`, and `./nexus.ps1 studio-bridge` for repeatable local G2 readiness evidence, but live Studio sync remains blocked on **G2 - Studio connect** at the founder's request. WO-3/G3 is now accepted: Obsidian REST config is present, all required plugins are enabled, pending REST writes are flushed, and dashboard render proof is recorded. WO-4 automation scripts pass through exact `./nexus.ps1 loop --once` and the dashboard notes now refresh with the accepted G3 state. WO-5 asset pipeline renders real Blender PNG thumbnails for the four seed assets through `./nexus.ps1 thumbnails`. WO-6 Cmdr profile commands call DataService for inventory grants, schema-backed stat edits, and Owner-confirmed profile resets; `reloadmap` calls MapService to reload Rojo-managed maps into `Workspace.Map`, but in-Studio command execution remains G2-gated. WO-7 data/networking baseline has direct local proof and server-owned mutation helpers, but live ProfileStore session behavior remains Studio-gated. WO-8 Nexus GitHub auth, private remote, workflow, push, and latest CI run now pass; remaining G4 items are Nexus branch protection, which GitHub rejects for this private repo unless the account is upgraded to GitHub Pro or the repo is made public, and explicit approval to create/push the separate private `RobloxGameVault` repo because the vault contains private notes. WO-9 Open Cloud config and real dry-run now pass without printing secrets; live publish remains gated on explicit G5 approval. WO-10 `up/status/down` starts and stops watcher jobs cleanly, `./nexus.ps1 cold-boot` now narrows to `BLOCKED_ON_G2`, and `./nexus.ps1 wo-audit` preserves the remaining human/external blockers instead of faking completion.
+WO-0 G1 tool closure passes locally: Git, Rokit, Rojo, VS Code `code`, GitHub CLI `gh`, Blender CLI, and Obsidian command are all available through refreshed PATH/shims. WO-1 exact local acceptance passes through `./nexus.ps1 check`. WO-2 has the sync-rules runbook, sourcemap-aware analyze proof, Rojo-managed `ServerStorage.Maps`, and `./nexus.ps1 studio-bridge` for repeatable local G2 readiness evidence, but live Studio sync remains blocked on **G2 - Studio connect** at the founder's request. WO-3/G3 is now accepted: Obsidian REST config is present, all required plugins are enabled, pending REST writes are flushed, and dashboard render proof is recorded. WO-4 automation scripts pass through exact `./nexus.ps1 loop --once` and the dashboard notes now refresh with the accepted G3 state. WO-5 asset pipeline renders real Blender PNG thumbnails for the four seed assets through `./nexus.ps1 thumbnails`. WO-6 Cmdr profile commands call DataService for inventory grants, schema-backed stat edits, and Owner-confirmed profile resets; `reloadmap` calls MapService to reload Rojo-managed maps into `Workspace.Map`, but in-Studio command execution remains G2-gated. WO-7 data/networking baseline has direct local proof and server-owned mutation helpers, but live ProfileStore session behavior remains Studio-gated. WO-8/G4 is now accepted: Nexus is public, `master` branch protection requires `Quality Gate`, PR #2 passed and merged through the protected path, and the separate private `RobloxGameVault` repo was created/pushed with non-secret proof. WO-9 Open Cloud config and real dry-run now pass without printing secrets; live publish remains gated on explicit G5 approval. WO-10 `up/status/down` starts and stops watcher jobs cleanly, `./nexus.ps1 cold-boot` now narrows to `BLOCKED_ON_G2`, and `./nexus.ps1 wo-audit` preserves the remaining human/external blockers instead of faking completion.
 
 G3/G5 gate probes now parse local secret env files and only pass when Obsidian REST and Open Cloud values are present, non-placeholder, and valid enough to use; secret values are never printed.
 
@@ -1436,20 +1436,19 @@ Build: PASS
 Open Cloud Dry Run: PASS
 ```
 
-### Human Gate G4 Request
+### Human Gate G4 Accepted
 
-Please complete when ready:
+Completed:
 
-1. Approve exporting the separate `RobloxGameVault` Obsidian repo to private GitHub, then run `./nexus.ps1 github-ci --create-vault-private`.
-2. Upgrade GitHub to Pro or make `ddoublejj-sketch/nexus` public if branch protection must be enabled on GitHub.
-3. Enable branch protection on `master` so the Nexus CI `Quality Gate` check is required before merge, then mark `docs/gate-proofs/G4-github-ci.md`.
+1. Founder approved exporting the separate `RobloxGameVault` Obsidian repo to private GitHub; `./nexus.ps1 github-ci --create-vault-private` created and pushed the private remote.
+2. Nexus was made public to avoid GitHub Pro.
+3. Branch protection on `master` requires `Quality Gate`; GitHub API verification returned `strict=true`, `contexts=[Quality Gate]`, `admins=true`.
+4. Direct push to protected `master` was rejected, then PR #2 passed `Quality Gate` and merged at `eba6611`.
 
 ### Open Blockers
 
-- Nexus GitHub auth, private remote, push, real CI run, and deliberate failing/fixed PR proof are complete.
-- `RobloxGameVault` is committed locally but not pushed to GitHub; exporting vault notes requires explicit founder approval.
-- Branch protection is blocked by GitHub's private-repo feature gate unless the account is upgraded to GitHub Pro or the repo is made public.
-- WO-8 is **not marked complete** until vault remote push and branch protection evidence are recorded.
+- None for G4.
+- WO-8 is accepted; remaining goal blockers are G2 Studio proof and G5 live publish approval.
 
 ## WO-9 - Release Path
 
@@ -1917,8 +1916,7 @@ NexusAutomationLoop Stopped
 ### Exact Acceptance Blockers
 
 - The cold-boot flow cannot prove Studio updates until G2 Studio plugin connect is complete. This is intentionally on hold per founder direction because the Rojo/Studio proof should be done in the project-specific Studio session.
-- GitHub auth, remote, workflow, push, and CI are green. Branch protection is still blocked by GitHub's private-repo feature gate unless the account is upgraded to GitHub Pro or the repository is made public.
-- The vault repo is committed locally but not pushed to GitHub. Creating/pushing private repo `ddoublejj-sketch/RobloxGameVault` exports Obsidian note data to GitHub and needs explicit approval.
+- G4 is accepted: Nexus is public, `master` requires `Quality Gate`, PR #2 merged through the protected branch flow, and the private `RobloxGameVault` remote is pushed.
 - Open Cloud config and dry-run pass. Live publish is intentionally blocked until the founder gives explicit live approval; no live publish has been attempted.
 
 ### Latest Gate Revalidation - 2026-07-04 UTC
@@ -2088,9 +2086,9 @@ Wrote founder sign-off audit to C:/Users/jackw/Roblox/RobloxGameVault/00_Command
 | WO-5 Asset Pipeline | Implemented with seed assets | Manifest, orphan repair, asset manifest tests, vault asset notes, Blender-rendered PNG thumbnails, and seed catalog | None locally |
 | WO-6 Cmdr | Implemented and analyzed | Cmdr service/controller, DataService-backed profile commands, MapService-backed reloadmap, generated command docs | G2 Studio playtest for command execution |
 | WO-7 Data/Networking | Implemented and tested locally | ProfileStore wrapper, server-owned mutation helpers, migration tests, DataService contract tests, Net contract tests, typed Net, Build Health | G2 Studio playtest for session/runtime behavior |
-| WO-8 CI | Nexus CI green on pushed private remote | Shared gate output, CI contract tests, GitHub CI bootstrap proof, workflow, runbook, origin remote, and latest successful GitHub Actions run | G4 branch protection blocked by GitHub Pro/public-repo requirement; vault GitHub repo/push needs explicit approval |
+| WO-8 CI | G4 accepted; protected CI green | Shared gate output, CI contract tests, GitHub CI bootstrap proof, workflow, runbook, origin remote, latest successful GitHub Actions run, PR #2 protected-branch merge, branch protection receipt, and private vault remote proof | None locally |
 | WO-9 Release Path | Dry-run accepted with real config | Fixture dry-run, `./nexus.ps1 release --dry-run --fixture`, Open Cloud bootstrap proof, release contract tests, secret-history scan, release checklist, and real dry-run pass | G5 live publish approval only |
-| WO-10 Hardening | Up/down smoke test passed locally | Task JSON parse, command-center contract tests, cold-boot readiness tests, work-order acceptance audit tests, human gate checklist/readiness/acceptance/receipt/founder sign-off tests, dev log writes, Gate Status, Human Gate Proof Receipts, Cold Boot Readiness, Work Order Acceptance Audit, and Founder Sign-Off dashboard embeds, `./nexus.ps1 up/status/down`, full gate | G2 Studio connect for cold-boot Studio proof; G4 branch protection external blocker; G5 live publish approval |
+| WO-10 Hardening | Up/down smoke test passed locally | Task JSON parse, command-center contract tests, cold-boot readiness tests, work-order acceptance audit tests, human gate checklist/readiness/acceptance/receipt/founder sign-off tests, dev log writes, Gate Status, Human Gate Proof Receipts, Cold Boot Readiness, Work Order Acceptance Audit, and Founder Sign-Off dashboard embeds, `./nexus.ps1 up/status/down`, full gate | G2 Studio connect for cold-boot Studio proof; G5 live publish approval |
 
 Acceptance Matrix contract self-test:
 
