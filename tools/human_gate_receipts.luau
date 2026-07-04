@@ -25,7 +25,7 @@ local RECEIPTS: { Receipt } = {
 			"Studio playtest observed",
 		},
 		humanSteps = {
-			"Open the Nexus place in Roblox Studio.",
+			"Open the target place in Roblox Studio. Current target: Golf Pro.",
 			"Run `./nexus.ps1 up` and connect the Rojo Studio plugin.",
 			"Confirm a disk edit appears in Studio within seconds.",
 			"Playtest Cmdr command execution and DataService mock-session behavior.",
