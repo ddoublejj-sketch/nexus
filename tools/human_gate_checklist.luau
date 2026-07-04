@@ -46,7 +46,7 @@ local GATES: { Gate } = {
 		title = "Studio Connect",
 		state = "Blocked on Roblox Studio plugin connection and playtest proof",
 		human = {
-			"Open the Nexus place in Roblox Studio.",
+			"Open the target place in Roblox Studio. Current target: Golf Pro.",
 			"Run `./nexus.ps1 up` from the Nexus repo.",
 			"Run `./nexus.ps1 studio-bridge` to confirm local bridge readiness.",
 			"Connect the Rojo Studio plugin to the local server.",

@@ -132,7 +132,7 @@ local function nextAction(rojo: Check, studio: Check, receipt: Check): string
 	end
 
 	if studio.state ~= "PASS" then
-		return "- Open Roblox Studio, open the Nexus place, connect the Rojo plugin to `127.0.0.1:34872`, then re-run this helper."
+		return "- Open Roblox Studio, open the target place (currently Golf Pro), connect the Rojo plugin to `127.0.0.1:34872`, then re-run this helper."
 	end
 
 	if receipt.state ~= "PASS" then
