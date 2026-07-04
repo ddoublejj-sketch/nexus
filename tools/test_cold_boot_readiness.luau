@@ -45,9 +45,10 @@ assertContains(
 	'Invoke-Tool "lune" @("run", "tools/cold_boot_readiness.luau")',
 	"launcher must run cold_boot_readiness"
 )
+assertContains(launcher, '"loop" {', "launcher must expose loop command")
 assertContains(
 	launcher,
-	'Invoke-LoopScript "tools/cold_boot_readiness.luau"',
+	'"tools/cold_boot_readiness.luau"',
 	"launcher loop must refresh cold-boot readiness"
 )
 

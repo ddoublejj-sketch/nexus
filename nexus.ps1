@@ -8,6 +8,9 @@ param(
 
 $ErrorActionPreference = "Stop"
 $RepoRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
+$NexusRuntimeRoot = Join-Path $RepoRoot ".nexus"
+$NexusPidRoot = Join-Path $NexusRuntimeRoot "pids"
+$NexusLogRoot = Join-Path $NexusRuntimeRoot "logs"
 $NexusJobNames = @(
 	"NexusRojoServe",
 	"NexusSourcemapWatch",
@@ -67,44 +70,89 @@ function Ensure-BuildDirectory {
 	}
 }
 
-function Start-NexusJob {
-	param(
-		[string]$Name,
-		[scriptblock]$ScriptBlock,
-		[object[]]$JobArgs = @()
-	)
-
-	$existing = Get-Job -Name $Name -ErrorAction SilentlyContinue | Select-Object -First 1
-	if ($existing) {
-		if ($existing.State -eq "Running") {
-			return
+function Ensure-NexusRuntime {
+	foreach ($path in @($NexusRuntimeRoot, $NexusPidRoot, $NexusLogRoot)) {
+		if (-not (Test-Path -LiteralPath $path)) {
+			New-Item -ItemType Directory -Path $path | Out-Null
 		}
+	}
+}
 
-		Remove-Job -Job $existing -Force
+function Get-NexusPidPath {
+	param([string]$Name)
+
+	Join-Path $NexusPidRoot "$Name.pid"
+}
+
+function Get-NexusProcess {
+	param([string]$Name)
+
+	$pidPath = Get-NexusPidPath $Name
+	if (-not (Test-Path -LiteralPath $pidPath)) {
+		return $null
 	}
 
-	Start-Job -Name $Name -ScriptBlock $ScriptBlock -ArgumentList $JobArgs | Out-Null
+	$processId = [int](Get-Content -LiteralPath $pidPath -Raw)
+	$process = Get-Process -Id $processId -ErrorAction SilentlyContinue
+	if (-not $process) {
+		Remove-Item -LiteralPath $pidPath -Force
+	}
+
+	$process
+}
+
+function Start-NexusProcess {
+	param(
+		[string]$Name,
+		[string]$FilePath,
+		[string[]]$Arguments = @()
+	)
+
+	Ensure-NexusRuntime
+	$existing = Get-NexusProcess $Name
+	if ($existing) {
+		return
+	}
+
+	$outPath = Join-Path $NexusLogRoot "$Name.out.log"
+	$errPath = Join-Path $NexusLogRoot "$Name.err.log"
+	foreach ($path in @($outPath, $errPath)) {
+		if (Test-Path -LiteralPath $path) {
+			Remove-Item -LiteralPath $path -Force
+		}
+	}
+
+	$process = Start-Process -FilePath $FilePath `
+		-ArgumentList $Arguments `
+		-WorkingDirectory $RepoRoot `
+		-WindowStyle Hidden `
+		-RedirectStandardOutput $outPath `
+		-RedirectStandardError $errPath `
+		-PassThru
+	Set-Content -LiteralPath (Get-NexusPidPath $Name) -Value $process.Id
 }
 
 function Stop-NexusJobs {
 	foreach ($name in $NexusJobNames) {
-		$jobs = Get-Job -Name $name -ErrorAction SilentlyContinue
-		foreach ($job in $jobs) {
-			if ($job.State -eq "Running") {
-				Stop-Job -Job $job
-			}
-			Remove-Job -Job $job -Force
+		$process = Get-NexusProcess $name
+		if ($process) {
+			Stop-Process -Id $process.Id -Force
+		}
+
+		$pidPath = Get-NexusPidPath $name
+		if (Test-Path -LiteralPath $pidPath) {
+			Remove-Item -LiteralPath $pidPath -Force
 		}
 	}
 }
 
 function Write-NexusJobTable {
 	$rows = foreach ($name in $NexusJobNames) {
-		$job = Get-Job -Name $name -ErrorAction SilentlyContinue | Select-Object -First 1
+		$process = Get-NexusProcess $name
 		[pscustomobject]@{
 			Name = $name
-			State = if ($job) { $job.State } else { "Stopped" }
-			Id = if ($job) { $job.Id } else { "" }
+			State = if ($process) { "Running" } else { "Stopped" }
+			Id = if ($process) { $process.Id } else { "" }
 		}
 	}
 
@@ -136,53 +184,13 @@ switch ($Command.ToLowerInvariant()) {
 	"up" {
 		Ensure-BuildDirectory
 		$rojoPath = Get-ToolPath "rojo"
-		$lunePath = Get-ToolPath "lune"
+		$powershellPath = (Get-Process -Id $PID).Path
 		Invoke-Tool "lune" @("run", "tools/dev_log.luau", "start")
+		Invoke-Tool "wally" @("install")
 
-		Start-NexusJob -Name "NexusRojoServe" -ScriptBlock {
-			param($Root, $Rojo)
-			Set-Location $Root
-			& $Rojo serve default.project.json
-		} -JobArgs @($RepoRoot, $rojoPath)
-
-		Start-NexusJob -Name "NexusSourcemapWatch" -ScriptBlock {
-			param($Root, $Rojo)
-			Set-Location $Root
-			& $Rojo sourcemap default.project.json -o sourcemap.json --watch
-		} -JobArgs @($RepoRoot, $rojoPath)
-
-		Start-NexusJob -Name "NexusAutomationLoop" -ScriptBlock {
-			param($Root, $Lune)
-			$ErrorActionPreference = "Stop"
-			function Invoke-LoopScript {
-				param([string]$ScriptPath)
-
-				& $Lune run $ScriptPath
-				if ($LASTEXITCODE -ne 0) {
-					throw "$ScriptPath failed with exit code $LASTEXITCODE"
-				}
-			}
-
-			Set-Location $Root
-			while ($true) {
-				Invoke-LoopScript "tools/sourcemap_summary.luau"
-				Invoke-LoopScript "tools/vault_sync.luau"
-				Invoke-LoopScript "tools/command_registry.luau"
-				Invoke-LoopScript "tools/asset_manifest.luau"
-				Invoke-LoopScript "tools/gate_status.luau"
-				Invoke-LoopScript "tools/human_gate_checklist.luau"
-				Invoke-LoopScript "tools/human_gate_readiness.luau"
-				Invoke-LoopScript "tools/human_gate_receipts.luau"
-				& $Lune run tools/build_health.luau --skip-install
-				if ($LASTEXITCODE -ne 0) {
-					throw "tools/build_health.luau --skip-install failed with exit code $LASTEXITCODE"
-				}
-				Invoke-LoopScript "tools/cold_boot_readiness.luau"
-				Invoke-LoopScript "tools/work_order_acceptance_audit.luau"
-				Invoke-LoopScript "tools/founder_signoff_audit.luau"
-				Start-Sleep -Seconds 10
-			}
-		} -JobArgs @($RepoRoot, $lunePath)
+		Start-NexusProcess -Name "NexusRojoServe" -FilePath $rojoPath -Arguments @("serve", "default.project.json")
+		Start-NexusProcess -Name "NexusSourcemapWatch" -FilePath $rojoPath -Arguments @("sourcemap", "default.project.json", "-o", "sourcemap.json", "--watch")
+		Start-NexusProcess -Name "NexusAutomationLoop" -FilePath $powershellPath -Arguments @("-NoProfile", "-ExecutionPolicy", "Bypass", "-File", $MyInvocation.MyCommand.Path, "loop")
 
 		Write-NexusJobTable
 	}
@@ -283,7 +291,11 @@ switch ($Command.ToLowerInvariant()) {
 			Invoke-Tool "lune" @("run", "tools/human_gate_checklist.luau")
 			Invoke-Tool "lune" @("run", "tools/human_gate_readiness.luau")
 			Invoke-Tool "lune" @("run", "tools/human_gate_receipts.luau")
-			Invoke-Tool "lune" @("run", "tools/build_health.luau")
+			if ($Rest -contains "--once") {
+				Invoke-Tool "lune" @("run", "tools/build_health.luau")
+			} else {
+				Invoke-Tool "lune" @("run", "tools/build_health.luau", "--skip-install")
+			}
 			Invoke-Tool "lune" @("run", "tools/cold_boot_readiness.luau")
 			Invoke-Tool "lune" @("run", "tools/work_order_acceptance_audit.luau")
 			Invoke-Tool "lune" @("run", "tools/founder_signoff_audit.luau")

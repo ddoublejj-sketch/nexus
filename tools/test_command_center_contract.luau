@@ -146,16 +146,26 @@ do
 	assertContains(launcher, command .. " {", "Launcher missing subcommand " .. command)
 end
 
-assertContains(launcher, "& $Rojo serve default.project.json", "up must start Rojo serve")
+assertContains(launcher, 'Start-NexusProcess -Name "NexusRojoServe"', "up must start Rojo serve")
 assertContains(
 	launcher,
-	"& $Rojo sourcemap default.project.json -o sourcemap.json --watch",
+	'Start-NexusProcess -Name "NexusSourcemapWatch"',
 	"up must start sourcemap watch"
 )
 assertContains(
 	launcher,
-	"tools/build_health.luau --skip-install",
+	'Start-NexusProcess -Name "NexusAutomationLoop"',
 	"up loop must use watcher-safe Build Health"
+)
+assertContains(
+	launcher,
+	'Invoke-Tool "wally" @("install")',
+	"up must install Wally packages before starting watchers"
+)
+assertContains(
+	launcher,
+	'"tools/build_health.luau", "--skip-install"',
+	"watch loop must use watcher-safe Build Health"
 )
 assertContains(
 	launcher,
@@ -169,6 +179,9 @@ assertContains(
 )
 assertContains(launcher, "Stop-NexusJobs", "down must stop background jobs")
 assertContains(launcher, "Write-NexusJobTable", "status/up/down must print job table")
+assertContains(launcher, "Start-Process", "up must start persistent child processes")
+assertContains(launcher, ".nexus", "launcher must store cross-command process state")
+assertNotContains(launcher, "Start-Job", "up must not use session-scoped PowerShell jobs")
 assertContains(
 	launcher,
 	"Refresh-NexusPath",
