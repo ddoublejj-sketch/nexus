@@ -93,9 +93,9 @@ local EXPECTED_ROWS = {
 	},
 	{
 		id = "WO-8 CI",
-		status = "CI green on pushed private remote",
+		status = "Nexus CI green on pushed private remote",
 		evidence = "latest successful GitHub Actions run",
-		blocker = "G4 branch protection",
+		blocker = "vault GitHub repo/push needs explicit approval",
 	},
 	{
 		id = "WO-9 Release Path",
@@ -198,7 +198,7 @@ assertContains(status, "blocked on **G2 - Studio connect**", "Current phase must
 assertContains(status, "WO-3/G3 is now accepted", "Current phase must show G3 accepted")
 assertContains(
 	status,
-	"only remaining G4 item is branch protection",
+	"remaining G4 items are Nexus branch protection",
 	"Current phase must preserve G4"
 )
 assertContains(status, "live publish remains gated", "Current phase must preserve G5")

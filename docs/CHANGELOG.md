@@ -54,3 +54,4 @@
 - [WO-8] Connected GitHub auth, private remote, push, and a passing GitHub Actions run; branch protection is blocked by GitHub Pro/public-repo requirement - 2026-07-04.
 - [WO-9] Accepted Open Cloud config and real dry-run without exposing secrets; live publish remains gated on explicit founder approval - 2026-07-04.
 - [WO-10] Refreshed STATUS.md, vault dashboard notes, cold-boot readiness, and work-order audit with current G2/G4/G5 blockers - 2026-07-04.
+- [WO-8] Committed the vault locally and recorded explicit-approval requirement before exporting RobloxGameVault notes to GitHub - 2026-07-04.
