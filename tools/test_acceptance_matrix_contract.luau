@@ -63,21 +63,21 @@ local EXPECTED_ROWS = {
 	},
 	{
 		id = "WO-3 Vault",
-		status = "Scaffolded, REST blocked",
-		evidence = "vault scaffold tests",
-		blocker = "G3:",
+		status = "G3 accepted",
+		evidence = "REST bootstrap proof",
+		blocker = "None locally",
 	},
 	{
 		id = "WO-4 Automation Loop",
 		status = "Exact local launcher proof passed",
 		evidence = "`./nexus.ps1 loop --once`",
-		blocker = "Dashboard render needs G3",
+		blocker = "None locally",
 	},
 	{
 		id = "WO-5 Asset Pipeline",
 		status = "Implemented with seed assets",
 		evidence = "Blender-rendered PNG thumbnails",
-		blocker = "Dashboard render needs G3",
+		blocker = "None locally",
 	},
 	{
 		id = "WO-6 Cmdr",
@@ -93,21 +93,21 @@ local EXPECTED_ROWS = {
 	},
 	{
 		id = "WO-8 CI",
-		status = "Local workflow committed",
-		evidence = "CI contract tests",
-		blocker = "G4:",
+		status = "CI green on pushed private remote",
+		evidence = "latest successful GitHub Actions run",
+		blocker = "G4 branch protection",
 	},
 	{
 		id = "WO-9 Release Path",
-		status = "Dry-run accepted locally",
-		evidence = "release contract tests",
-		blocker = "G5",
+		status = "Dry-run accepted with real config",
+		evidence = "real dry-run pass",
+		blocker = "G5 live publish approval only",
 	},
 	{
 		id = "WO-10 Hardening",
 		status = "Up/down smoke test passed locally",
 		evidence = "`./nexus.ps1 up/status/down`",
-		blocker = "G2 Studio connect and G3 dashboard render",
+		blocker = "G2 Studio connect",
 	},
 }
 
@@ -163,7 +163,7 @@ for _, heading in WORK_ORDER_HEADINGS do
 	assertContains(status, heading, "Missing section " .. heading)
 end
 
-local matrix = section(status, "## Acceptance Matrix", "## Latest Whole-Repo Verification")
+local matrix = section(status, "## Acceptance Matrix", "## Previous Whole-Repo Verification")
 assertTrue(matrix ~= "", "Missing Acceptance Matrix section")
 
 local rows: { [string]: MatrixRow } = {}
@@ -193,29 +193,30 @@ for _, expected in EXPECTED_ROWS do
 	assertContains(row.blocker, expected.blocker, "Missing blocker in " .. expected.id)
 end
 
-assertContains(status, "WO-0 G1 tool closure now passes locally", "Current phase must close G1")
+assertContains(status, "WO-0 G1 tool closure passes locally", "Current phase must close G1")
 assertContains(status, "blocked on **G2 - Studio connect**", "Current phase must preserve G2")
+assertContains(status, "WO-3/G3 is now accepted", "Current phase must show G3 accepted")
 assertContains(
 	status,
-	"blocked on **G3 - Obsidian REST key + dashboard proof**",
-	"Current phase must preserve G3"
+	"only remaining G4 item is branch protection",
+	"Current phase must preserve G4"
 )
-assertContains(status, "blocked on **G4 - GitHub auth**", "Current phase must preserve G4")
-assertContains(status, "gated on **G5 - Open Cloud key**", "Current phase must preserve G5")
+assertContains(status, "live publish remains gated", "Current phase must preserve G5")
 assertContains(
 	status,
-	"not complete",
+	"instead of faking completion",
 	"STATUS must explicitly mark gate-dependent work as incomplete"
 )
 
-local latest = section(status, "## Latest Whole-Repo Verification", nil)
-assertTrue(latest ~= "", "Missing Latest Whole-Repo Verification section")
+local latest =
+	section(status, "### Latest Gate Revalidation - 2026-07-04 UTC", "## Acceptance Matrix")
+assertTrue(latest ~= "", "Missing Latest Gate Revalidation section")
 assertContains(latest, "./nexus.ps1 check", "Latest verification must run launcher check")
 assertContains(latest, "Quality gate PASS", "Latest verification must include gate pass")
 assertContains(
 	latest,
-	"./nexus.ps1 health",
-	"Latest verification must include Build Health refresh"
+	"./nexus.ps1 loop --once",
+	"Latest verification must include automation loop refresh"
 )
 
 for _, label in REQUIRED_GATE_LABELS do

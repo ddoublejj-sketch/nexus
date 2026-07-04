@@ -50,3 +50,7 @@
 - [WO-10] Added cold-boot readiness probe, dashboard note, launcher/task wiring, and contract test - 2026-07-03.
 - [WO-10] Added work-order acceptance audit for WO-0 through WO-10 evidence coverage - 2026-07-03.
 - [WO-10] Revalidated up/status/down smoke test with work-order acceptance audit in the automation loop - 2026-07-03.
+- [WO-3] Accepted G3 with Obsidian REST config present, eight plugins enabled, pending writes flushed, and dashboard render proof recorded - 2026-07-04.
+- [WO-8] Connected GitHub auth, private remote, push, and a passing GitHub Actions run; branch protection is blocked by GitHub Pro/public-repo requirement - 2026-07-04.
+- [WO-9] Accepted Open Cloud config and real dry-run without exposing secrets; live publish remains gated on explicit founder approval - 2026-07-04.
+- [WO-10] Refreshed STATUS.md, vault dashboard notes, cold-boot readiness, and work-order audit with current G2/G4/G5 blockers - 2026-07-04.

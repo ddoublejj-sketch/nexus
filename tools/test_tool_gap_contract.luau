@@ -31,7 +31,7 @@ local gateStatus = read(GATE_STATUS_PATH)
 
 assertContains(
 	status,
-	"WO-0 G1 tool closure now passes locally",
+	"WO-0 G1 tool closure passes locally",
 	"Current phase must show WO-0/G1 closed"
 )
 assertContains(status, "### Current Re-Audit - 2026-07-03", "Missing current audit")
