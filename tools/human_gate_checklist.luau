@@ -71,18 +71,15 @@ local GATES: { Gate } = {
 	{
 		id = "G3",
 		title = "Obsidian REST And Plugins",
-		state = "Blocked on Obsidian plugin load confirmation, dashboard proof, and Local REST API key",
+		state = "Closed locally; Obsidian REST, plugins, pending flush, and dashboard proof are accepted",
 		human = {
-			"Open `C:\\Users\\jackw\\Roblox\\RobloxGameVault` as an Obsidian vault.",
-			"Confirm the preinstalled plugins load: Local REST API, Obsidian Git, Dataview, Tasks, Kanban, Templater, QuickAdd, and Omnisearch.",
-			"Run `./nexus.ps1 obsidian-rest` after Obsidian has generated Local REST settings so the secret file is written without printing the key.",
+			"No current G3 action remains.",
+			"Keep Obsidian opened on `C:\\Users\\jackw\\Roblox\\RobloxGameVault` when using REST-backed dashboard refreshes.",
 		},
 		codex = {
 			"Run `./nexus.ps1 obsidian-plugins` if the local plugin bundle files need to be restored.",
-			"Mark the required marker in `docs/gate-proofs/G3-obsidian-dashboard.md` as `PASS` after the dashboard render is confirmed.",
-			"Run the REST ping and flush queued pending writes.",
-			"Verify Dataview and Tasks sections render in the Dashboard.",
-			"Commit vault proof after the REST ping and dashboard render are confirmed.",
+			"Run `./nexus.ps1 obsidian-rest` and `lune run tools/vault_ping.luau` if Obsidian REST settings are regenerated.",
+			"Rerun `./nexus.ps1 gatecheck --gate G3` after Obsidian or plugin changes.",
 		},
 		proof = {
 			"./nexus.ps1 receipts",
@@ -97,24 +94,22 @@ local GATES: { Gate } = {
 	{
 		id = "G4",
 		title = "GitHub Auth And CI",
-		state = "Blocked on GitHub authentication and remote repository setup",
+		state = "Blocked on Nexus branch protection and explicit approval to export the vault repo",
 		human = {
-			"Run `gh auth login` and complete the browser/device flow.",
-			"Run `./nexus.ps1 github-ci` after auth to capture readiness without printing remote URLs.",
-			"Approve private repo creation for Nexus and RobloxGameVault.",
+			"Approve exporting the separate `RobloxGameVault` Obsidian repo to private GitHub before Codex runs the vault push.",
+			"Either upgrade GitHub to Pro or make `ddoublejj-sketch/nexus` public so branch protection can be enabled on the repo.",
 		},
 		codex = {
+			"Run `./nexus.ps1 github-ci --create-vault-private` only after explicit approval.",
+			"Enable branch protection requiring the Nexus CI quality gate after GitHub allows it.",
 			"Mark the required marker in `docs/gate-proofs/G4-github-ci.md` as `PASS` after branch protection is confirmed.",
-			"Create/push private remotes.",
-			"Enable branch protection requiring the Nexus CI quality gate.",
-			"Demonstrate a failing formatting PR and a fixed passing PR.",
+			"Demonstrate a failing formatting PR and a fixed passing PR if founder still wants that proof path.",
 		},
 		proof = {
 			"./nexus.ps1 receipts",
 			"gh auth status",
 			"./nexus.ps1 github-ci",
-			"gh repo create nexus --private --source . --remote origin --push",
-			"./nexus.ps1 github-ci --create-private",
+			"./nexus.ps1 github-ci --create-vault-private",
 			"gh pr checks",
 			"./nexus.ps1 gatecheck --gate G4",
 		},
@@ -122,11 +117,9 @@ local GATES: { Gate } = {
 	{
 		id = "G5",
 		title = "Open Cloud Key",
-		state = "Blocked on live publish credentials; dry-run path is ready",
+		state = "Config and dry-run accepted; blocked only on explicit live publish approval",
 		human = {
-			"Create the smallest-scope Open Cloud key needed to publish the target place.",
-			"Create `secrets/opencloud.env` with key, universe ID, and place ID.",
-			"Run `./nexus.ps1 open-cloud` to capture release readiness without writing key or place values into the vault.",
+			"Give explicit live publish approval only when ready to publish the target place.",
 		},
 		codex = {
 			"Mark the required marker in `docs/gate-proofs/G5-open-cloud-publish.md` as `PASS` after explicit live publish approval.",

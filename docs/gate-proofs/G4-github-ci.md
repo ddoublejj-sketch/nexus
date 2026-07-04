@@ -14,8 +14,8 @@ Change each required marker from `PENDING` to `PASS` only after the human action
 
 ## Human Steps
 
-- Complete `gh auth login`.
-- Approve private repo creation for Nexus and RobloxGameVault.
+- Approve exporting `RobloxGameVault` vault notes to a private GitHub repo before the vault push runs.
+- Upgrade GitHub to Pro or make `ddoublejj-sketch/nexus` public if GitHub blocks branch protection on the private repo.
 - Confirm branch protection requires the Nexus CI quality gate.
 
 ## Evidence Notes
@@ -27,6 +27,8 @@ Change each required marker from `PENDING` to `PASS` only after the human action
 
 ```powershell
 gh auth status
+./nexus.ps1 github-ci
+./nexus.ps1 github-ci --create-vault-private
 gh pr checks
 ./nexus.ps1 gatecheck --gate G4
 ```

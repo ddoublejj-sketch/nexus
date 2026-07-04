@@ -1907,9 +1907,9 @@ Whole-repo local quality gate:
 
 ```powershell
 ./nexus.ps1 check
-[PASS] Wally Install (0.73s, exit 0)
+[PASS] Wally Install (0.71s, exit 0)
 [PASS] StyLua (0.10s, exit 0)
-[PASS] Selene (0.13s, exit 0)
+[PASS] Selene (0.11s, exit 0)
 [PASS] Sourcemap (0.09s, exit 0)
 [PASS] Tool Gap Contract Tests (0.03s, exit 0)
 [PASS] G1 Tool Closure Tests (0.03s, exit 0)
@@ -1918,7 +1918,7 @@ Whole-repo local quality gate:
 [PASS] Migration Tests (0.03s, exit 0)
 [PASS] DataService Contract Tests (0.03s, exit 0)
 [PASS] Vault Scaffold Tests (0.08s, exit 0)
-[PASS] Obsidian Plugin Setup Tests (0.03s, exit 0)
+[PASS] Obsidian Plugin Setup Tests (0.04s, exit 0)
 [PASS] Obsidian REST Bootstrap Tests (0.03s, exit 0)
 [PASS] GitHub CI Bootstrap Tests (0.03s, exit 0)
 [PASS] Asset Manifest Tests (0.04s, exit 0)
@@ -1926,19 +1926,19 @@ Whole-repo local quality gate:
 [PASS] MapService Contract Tests (0.03s, exit 0)
 [PASS] Net Contract Tests (0.03s, exit 0)
 [PASS] CI Contract Tests (0.03s, exit 0)
-[PASS] Command Center Contract Tests (0.04s, exit 0)
+[PASS] Command Center Contract Tests (0.03s, exit 0)
 [PASS] Cold Boot Readiness Tests (0.03s, exit 0)
 [PASS] Work Order Acceptance Audit Tests (0.03s, exit 0)
 [PASS] Human Gate Checklist Tests (0.03s, exit 0)
 [PASS] Human Gate Readiness Tests (0.03s, exit 0)
-[PASS] Human Gate Acceptance Tests (2.87s, exit 0)
-[PASS] Human Gate Receipt Tests (1.48s, exit 0)
+[PASS] Human Gate Acceptance Tests (2.97s, exit 0)
+[PASS] Human Gate Receipt Tests (1.46s, exit 0)
 [PASS] Founder Sign-Off Audit Tests (0.03s, exit 0)
 [PASS] Acceptance Matrix Contract Tests (0.03s, exit 0)
 [PASS] Release Contract Tests (0.03s, exit 0)
 [PASS] Open Cloud Bootstrap Tests (0.03s, exit 0)
-[PASS] Secret Scan (0.87s, exit 0)
-[PASS] Analyze (2.04s, exit 0)
+[PASS] Secret Scan (0.77s, exit 0)
+[PASS] Analyze (2.05s, exit 0)
 [PASS] Build (0.08s, exit 0)
 [PASS] Open Cloud Dry Run (0.03s, exit 0)
 Quality gate PASS
@@ -1964,8 +1964,10 @@ G4 GitHub CI readiness:
 GitHub auth: PASS
 Origin remote: PASS
 CI workflow: PASS
+Vault remote: WAITING
 Branch protection receipt: NEEDS HUMAN
 Remote create action: not requested
+Vault create action: not requested
 Wrote GitHub CI bootstrap evidence to C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/GitHub CI Bootstrap.md
 ```
 
@@ -1973,9 +1975,9 @@ Latest GitHub Actions runs:
 
 ```powershell
 gh run list --limit 3
+completed	success	Record vault GitHub approval gate	Nexus CI	master	push	28691072431	53s	2026-07-04T01:41:07Z
+completed	success	Refresh gate acceptance status	Nexus CI	master	push	28690949457	1m2s	2026-07-04T01:35:55Z
 completed	success	Skip local vault checks in CI	Nexus CI	master	push	28690095489	1m1s	2026-07-04T01:01:25Z
-completed	failure	Normalize Luau line endings for CI	Nexus CI	master	push	28690009708	51s	2026-07-04T00:58:18Z
-completed	failure	Complete Obsidian G3 acceptance	Nexus CI	master	push	28689921508	1m0s	2026-07-04T00:54:44Z
 ```
 
 Branch protection attempt:

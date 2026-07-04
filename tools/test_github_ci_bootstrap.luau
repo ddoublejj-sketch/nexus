@@ -40,10 +40,21 @@ assertContains(script, "CI branch protection confirmed: PASS", "bootstrap must h
 assertContains(script, "--create-private", "bootstrap must require an explicit remote-create flag")
 assertContains(
 	script,
+	"--create-vault-private",
+	"bootstrap must require an explicit vault-create flag"
+)
+assertContains(
+	script,
+	"explicit founder approval",
+	"bootstrap must warn before exporting vault notes"
+)
+assertContains(
+	script,
 	"Remote URLs and tokens are not written",
 	"bootstrap must avoid remote/token leakage"
 )
 assertContains(script, "URL intentionally hidden", "bootstrap evidence must hide remote URLs")
+assertContains(script, "vault origin remote", "bootstrap evidence must track vault remote")
 assertNotContains(script, "ghp_", "bootstrap must not contain a GitHub token prefix")
 assertNotContains(script, "github_pat_", "bootstrap must not contain a fine-grained token prefix")
 
@@ -64,6 +75,11 @@ end
 assertTrue(foundTask, "VS Code tasks must include Nexus: GitHub CI Bootstrap")
 
 assertContains(runbook, "./nexus.ps1 github-ci", "CI runbook must mention GitHub CI bootstrap")
+assertContains(
+	runbook,
+	"--create-vault-private",
+	"CI runbook must document explicit vault remote creation"
+)
 
 if fs.isDir(VAULT_ROOT) then
 	local dashboard = read(DASHBOARD_PATH)

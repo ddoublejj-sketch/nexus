@@ -36,7 +36,8 @@ end
 
 local function acceptanceMatrix(status: string): { MatrixRow }
 	local rows = {}
-	local matrix = status:match("## Acceptance Matrix%s*(.-)%s*## Latest Whole%-Repo Verification")
+	local matrix =
+		status:match("## Acceptance Matrix%s*(.-)%s*## Previous Whole%-Repo Verification")
 	if not matrix then
 		return rows
 	end

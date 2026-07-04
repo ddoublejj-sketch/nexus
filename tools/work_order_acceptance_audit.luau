@@ -82,7 +82,6 @@ local WORK_ORDERS: { WorkOrder } = {
 	{
 		id = "WO-3",
 		title = "Obsidian Command Vault",
-		blocker = "G3 Local REST key, pending flush, dashboard render",
 		requirements = {
 			{
 				label = "vault scaffold proof",
@@ -105,16 +104,15 @@ local WORK_ORDERS: { WorkOrder } = {
 				needle = "Obsidian REST bootstrap tests passed",
 			},
 			{
-				label = "G3 blocker preserved",
+				label = "G3 acceptance proof",
 				path = STATUS_PATH,
-				needle = "REST/dashboard acceptance remains blocked",
+				needle = "| G3 | Dashboard rendered in Obsidian | PASS",
 			},
 		},
 	},
 	{
 		id = "WO-4",
 		title = "Live Project Indexer",
-		blocker = "G3 dashboard render",
 		requirements = {
 			{
 				label = "sourcemap generated",
@@ -135,14 +133,13 @@ local WORK_ORDERS: { WorkOrder } = {
 			{
 				label = "stale-source proof",
 				path = STATUS_PATH,
-				needle = "dummy-service/stale-note evidence",
+				needle = "dummy/stale-note demo",
 			},
 		},
 	},
 	{
 		id = "WO-5",
 		title = "Asset Pipeline",
-		blocker = "G3 dashboard render",
 		requirements = {
 			{
 				label = "seed catalog count",
@@ -213,7 +210,7 @@ local WORK_ORDERS: { WorkOrder } = {
 	{
 		id = "WO-8",
 		title = "CI",
-		blocker = "G4 GitHub auth, remote, branch protection, real CI run",
+		blocker = "G4 branch protection plus explicit vault GitHub repo/push approval",
 		requirements = {
 			{
 				label = "workflow exists",
@@ -231,16 +228,21 @@ local WORK_ORDERS: { WorkOrder } = {
 				needle = "GitHub CI bootstrap tests passed",
 			},
 			{
-				label = "G4 blocker preserved",
+				label = "Nexus CI green proof",
 				path = STATUS_PATH,
-				needle = "GitHub auth, repo creation, push, and branch protection still require G4",
+				needle = "latest successful GitHub Actions run",
+			},
+			{
+				label = "vault GitHub approval blocker preserved",
+				path = STATUS_PATH,
+				needle = "vault GitHub repo/push needs explicit approval",
 			},
 		},
 	},
 	{
 		id = "WO-9",
 		title = "Release Path",
-		blocker = "G5 Open Cloud key for live publish",
+		blocker = "G5 explicit live publish approval",
 		requirements = {
 			{
 				label = "fixture dry run",
@@ -268,7 +270,7 @@ local WORK_ORDERS: { WorkOrder } = {
 	{
 		id = "WO-10",
 		title = "Command Center Hardening",
-		blocker = "G2 Studio connect and G3 dashboard render for cold boot",
+		blocker = "G2 Studio connect, G4 branch protection/vault approval, and G5 live publish approval",
 		requirements = {
 			{
 				label = "up/down proof",
@@ -412,7 +414,7 @@ if #failures > 0 then
 else
 	table.insert(
 		lines,
-		"All local evidence checks are present. Remaining non-pass rows require G2, G3, G4, or G5 human proof."
+		"All local evidence checks are present. Remaining non-pass rows require G2, G4, or G5 human/external proof."
 	)
 end
 

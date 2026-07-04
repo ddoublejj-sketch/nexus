@@ -1,6 +1,6 @@
 # GitHub CI Runbook
 
-Status: workflow created; remote repository and branch protection are blocked on G4.
+Status: Nexus workflow, private remote, push, and CI are green. Remaining G4 items are the separate private vault remote and branch protection.
 
 ## Local And CI Gate
 
@@ -31,17 +31,39 @@ The workflow at `.github/workflows/ci.yml` runs on Windows and:
 5. Runs the shared quality gate.
 6. Uploads `build/nexus.rbxl`.
 
+## Current G4 State
+
+- GitHub CLI auth is complete.
+- Nexus `origin` points to the private GitHub repo.
+- Nexus CI is running the shared quality gate and the latest pushed run is green.
+- `RobloxGameVault` is committed locally, but has no GitHub remote yet.
+- Creating/pushing the vault repo exports Obsidian notes to GitHub and needs explicit founder approval.
+- Branch protection cannot currently be enabled on the private Nexus repo unless the account has GitHub Pro or the repo is made public.
+
 ## G4 Remaining Work
 
-After GitHub CLI is installed and authenticated:
+Read-only readiness check:
 
 ```powershell
-gh auth login
-./nexus.ps1 github-ci
-gh repo create nexus --private --source . --remote origin --push
 ./nexus.ps1 github-ci
 ```
 
-Then enable branch protection on `main` so `Nexus CI / Quality Gate` is required before merge.
-The repeatable helper is read-only by default; after auth, `./nexus.ps1 github-ci --create-private`
-can create and push the private `origin` remote explicitly.
+If GitHub auth is ever lost, restore it first:
+
+```powershell
+gh auth login
+```
+
+After explicit approval to export vault notes to GitHub:
+
+```powershell
+./nexus.ps1 github-ci --create-vault-private
+```
+
+If the Nexus remote ever needs to be recreated from scratch, the repeatable helper remains:
+
+```powershell
+./nexus.ps1 github-ci --create-private
+```
+
+Then enable branch protection on `master` so the `Nexus CI / Quality Gate` job is required before merge. If GitHub returns `Upgrade to GitHub Pro or make this repository public`, either upgrade the account or make the repo public before marking the G4 receipt.

@@ -31,6 +31,7 @@ local REQUIRED_PROOF_COMMANDS = {
 	"lune run tools/vault_ping.luau",
 	"gh auth status",
 	"./nexus.ps1 github-ci",
+	"./nexus.ps1 github-ci --create-vault-private",
 	"./nexus.ps1 open-cloud",
 	"./nexus.ps1 gatecheck --gate G1",
 	"./nexus.ps1 release --dry-run --fixture",

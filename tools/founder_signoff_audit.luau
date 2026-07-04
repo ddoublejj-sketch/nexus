@@ -40,8 +40,9 @@ local function markdownEscape(value: string): string
 end
 
 local function countMatrixRows(status: string): number
-	local matrix = status:match("## Acceptance Matrix%s*(.-)%s*## Latest Whole%-Repo Verification")
-		or ""
+	local matrix = status:match(
+		"## Acceptance Matrix%s*(.-)%s*## Previous Whole%-Repo Verification"
+	) or ""
 	local count = 0
 	for line in matrix:gmatch("[^\r\n]+") do
 		if line:match("^| WO%-") then
@@ -53,8 +54,9 @@ local function countMatrixRows(status: string): number
 end
 
 local function gateBlockerSummary(status: string): string
-	local matrix = status:match("## Acceptance Matrix%s*(.-)%s*## Latest Whole%-Repo Verification")
-		or ""
+	local matrix = status:match(
+		"## Acceptance Matrix%s*(.-)%s*## Previous Whole%-Repo Verification"
+	) or ""
 	local blockerCells = {}
 
 	for line in matrix:gmatch("[^\r\n]+") do
@@ -134,9 +136,9 @@ local criteria: { Criterion } = {
 		criterion = "Cold-boot test passes",
 		status = "BLOCKED",
 		evidence = if contains(status, "Exact Up/Down Evidence")
-			then "Local up/status/down smoke test is recorded, but cold boot still requires G2 Studio sync proof and G3 dashboard render."
+			then "Local up/status/down smoke test is recorded, but cold boot still requires G2 Studio sync proof."
 			else "Cold-boot proof has not been recorded.",
-		nextAction = "After G2 and G3, run the WO-10 cold-boot path and paste the output into STATUS.md.",
+		nextAction = "After G2, run the WO-10 cold-boot path and paste the output into STATUS.md.",
 	},
 	{
 		id = "3",
@@ -158,9 +160,9 @@ local criteria: { Criterion } = {
 		criterion = "Vault dashboard answers systems, assets, commands, and last build",
 		status = if dashboardHasCoreCoverage(dashboard) then "PARTIAL" else "BLOCKED",
 		evidence = if dashboardHasCoreCoverage(dashboard)
-			then "Dashboard includes systems/assets queries and Build Health embeds; live Dataview/Tasks rendering still waits on G3."
+			then "Dashboard includes systems/assets queries and Build Health embeds; G3 visual dashboard proof is recorded."
 			else "Dashboard is missing one or more required systems/assets/build sections.",
-		nextAction = "Complete G3, open the dashboard in Obsidian, and confirm rendered systems, assets, commands, and build status.",
+		nextAction = "Keep generated command, asset, system, and build notes refreshed through `./nexus.ps1 loop --once`.",
 	},
 	{
 		id = "5",
@@ -232,10 +234,16 @@ table.insert(lines, "")
 table.insert(lines, "- G2: Roblox Studio Rojo plugin connect and live sync proof.")
 table.insert(
 	lines,
-	"- G3: Obsidian plugin load confirmation, Local REST API key, pending write flush, and dashboard render."
+	"- G3: Obsidian REST, plugin load, pending flush, and dashboard proof accepted."
 )
-table.insert(lines, "- G4: GitHub CLI auth, remote repos, branch protection, and real CI run.")
-table.insert(lines, "- G5: Open Cloud key and live publish approval.")
+table.insert(
+	lines,
+	"- G4: Nexus CI is green; branch protection needs GitHub Pro/public repo and vault GitHub export needs explicit approval."
+)
+table.insert(
+	lines,
+	"- G5: Open Cloud config and dry-run pass; live publish approval remains pending."
+)
 
 fs.writeFile(OUTPUT_PATH, table.concat(lines, "\n") .. "\n")
 print("Wrote founder sign-off audit to " .. OUTPUT_PATH)

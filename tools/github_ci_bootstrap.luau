@@ -9,16 +9,20 @@ local OUTPUT_PATH = VAULT_ROOT .. "/00_Command_Center/GitHub CI Bootstrap.md"
 local WORKFLOW_PATH = ".github/workflows/ci.yml"
 local RECEIPT_PATH = "docs/gate-proofs/G4-github-ci.md"
 local DEFAULT_REPO_NAME = "nexus"
+local DEFAULT_VAULT_REPO_NAME = "RobloxGameVault"
 
 type Options = {
 	createPrivate: boolean,
+	createVaultPrivate: boolean,
 	repoName: string,
+	vaultRepoName: string,
 }
 
 type CommandResult = {
 	ok: boolean,
 	code: number,
 	output: string,
+	rawOutput: string,
 }
 
 local function isoTimestamp(): string
@@ -37,17 +41,20 @@ end
 
 local function usage(): string
 	return table.concat({
-		"Usage: lune run tools/github_ci_bootstrap.luau [--create-private] [--repo name]",
+		"Usage: lune run tools/github_ci_bootstrap.luau [--create-private] [--repo name] [--create-vault-private] [--vault-repo name]",
 		"",
 		"Default mode is read-only and writes non-secret G4 readiness evidence.",
 		"`--create-private` requires an authenticated GitHub CLI session and creates/pushes the private remote.",
+		"`--create-vault-private` requires explicit founder approval because it exports Obsidian vault notes to GitHub.",
 	}, "\n")
 end
 
 local function parseArgs(args: { string }): Options
 	local options: Options = {
 		createPrivate = false,
+		createVaultPrivate = false,
 		repoName = DEFAULT_REPO_NAME,
+		vaultRepoName = DEFAULT_VAULT_REPO_NAME,
 	}
 
 	local index = 1
@@ -59,14 +66,24 @@ local function parseArgs(args: { string }): Options
 			process.exit(0)
 		elseif arg == "--create-private" then
 			options.createPrivate = true
+		elseif arg == "--create-vault-private" then
+			options.createVaultPrivate = true
 		elseif arg == "--repo" then
 			index += 1
 			if index > #args then
 				error("--repo requires a name")
 			end
 			options.repoName = args[index]
+		elseif arg == "--vault-repo" then
+			index += 1
+			if index > #args then
+				error("--vault-repo requires a name")
+			end
+			options.vaultRepoName = args[index]
 		elseif arg:match("^%-%-repo=") then
 			options.repoName = arg:gsub("^%-%-repo=", "")
+		elseif arg:match("^%-%-vault%-repo=") then
+			options.vaultRepoName = arg:gsub("^%-%-vault%-repo=", "")
 		else
 			error("Unknown argument: " .. arg .. "\n" .. usage())
 		end
@@ -76,6 +93,9 @@ local function parseArgs(args: { string }): Options
 
 	if not options.repoName:match("^[%w_.%-]+$") then
 		error("Repo name must contain only letters, numbers, dots, underscores, or hyphens.")
+	end
+	if not options.vaultRepoName:match("^[%w_.%-]+$") then
+		error("Vault repo name must contain only letters, numbers, dots, underscores, or hyphens.")
 	end
 
 	return options
@@ -91,19 +111,27 @@ local function run(command: string, args: { string }): CommandResult
 			ok = false,
 			code = -1,
 			output = oneLine(tostring(result)),
+			rawOutput = tostring(result),
 		}
 	end
 
 	local execResult = result :: any
+	local rawOutput = (execResult.stdout or "") .. " " .. (execResult.stderr or "")
 	return {
 		ok = execResult.ok,
 		code = execResult.code,
-		output = oneLine((execResult.stdout or "") .. " " .. (execResult.stderr or "")),
+		output = oneLine(rawOutput),
+		rawOutput = rawOutput,
 	}
 end
 
 local function hasOriginRemote(): boolean
 	local result = run("git", { "remote", "get-url", "origin" })
+	return result.ok and result.output ~= ""
+end
+
+local function vaultHasOriginRemote(): boolean
+	local result = run("git", { "-C", VAULT_ROOT, "remote", "get-url", "origin" })
 	return result.ok and result.output ~= ""
 end
 
@@ -127,6 +155,20 @@ local function remoteSummary(): string
 	return "origin remote configured; URL intentionally hidden"
 end
 
+local function vaultRemoteSummary(): string
+	if not fs.isDir(VAULT_ROOT) then
+		return "vault directory missing"
+	end
+	if not fs.isDir(VAULT_ROOT .. "/.git") then
+		return "vault Git repo missing"
+	end
+	if not vaultHasOriginRemote() then
+		return "vault origin remote not configured"
+	end
+
+	return "vault origin remote configured; URL intentionally hidden"
+end
+
 local function ghRepoView(): string
 	if not hasOriginRemote() then
 		return "not checked; no origin remote"
@@ -144,7 +186,7 @@ local function ghRepoView(): string
 	end
 
 	local ok, decoded = pcall(function()
-		return serde.decode("json", result.output)
+		return serde.decode("json", result.rawOutput)
 	end)
 
 	if not ok or type(decoded) ~= "table" then
@@ -186,14 +228,46 @@ local function createPrivateRemote(repoName: string): string
 	return "created private remote and pushed current branch"
 end
 
+local function createVaultPrivateRemote(repoName: string): string
+	if not fs.isDir(VAULT_ROOT) then
+		error("Missing vault directory: " .. VAULT_ROOT)
+	end
+	if not fs.isDir(VAULT_ROOT .. "/.git") then
+		error("Vault is not a Git repo: " .. VAULT_ROOT)
+	end
+	if vaultHasOriginRemote() then
+		return "skipped; vault origin remote already exists"
+	end
+
+	local result = run("gh", {
+		"repo",
+		"create",
+		repoName,
+		"--private",
+		"--source",
+		VAULT_ROOT,
+		"--remote",
+		"origin",
+		"--push",
+	})
+
+	if not result.ok then
+		error("Failed to create/push private vault GitHub remote: " .. result.output)
+	end
+
+	return "created private vault remote and pushed current branch"
+end
+
 local function writeEvidence(
 	timestamp: string,
 	authState: string,
 	remoteState: string,
 	workflowState: string,
 	repoState: string,
+	vaultRemoteState: string,
 	branchProtectionState: string,
 	createState: string,
+	vaultCreateState: string,
 	nextAction: string
 )
 	local lines = {
@@ -221,14 +295,18 @@ local function writeEvidence(
 		"| Origin remote | " .. remoteState .. " | " .. remoteSummary() .. " |",
 		"| CI workflow | " .. workflowState .. " | " .. WORKFLOW_PATH .. " |",
 		"| GitHub repo view | " .. repoState .. " | " .. repoState .. " |",
+		"| Vault origin remote | " .. vaultRemoteState .. " | " .. vaultRemoteSummary() .. " |",
 		"| Branch protection receipt | " .. branchProtectionState .. " | " .. RECEIPT_PATH .. " |",
 		"| Remote create action | " .. createState .. " | requires `--create-private` |",
+		"| Vault create action | "
+			.. vaultCreateState
+			.. " | requires explicit approval and `--create-vault-private` |",
 		"",
 		"## Next Action",
 		"",
 		nextAction,
 		"",
-		"After GitHub auth, remote push, and branch protection are real, update the G4 receipt and run `./nexus.ps1 gatecheck --gate G4`.",
+		"After GitHub auth, Nexus remote push, vault remote push, and branch protection are real, update the G4 receipt and run `./nexus.ps1 gatecheck --gate G4`.",
 	}
 
 	fs.writeFile(OUTPUT_PATH, table.concat(lines, "\n") .. "\n")
@@ -244,6 +322,7 @@ local auth = run("gh", { "auth", "status" })
 local authState = if auth.ok then "PASS" else "WAITING"
 local workflowState = if workflowReady() then "PASS" else "MISSING"
 local createState = "not requested"
+local vaultCreateState = "not requested"
 
 if options.createPrivate then
 	if not auth.ok then
@@ -252,7 +331,15 @@ if options.createPrivate then
 	createState = createPrivateRemote(options.repoName)
 end
 
+if options.createVaultPrivate then
+	if not auth.ok then
+		error("Cannot create GitHub vault remote until `gh auth status` passes.")
+	end
+	vaultCreateState = createVaultPrivateRemote(options.vaultRepoName)
+end
+
 local remoteState = if hasOriginRemote() then "PASS" else "WAITING"
+local vaultRemoteState = if vaultHasOriginRemote() then "PASS" else "WAITING"
 local repoState = if auth.ok then ghRepoView() else "not checked; GitHub CLI not authenticated"
 local branchProtectionState = if receiptAccepted() then "PASS" else "NEEDS HUMAN"
 
@@ -263,9 +350,12 @@ if not auth.ok then
 elseif not hasOriginRemote() then
 	nextAction =
 		"- Run `./nexus.ps1 github-ci --create-private` to create/push the private remote, or configure `origin` manually."
+elseif not vaultHasOriginRemote() then
+	nextAction =
+		"- After explicit founder approval, run `./nexus.ps1 github-ci --create-vault-private` to create/push the private vault remote."
 elseif not receiptAccepted() then
 	nextAction =
-		"- Confirm the GitHub Actions run is green, enable branch protection requiring `Nexus CI / Quality Gate`, then mark the G4 receipt."
+		"- Confirm the GitHub Actions run is green, enable branch protection requiring `Nexus CI / Quality Gate`, then mark the G4 receipt. Private-repo branch protection may require GitHub Pro or a public repo."
 else
 	nextAction = "- G4 evidence is locally ready. Run `./nexus.ps1 gatecheck --gate G4`."
 end
@@ -276,14 +366,18 @@ writeEvidence(
 	remoteState,
 	workflowState,
 	repoState,
+	vaultRemoteState,
 	branchProtectionState,
 	createState,
+	vaultCreateState,
 	nextAction
 )
 
 print("GitHub auth: " .. authState)
 print("Origin remote: " .. remoteState)
 print("CI workflow: " .. workflowState)
+print("Vault remote: " .. vaultRemoteState)
 print("Branch protection receipt: " .. branchProtectionState)
 print("Remote create action: " .. createState)
+print("Vault create action: " .. vaultCreateState)
 print("Wrote GitHub CI bootstrap evidence to " .. OUTPUT_PATH)

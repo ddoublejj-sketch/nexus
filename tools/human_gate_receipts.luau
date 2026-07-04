@@ -65,12 +65,14 @@ local RECEIPTS: { Receipt } = {
 			"CI branch protection confirmed",
 		},
 		humanSteps = {
-			"Complete `gh auth login`.",
-			"Approve private repo creation for Nexus and RobloxGameVault.",
+			"Approve exporting `RobloxGameVault` vault notes to a private GitHub repo before the vault push runs.",
+			"Upgrade GitHub to Pro or make `ddoublejj-sketch/nexus` public if GitHub blocks branch protection on the private repo.",
 			"Confirm branch protection requires the Nexus CI quality gate.",
 		},
 		proofCommands = {
 			"gh auth status",
+			"./nexus.ps1 github-ci",
+			"./nexus.ps1 github-ci --create-vault-private",
 			"gh pr checks",
 			"./nexus.ps1 gatecheck --gate G4",
 		},
@@ -83,11 +85,12 @@ local RECEIPTS: { Receipt } = {
 			"Live publish approval recorded",
 		},
 		humanSteps = {
-			"Create the smallest-scope Open Cloud key needed to publish the target place.",
-			"Create `secrets/opencloud.env`; never paste key, universe ID, or place ID values into this receipt.",
-			"Approve live publish only after fixture and real dry-runs pass.",
+			"Confirm `./nexus.ps1 open-cloud` still reports fixture and real dry-runs as PASS.",
+			"Approve live publish only after reviewing the release checklist.",
+			"Never paste key, universe ID, or place ID values into this receipt.",
 		},
 		proofCommands = {
+			"./nexus.ps1 open-cloud",
 			"./nexus.ps1 release --dry-run --fixture",
 			"lune run tools/open_cloud_publish.luau --dry-run",
 			"lune run tools/secret_scan.luau",
