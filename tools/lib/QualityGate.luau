@@ -18,6 +18,7 @@ export type RunOptions = {
 }
 
 local QualityGate = {}
+local LOCAL_VAULT_ROOT = "C:/Users/jackw/Roblox/RobloxGameVault"
 
 local TOOL_EXES = {
 	["rojo"] = "rojo.exe",
@@ -77,6 +78,33 @@ function QualityGate.runTool(label: string, name: string, args: { string }): Com
 		stderr = result.stderr,
 		duration = duration,
 	}
+end
+
+function QualityGate.skip(label: string, reason: string): CommandResult
+	return {
+		label = label,
+		command = "skipped",
+		ok = true,
+		code = 0,
+		stdout = reason,
+		stderr = "",
+		duration = 0,
+	}
+end
+
+local function runningCiWithoutLocalVault(): boolean
+	return process.env.GITHUB_ACTIONS == "true" and not fs.isDir(LOCAL_VAULT_ROOT)
+end
+
+local function localVaultTest(label: string, scriptPath: string): CommandResult
+	if runningCiWithoutLocalVault() then
+		return QualityGate.skip(
+			label,
+			"Skipped in GitHub Actions because the local RobloxGameVault checkout is not present."
+		)
+	end
+
+	return QualityGate.runTool(label, "lune", { "run", scriptPath })
 end
 
 function QualityGate.runAll(options: RunOptions?): { CommandResult }
@@ -139,11 +167,7 @@ function QualityGate.runAll(options: RunOptions?): { CommandResult }
 	)
 	table.insert(
 		results,
-		QualityGate.runTool(
-			"DataService Contract Tests",
-			"lune",
-			{ "run", "tools/test_data_service_contract.luau" }
-		)
+		localVaultTest("DataService Contract Tests", "tools/test_data_service_contract.luau")
 	)
 	table.insert(
 		results,
@@ -197,10 +221,7 @@ function QualityGate.runAll(options: RunOptions?): { CommandResult }
 			{ "run", "tools/test_map_service_contract.luau" }
 		)
 	)
-	table.insert(
-		results,
-		QualityGate.runTool("Net Contract Tests", "lune", { "run", "tools/test_net_contract.luau" })
-	)
+	table.insert(results, localVaultTest("Net Contract Tests", "tools/test_net_contract.luau"))
 	table.insert(
 		results,
 		QualityGate.runTool("CI Contract Tests", "lune", { "run", "tools/test_ci_contract.luau" })
@@ -215,18 +236,13 @@ function QualityGate.runAll(options: RunOptions?): { CommandResult }
 	)
 	table.insert(
 		results,
-		QualityGate.runTool(
-			"Cold Boot Readiness Tests",
-			"lune",
-			{ "run", "tools/test_cold_boot_readiness.luau" }
-		)
+		localVaultTest("Cold Boot Readiness Tests", "tools/test_cold_boot_readiness.luau")
 	)
 	table.insert(
 		results,
-		QualityGate.runTool(
+		localVaultTest(
 			"Work Order Acceptance Audit Tests",
-			"lune",
-			{ "run", "tools/test_work_order_acceptance_audit.luau" }
+			"tools/test_work_order_acceptance_audit.luau"
 		)
 	)
 	table.insert(

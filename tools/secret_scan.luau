@@ -1,5 +1,6 @@
 --!strict
 
+local fs = require("@lune/fs")
 local process = require("@lune/process")
 
 type PatternRule = {
@@ -105,6 +106,11 @@ end
 local findings = {}
 
 for _, target in TARGETS do
+	if target.path ~= "." and not fs.isDir(target.path) then
+		print("Skipping missing scan target: " .. target.name)
+		continue
+	end
+
 	local output = runGit(target)
 	local lineNumber = 0
 
