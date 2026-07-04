@@ -1,4 +1,5 @@
 build/
+.nexus/
 sourcemap.json
 .env
 secrets/*

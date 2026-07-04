@@ -59,3 +59,4 @@
 - [WO-8] Proved PR CI behavior with draft PR #1: intentional StyLua failure run followed by fixed passing run - 2026-07-04.
 - [WO-8/G4] Accepted GitHub gate: public Nexus repo, protected master requiring Quality Gate, PR #2 protected merge, and private vault remote proof - 2026-07-04.
 - [WO-10] Locked zero OpenAI API spend for the command center; Codex usage remains outside the repo in the user's Codex plan - 2026-07-04.
+- [WO-10] Replaced session-scoped PowerShell jobs with persistent `.nexus` PID/log processes so `up/status/down` works across terminal invocations - 2026-07-04.

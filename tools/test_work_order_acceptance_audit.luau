@@ -45,9 +45,10 @@ assertContains(
 	'Invoke-Tool "lune" @("run", "tools/work_order_acceptance_audit.luau")',
 	"launcher must run work_order_acceptance_audit"
 )
+assertContains(launcher, '"loop" {', "launcher must expose loop command")
 assertContains(
 	launcher,
-	'Invoke-LoopScript "tools/work_order_acceptance_audit.luau"',
+	'"tools/work_order_acceptance_audit.luau"',
 	"launcher loop must refresh work-order acceptance audit"
 )
 

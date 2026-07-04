@@ -1850,60 +1850,31 @@ Open Cloud Dry Run: PASS
 
 ### Exact Up/Down Evidence
 
-Initial `up/status/down` test showed Rojo serve and sourcemap-watch jobs crashing because the loop's Build Health step ran `wally install` while Rojo was watching `Packages/`. The launcher now uses `tools/build_health.luau --skip-install` only inside the continuous `up` loop; full `./nexus.ps1 check` and `./nexus.ps1 health` still run the complete gate with Wally install.
+`up/status/down` now uses persistent child processes tracked in `.nexus/pids` instead of session-scoped PowerShell jobs, so separate terminal invocations can see and stop the Rojo server, sourcemap watcher, and automation loop.
 
 ```powershell
-./nexus.ps1 up; Start-Sleep -Seconds 12; ./nexus.ps1 status; Receive-Job -Name NexusRojoServe,NexusSourcemapWatch,NexusAutomationLoop -Keep; ./nexus.ps1 down
-Dev log appended: C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Daily Dev Log.md (Session Start)
+./nexus.ps1 up
+./nexus.ps1 status
+Name                State      Id
+----                -----      --
+NexusRojoServe      Running  3404
+NexusSourcemapWatch Running 32220
+NexusAutomationLoop Running 43268
+```
 
-Name                State   Id
-----                -----   --
-NexusRojoServe      Running  1
-NexusSourcemapWatch Running  3
-NexusAutomationLoop Running  5
+```powershell
+./nexus.ps1 studio-bridge
+Rojo project: PASS
+Sourcemap: PASS
+Sync runbook: PASS
+Snapshot archive: PASS
+Rojo local server: PASS
+Roblox Studio process: PASS
+G2 human receipt: NEEDS HUMAN
+```
 
-Found tools:
-
-./rokit.toml
-- luau-lsp -> JohnnyMorganz/luau-lsp @ 1.68.1
-- lune -> lune-org/lune @ 0.10.5
-- rojo -> rojo-rbx/rojo @ 7.7.0
-- selene -> Kampfkarren/selene @ 0.31.0
-- stylua -> JohnnyMorganz/StyLua @ 2.5.2
-- wally -> UpliftGames/wally @ 0.3.2
-
-Pinned tool versions:
-Rojo 7.7.0
-wally 0.3.2
-lune 0.10.5
-selene 0.31.0
-stylua 2.5.2
-1.68.1
-Last build: 89423 bytes at 07/03/2026 04:56:51
-
-Name                State   Id
-----                -----   --
-NexusRojoServe      Running  1
-NexusSourcemapWatch Running  3
-NexusAutomationLoop Running  5
-
-Rojo server listening:
-  Address: localhost
-  Port:    34872
-Visit http://localhost:34872/ in your browser for more information.
-Created sourcemap at sourcemap.json
-Wrote 133 sourcemap rows to C:/Users/jackw/Roblox/RobloxGameVault/90_Automation/Generated/Sourcemap.md
-Wrote 13 module notes under C:/Users/jackw/Roblox/RobloxGameVault/02_Systems/Generated Modules and refreshed stale-source report
-Wrote 7 command rows to C:/Users/jackw/Roblox/RobloxGameVault/02_Systems/Commands.md
-Asset manifest reconciled 4 assets; auto-added 0; missing sources 0; missing exports 0
-Wrote gate status for 11 work orders to C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Gate Status.md
-Wrote human gate checklist to C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Human Gate Checklist.md
-Wrote human gate readiness to C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Human Gate Readiness.md
-Wrote human gate proof receipts to C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Human Gate Proof Receipts.md
-Build health PASS; wrote C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Build Health.md
-Cold boot readiness BLOCKED_ON_G2_G3; wrote C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Cold Boot Readiness.md
-Work order acceptance audit BLOCKED_ON_HUMAN_GATES; wrote C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Work Order Acceptance Audit.md
-Wrote founder sign-off audit to C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Founder Sign-Off Audit.md
+```powershell
+./nexus.ps1 down
 Dev log appended: C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Daily Dev Log.md (Session End)
 
 Name                State   Id
@@ -1911,6 +1882,11 @@ Name                State   Id
 NexusRojoServe      Stopped
 NexusSourcemapWatch Stopped
 NexusAutomationLoop Stopped
+```
+
+```powershell
+./nexus.ps1 check
+Quality gate PASS
 ```
 
 ### Exact Acceptance Blockers
