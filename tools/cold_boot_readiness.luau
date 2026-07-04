@@ -113,7 +113,9 @@ end
 local overall = if hasLocalFailure
 	then "LOCAL_CHECKS_FAIL"
 	elseif g2Ready and g3Ready then "READY_FOR_COLD_BOOT_ACCEPTANCE"
-	else "BLOCKED_ON_G2_G3"
+	elseif not g2Ready and not g3Ready then "BLOCKED_ON_G2_G3"
+	elseif not g2Ready then "BLOCKED_ON_G2"
+	else "BLOCKED_ON_G3"
 
 local now = isoTimestamp()
 local lines = {

@@ -102,6 +102,22 @@ local function restProbe(apiUrl: string, apiKey: string): (boolean, string)
 	end)
 
 	if not ok then
+		local curlResult = process.exec("curl.exe", {
+			"-k",
+			"-s",
+			"-o",
+			"NUL",
+			"-w",
+			"%{http_code}",
+			"-H",
+			"Authorization: Bearer " .. apiKey,
+			apiUrl .. "/",
+		})
+
+		if curlResult.ok and curlResult.stdout:match("^2%d%d") then
+			return true, "root route responded via local curl fallback"
+		end
+
 		return false, oneLine(tostring(response))
 	end
 

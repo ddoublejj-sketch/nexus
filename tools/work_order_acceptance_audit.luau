@@ -283,7 +283,7 @@ local WORK_ORDERS: { WorkOrder } = {
 			{
 				label = "cold-boot readiness",
 				path = STATUS_PATH,
-				needle = "Cold boot readiness BLOCKED_ON_G2_G3",
+				needle = "Cold boot readiness",
 			},
 			{
 				label = "founder sign-off audit",

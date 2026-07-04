@@ -27,7 +27,9 @@ end
 
 local script = read(SCRIPT_PATH)
 assertContains(script, "Cold Boot Readiness", "script must write the Cold Boot Readiness note")
-assertContains(script, "BLOCKED_ON_G2_G3", "script must preserve G2/G3 blocker status")
+assertContains(script, "BLOCKED_ON_G2_G3", "script must preserve combined G2/G3 blocker status")
+assertContains(script, "BLOCKED_ON_G2", "script must report G2-only blocker status")
+assertContains(script, "BLOCKED_ON_G3", "script must report G3-only blocker status")
 assertContains(script, "Studio plugin connected", "script must inspect G2 receipt markers")
 assertContains(script, "Dashboard rendered in Obsidian", "script must inspect G3 receipt markers")
 assertContains(

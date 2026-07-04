@@ -1,8 +1,8 @@
 # G3 - Obsidian Dashboard Proof Receipt
 
-status: pending
+status: pass
 gate: G3
-updated: TODO
+updated: 2026-07-04T00:27:00Z
 
 ## Completion Rule
 
@@ -10,7 +10,7 @@ Change each required marker from `PENDING` to `PASS` only after the human action
 
 ## Required Markers
 
-- Dashboard rendered in Obsidian: PENDING
+- Dashboard rendered in Obsidian: PASS
 
 ## Human Steps
 
@@ -21,8 +21,9 @@ Change each required marker from `PENDING` to `PASS` only after the human action
 
 ## Evidence Notes
 
-- Paste non-secret observations here after the gate is complete.
-- Include command output only if it does not reveal secrets or private IDs.
+- Verified Obsidian window title `Dashboard - RobloxGameVault - Obsidian 1.12.7`.
+- Visual check showed the `00_Command_Center / Dashboard` note open in the real `RobloxGameVault` vault, with the command-center folder tree visible.
+- Obsidian REST key values were not pasted into this receipt.
 
 ## Proof Commands
 

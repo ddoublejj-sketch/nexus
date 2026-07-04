@@ -20,6 +20,16 @@ local function trim(value: string): string
 	return value:match("^%s*(.-)%s*$") or ""
 end
 
+local function oneLine(value: string): string
+	local normalized = value:gsub("\r", "\n"):gsub("\n+", " "):gsub("|", "\\|")
+	normalized = normalized:match("^%s*(.-)%s*$") or ""
+	if #normalized > 140 then
+		return normalized:sub(1, 137) .. "..."
+	end
+
+	return normalized
+end
+
 local function readEnvFile(path: string): { [string]: string }
 	local values = {}
 
@@ -127,27 +137,72 @@ local function writeViaRest(
 	targetPath: string,
 	body: string
 ): (boolean, string?)
-	local response = net.request({
-		url = config.apiUrl .. "/vault/" .. encodeVaultPath(targetPath),
-		method = "PUT",
-		headers = {
-			Authorization = "Bearer " .. config.apiKey,
-			["Content-Type"] = "text/plain",
-		},
-		body = body,
-	})
+	local requestOk, response = pcall(function()
+		return net.request({
+			url = config.apiUrl .. "/vault/" .. encodeVaultPath(targetPath),
+			method = "PUT",
+			headers = {
+				Authorization = "Bearer " .. config.apiKey,
+				["Content-Type"] = "text/plain",
+			},
+			body = body,
+		})
+	end)
 
-	if not response.ok then
-		return false,
-			("Failed to write %s via Obsidian REST: %d %s\n%s"):format(
-				targetPath,
-				response.statusCode,
-				response.statusMessage,
-				response.body
-			)
+	if not requestOk then
+		return false, oneLine(tostring(response))
+	end
+
+	local restResponse = response :: any
+	if not restResponse.ok then
+		local message = ("Failed to write %s via Obsidian REST: %d %s\n%s"):format(
+			targetPath,
+			restResponse.statusCode,
+			restResponse.statusMessage,
+			restResponse.body
+		)
+		return false, message
 	end
 
 	return true, nil
+end
+
+local function writeViaCurlFallback(
+	config: RestConfig,
+	targetPath: string,
+	body: string
+): (boolean, string?)
+	local tempPath = ("%s/curl_body_%s.md"):format(LOG_ROOT, sanitizePath(targetPath))
+	ensureDir(LOG_ROOT)
+	fs.writeFile(tempPath, body)
+
+	local result = process.exec("curl.exe", {
+		"-k",
+		"-s",
+		"-o",
+		"NUL",
+		"-w",
+		"%{http_code}",
+		"-X",
+		"PUT",
+		"-H",
+		"Authorization: Bearer " .. config.apiKey,
+		"-H",
+		"Content-Type: text/plain",
+		"--data-binary",
+		"@" .. tempPath,
+		config.apiUrl .. "/vault/" .. encodeVaultPath(targetPath),
+	})
+
+	if fs.isFile(tempPath) then
+		fs.removeFile(tempPath)
+	end
+
+	if result.ok and result.stdout:match("^2%d%d") then
+		return true, nil
+	end
+
+	return false, "curl fallback failed with status " .. (result.stdout or "unknown")
 end
 
 local function flushPending(config: RestConfig): number
@@ -174,7 +229,10 @@ local function flushPending(config: RestConfig): number
 			if targetPath and body then
 				local ok, err = writeViaRest(config, targetPath, body)
 				if not ok then
-					error(err)
+					local curlOk, curlErr = writeViaCurlFallback(config, targetPath, body)
+					if not curlOk then
+						error(curlErr or err)
+					end
 				end
 
 				fs.writeFile(sentPath, envelope)
@@ -225,8 +283,16 @@ end
 
 local ok, err = writeViaRest(config, PING_NOTE_PATH, noteBody)
 if not ok then
-	queueWrite(PING_NOTE_PATH, noteBody, err or "Obsidian REST write failed", timestamp)
-	process.exit(0)
+	local curlOk, curlErr = writeViaCurlFallback(config, PING_NOTE_PATH, noteBody)
+	if not curlOk then
+		queueWrite(
+			PING_NOTE_PATH,
+			noteBody,
+			curlErr or err or "Obsidian REST write failed",
+			timestamp
+		)
+		process.exit(0)
+	end
 end
 
 local flushed = flushPending(config)

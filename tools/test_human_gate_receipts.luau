@@ -83,7 +83,11 @@ for _, receipt in RECEIPTS do
 	assertContains(acceptance, fileName, "gatecheck missing receipt " .. fileName)
 
 	local contents = read(receipt.path)
-	assertContains(contents, "status: pending", receipt.path .. " missing pending status")
+	assertTrue(
+		contents:find("status: pending", 1, true) ~= nil
+			or contents:find("status: pass", 1, true) ~= nil,
+		receipt.path .. " missing receipt status"
+	)
 	assertContains(contents, "## Required Markers", receipt.path .. " missing marker section")
 	assertContains(contents, "Do not paste secrets", receipt.path .. " missing secret warning")
 	assertNotContains(
@@ -97,10 +101,10 @@ for _, receipt in RECEIPTS do
 		receipt.path .. " must not include key assignment"
 	)
 	for _, marker in receipt.markers do
-		assertContains(
-			contents,
-			marker .. ": PENDING",
-			receipt.path .. " missing pending marker " .. marker
+		assertTrue(
+			contents:find(marker .. ": PENDING", 1, true) ~= nil
+				or contents:find(marker .. ": PASS", 1, true) ~= nil,
+			receipt.path .. " missing marker " .. marker
 		)
 	end
 end
