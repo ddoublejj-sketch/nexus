@@ -94,16 +94,16 @@ local GATES: { Gate } = {
 	{
 		id = "G4",
 		title = "GitHub Auth And CI",
-		state = "Blocked on Nexus branch protection and explicit approval to export the vault repo",
+		state = "Closed locally; GitHub auth, branch protection, and vault remote proof are accepted",
 		human = {
-			"Approve exporting the separate `RobloxGameVault` Obsidian repo to private GitHub before Codex runs the vault push.",
-			"Either upgrade GitHub to Pro or make `ddoublejj-sketch/nexus` public so branch protection can be enabled on the repo.",
+			"No current G4 action remains.",
+			"Keep `ddoublejj-sketch/nexus` public unless GitHub Pro branch protection is later available for a private repo.",
 		},
 		codex = {
-			"Run `./nexus.ps1 github-ci --create-vault-private` only after explicit approval.",
-			"Enable branch protection requiring the Nexus CI quality gate after GitHub allows it.",
-			"Mark the required marker in `docs/gate-proofs/G4-github-ci.md` as `PASS` after branch protection is confirmed.",
-			"Demonstrate a failing formatting PR and a fixed passing PR if founder still wants that proof path.",
+			"Use PRs so `master` stays behind the required `Quality Gate` branch protection.",
+			"Run `./nexus.ps1 github-ci` if GitHub auth, remotes, or branch protection need to be rechecked.",
+			"Run `./nexus.ps1 github-ci --create-vault-private` only if the separate vault remote needs to be recreated.",
+			"Rerun `./nexus.ps1 gatecheck --gate G4` after GitHub settings change.",
 		},
 		proof = {
 			"./nexus.ps1 receipts",
