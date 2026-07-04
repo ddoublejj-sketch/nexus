@@ -14,7 +14,7 @@ local REQUIRED_GATE_LABELS = {
 	"Selene",
 	"Sourcemap",
 	"Tool Gap Contract Tests",
-"G1 Tool Closure Tests",
+	"G1 Tool Closure Tests",
 	"Rojo Bridge Tests",
 	"Migration Tests",
 	"DataService Contract Tests",
