@@ -35,3 +35,7 @@ wally install
 
 The full gate list lives in `docs/STATUS.md`. Secrets belong only in `secrets/*.env`;
 never commit keys, tokens, universe IDs, or place IDs.
+
+Nexus does not call the OpenAI API or require `OPENAI_API_KEY`. AI work stays in the
+user's Codex plan outside this repo; the command center only runs local tools, GitHub
+CI, Obsidian Local REST, Roblox Studio/Rojo, and Roblox Open Cloud release checks.

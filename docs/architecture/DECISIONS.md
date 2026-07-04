@@ -15,6 +15,7 @@ explicitly opens a new decision.
 | D8 | Repo location | `C:\Users\jackw\Roblox\nexus` and `C:\Users\jackw\Roblox\RobloxGameVault` |
 | D9 | Command center v1 | `nexus.ps1`, VS Code tasks, Lune loops, Obsidian dashboard |
 | D10 | CI | GitHub Actions from WO-8, local quality gate from WO-1 |
+| D11 | AI/API spend | No OpenAI API, `OPENAI_API_KEY`, or paid model API calls inside Nexus; Codex usage stays in the user's Codex plan outside this repo |
 
 ## WO-1 Tool Pins
 

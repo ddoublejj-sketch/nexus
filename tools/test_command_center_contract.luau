@@ -11,6 +11,8 @@ local EXTENSIONS_PATH = ".vscode/extensions.json"
 local DEV_LOG_PATH = "tools/dev_log.luau"
 local FRESH_SETUP_PATH = "docs/runbooks/fresh-machine-setup.md"
 local DISASTER_RECOVERY_PATH = "docs/runbooks/disaster-recovery.md"
+local DECISIONS_PATH = "docs/architecture/DECISIONS.md"
+local CI_WORKFLOW_PATH = ".github/workflows/ci.yml"
 
 local EXPECTED_TASKS = {
 	["Nexus: Up"] = "./nexus.ps1 up",
@@ -82,10 +84,31 @@ local function assertContains(contents: string, needle: string, label: string)
 	assertTrue(contents:find(needle, 1, true) ~= nil, label)
 end
 
+local function assertNotContains(contents: string, needle: string, label: string)
+	assertTrue(contents:find(needle, 1, true) == nil, label)
+end
+
 local launcher = read(LAUNCHER_PATH)
 local devLog = read(DEV_LOG_PATH)
 local freshSetup = read(FRESH_SETUP_PATH)
 local disasterRecovery = read(DISASTER_RECOVERY_PATH)
+local decisions = read(DECISIONS_PATH)
+local ciWorkflow = read(CI_WORKFLOW_PATH)
+
+assertContains(decisions, "No OpenAI API", "Architecture decisions must lock zero OpenAI API spend")
+for label, contents in
+	{
+		launcher = launcher,
+		["CI workflow"] = ciWorkflow,
+	}
+do
+	assertNotContains(
+		contents,
+		"OPENAI_API_KEY",
+		label .. " must not require OpenAI API credentials"
+	)
+	assertNotContains(contents, "api.openai.com", label .. " must not call the OpenAI API")
+end
 
 for _, jobName in { "NexusRojoServe", "NexusSourcemapWatch", "NexusAutomationLoop" } do
 	assertContains(launcher, '"' .. jobName .. '"', "Launcher missing job " .. jobName)
