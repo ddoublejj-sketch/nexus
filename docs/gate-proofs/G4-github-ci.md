@@ -1,8 +1,8 @@
 # G4 - GitHub CI Proof Receipt
 
-status: pending
+status: pass
 gate: G4
-updated: TODO
+updated: 2026-07-04
 
 ## Completion Rule
 
@@ -10,7 +10,7 @@ Change each required marker from `PENDING` to `PASS` only after the human action
 
 ## Required Markers
 
-- CI branch protection confirmed: PENDING
+- CI branch protection confirmed: PASS
 
 ## Human Steps
 
@@ -20,8 +20,9 @@ Change each required marker from `PENDING` to `PASS` only after the human action
 
 ## Evidence Notes
 
-- Paste non-secret observations here after the gate is complete.
-- Include command output only if it does not reveal secrets or private IDs.
+- Nexus repo visibility verified as PUBLIC via gh repo view ddoublejj-sketch/nexus.
+- Branch protection verified via GitHub API: strict=true, contexts=[Quality Gate], admins=true.
+- RobloxGameVault remote was created and pushed privately; vault proof commit 2446d4c.
 
 ## Proof Commands
 
