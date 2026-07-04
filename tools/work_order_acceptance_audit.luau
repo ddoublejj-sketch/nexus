@@ -210,7 +210,6 @@ local WORK_ORDERS: { WorkOrder } = {
 	{
 		id = "WO-8",
 		title = "CI",
-		blocker = "G4 branch protection plus explicit vault GitHub repo/push approval",
 		requirements = {
 			{
 				label = "workflow exists",
@@ -238,9 +237,9 @@ local WORK_ORDERS: { WorkOrder } = {
 				needle = "Real GitHub PR Failure/Recovery Proof",
 			},
 			{
-				label = "vault GitHub approval blocker preserved",
-				path = STATUS_PATH,
-				needle = "vault GitHub repo/push needs explicit approval",
+				label = "G4 branch protection receipt accepted",
+				path = "docs/gate-proofs/G4-github-ci.md",
+				needle = "CI branch protection confirmed: PASS",
 			},
 		},
 	},
@@ -275,7 +274,7 @@ local WORK_ORDERS: { WorkOrder } = {
 	{
 		id = "WO-10",
 		title = "Command Center Hardening",
-		blocker = "G2 Studio connect, G4 branch protection/vault approval, and G5 live publish approval",
+		blocker = "G2 Studio connect and G5 live publish approval",
 		requirements = {
 			{
 				label = "up/down proof",
@@ -419,7 +418,7 @@ if #failures > 0 then
 else
 	table.insert(
 		lines,
-		"All local evidence checks are present. Remaining non-pass rows require G2, G4, or G5 human/external proof."
+		"All local evidence checks are present. Remaining non-pass rows require G2 or G5 human/external proof."
 	)
 end
 

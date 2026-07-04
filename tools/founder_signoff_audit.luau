@@ -173,7 +173,7 @@ local criteria: { Criterion } = {
 		evidence = if runbookCoverage(readme, freshSetup, disasterRecovery)
 			then "README plus fresh-machine and disaster-recovery runbooks cover setup, quality gate, release dry-run, and Studio snapshots; installer/auth gates remain human-owned."
 			else "README or runbooks are missing required setup evidence.",
-		nextAction = "Complete G4, then do a clean setup rehearsal from the docs.",
+		nextAction = "Complete G2 and G5, then do a clean setup rehearsal from the docs.",
 	},
 }
 
@@ -238,7 +238,7 @@ table.insert(
 )
 table.insert(
 	lines,
-	"- G4: Nexus CI is green; branch protection needs GitHub Pro/public repo and vault GitHub export needs explicit approval."
+	"- G4: Accepted; Nexus is public, master requires Quality Gate, and the private vault remote is pushed."
 )
 table.insert(
 	lines,
