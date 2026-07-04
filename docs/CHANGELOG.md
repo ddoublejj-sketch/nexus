@@ -58,3 +58,4 @@
 - [WO-8/WO-10] Added vault-remote readiness checks, explicit vault-push helper flag, and refreshed gate/audit generators for current G2/G4/G5 blockers - 2026-07-04.
 - [WO-8] Proved PR CI behavior with draft PR #1: intentional StyLua failure run followed by fixed passing run - 2026-07-04.
 - [WO-8/G4] Accepted GitHub gate: public Nexus repo, protected master requiring Quality Gate, PR #2 protected merge, and private vault remote proof - 2026-07-04.
+- [WO-10] Locked zero OpenAI API spend for the command center; Codex usage remains outside the repo in the user's Codex plan - 2026-07-04.
