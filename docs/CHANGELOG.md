@@ -56,3 +56,4 @@
 - [WO-10] Refreshed STATUS.md, vault dashboard notes, cold-boot readiness, and work-order audit with current G2/G4/G5 blockers - 2026-07-04.
 - [WO-8] Committed the vault locally and recorded explicit-approval requirement before exporting RobloxGameVault notes to GitHub - 2026-07-04.
 - [WO-8/WO-10] Added vault-remote readiness checks, explicit vault-push helper flag, and refreshed gate/audit generators for current G2/G4/G5 blockers - 2026-07-04.
+- [WO-8] Proved PR CI behavior with draft PR #1: intentional StyLua failure run followed by fixed passing run - 2026-07-04.

@@ -1287,8 +1287,8 @@ Actual Studio/runtime observation is still pending G2.
 - Added `.github/workflows/ci.yml`.
 - Added `docs/runbooks/github-ci.md`.
 - Added `tools/test_ci_contract.luau` to the shared gate. It verifies workflow/launcher/build-health parity, artifact upload settings, runbook G4 instructions, and that CI does not duplicate the quality checklist outside `tools/quality_gate.luau`.
-- Added `tools/github_ci_bootstrap.luau` and `./nexus.ps1 github-ci`; default mode is read-only, writes non-secret G4 readiness evidence, and requires `--create-private` before it will create/push a private remote.
-- Added `tools/test_github_ci_bootstrap.luau` to the shared gate. It verifies auth/remote/receipt checks, secret-safe evidence, launcher/task wiring, runbook mention, and the dashboard embed.
+- Added `tools/github_ci_bootstrap.luau` and `./nexus.ps1 github-ci`; default mode is read-only, writes non-secret G4 readiness evidence, requires `--create-private` before it will create/push the Nexus private remote, and requires `--create-vault-private` before it will create/push the separate private vault remote.
+- Added `tools/test_github_ci_bootstrap.luau` to the shared gate. It verifies auth/remote/receipt checks, vault-remote readiness, explicit vault-export approval wording, secret-safe evidence, launcher/task wiring, runbook mention, and the dashboard embed.
 
 ### Workflow Shape
 
@@ -1356,6 +1356,29 @@ lune run tools/test_github_ci_bootstrap.luau
 GitHub CI bootstrap tests passed
 ```
 
+### Real GitHub PR Failure/Recovery Proof - 2026-07-04 UTC
+
+Temporary draft PR:
+
+```powershell
+gh pr view 1 --json number,title,state,isDraft,headRefName,baseRefName,url,statusCheckRollup
+{"baseRefName":"master","headRefName":"wo8-ci-proof-format-fail","isDraft":true,"number":1,"state":"OPEN","statusCheckRollup":[{"__typename":"CheckRun","completedAt":"2026-07-04T02:04:46Z","conclusion":"SUCCESS","detailsUrl":"https://github.com/ddoublejj-sketch/nexus/actions/runs/28691597421/job/85093784422","name":"Quality Gate","startedAt":"2026-07-04T02:03:47Z","status":"COMPLETED","workflowName":"Nexus CI"}],"title":"WO-8 CI failure proof","url":"https://github.com/ddoublejj-sketch/nexus/pull/1"}
+```
+
+Intentional formatting failure run:
+
+```powershell
+gh run view 28691544906 --json conclusion,status,event,headBranch,headSha,url,displayTitle
+{"conclusion":"failure","displayTitle":"WO-8 CI failure proof","event":"pull_request","headBranch":"wo8-ci-proof-format-fail","headSha":"5c58138414b28ea3a5d89efa6a8cac1d9dbb8ddb","status":"completed","url":"https://github.com/ddoublejj-sketch/nexus/actions/runs/28691544906"}
+```
+
+Fixed PR run:
+
+```powershell
+gh run view 28691597421 --json conclusion,status,event,headBranch,headSha,url,displayTitle
+{"conclusion":"success","displayTitle":"WO-8 CI failure proof","event":"pull_request","headBranch":"wo8-ci-proof-format-fail","headSha":"55710f69cc28663fc95e209a7d913faa65b9ee1a","status":"completed","url":"https://github.com/ddoublejj-sketch/nexus/actions/runs/28691597421"}
+```
+
 Individual checks after CI work:
 
 ```powershell
@@ -1417,19 +1440,16 @@ Open Cloud Dry Run: PASS
 
 Please complete when ready:
 
-1. Run `gh auth login`.
-2. Re-run `./nexus.ps1 github-ci`.
-3. Create/push private repos for:
-   - `nexus`
-   - `RobloxGameVault`
-4. Enable branch protection on `main` so the Nexus CI quality gate is required before merge.
+1. Approve exporting the separate `RobloxGameVault` Obsidian repo to private GitHub, then run `./nexus.ps1 github-ci --create-vault-private`.
+2. Upgrade GitHub to Pro or make `ddoublejj-sketch/nexus` public if branch protection must be enabled on GitHub.
+3. Enable branch protection on `master` so the Nexus CI `Quality Gate` check is required before merge, then mark `docs/gate-proofs/G4-github-ci.md`.
 
 ### Open Blockers
 
-- `gh` is installed and `./nexus.ps1 github-ci` now records readiness, but GitHub auth, repo creation, push, and branch protection still require G4.
-- The workflow has not run on GitHub yet.
-- The deliberate failing/fixed PR acceptance check cannot be demonstrated until the remote repo exists and G4 is complete.
-- WO-8 is **not marked complete** until CI has a real GitHub run and branch protection evidence.
+- Nexus GitHub auth, private remote, push, real CI run, and deliberate failing/fixed PR proof are complete.
+- `RobloxGameVault` is committed locally but not pushed to GitHub; exporting vault notes requires explicit founder approval.
+- Branch protection is blocked by GitHub's private-repo feature gate unless the account is upgraded to GitHub Pro or the repo is made public.
+- WO-8 is **not marked complete** until vault remote push and branch protection evidence are recorded.
 
 ## WO-9 - Release Path
 
@@ -1907,7 +1927,7 @@ Whole-repo local quality gate:
 
 ```powershell
 ./nexus.ps1 check
-[PASS] Wally Install (0.71s, exit 0)
+[PASS] Wally Install (0.78s, exit 0)
 [PASS] StyLua (0.10s, exit 0)
 [PASS] Selene (0.11s, exit 0)
 [PASS] Sourcemap (0.09s, exit 0)
@@ -1931,14 +1951,14 @@ Whole-repo local quality gate:
 [PASS] Work Order Acceptance Audit Tests (0.03s, exit 0)
 [PASS] Human Gate Checklist Tests (0.03s, exit 0)
 [PASS] Human Gate Readiness Tests (0.03s, exit 0)
-[PASS] Human Gate Acceptance Tests (2.97s, exit 0)
-[PASS] Human Gate Receipt Tests (1.46s, exit 0)
+[PASS] Human Gate Acceptance Tests (2.98s, exit 0)
+[PASS] Human Gate Receipt Tests (1.45s, exit 0)
 [PASS] Founder Sign-Off Audit Tests (0.03s, exit 0)
-[PASS] Acceptance Matrix Contract Tests (0.03s, exit 0)
+[PASS] Acceptance Matrix Contract Tests (0.04s, exit 0)
 [PASS] Release Contract Tests (0.03s, exit 0)
 [PASS] Open Cloud Bootstrap Tests (0.03s, exit 0)
-[PASS] Secret Scan (0.77s, exit 0)
-[PASS] Analyze (2.05s, exit 0)
+[PASS] Secret Scan (0.78s, exit 0)
+[PASS] Analyze (2.10s, exit 0)
 [PASS] Build (0.08s, exit 0)
 [PASS] Open Cloud Dry Run (0.03s, exit 0)
 Quality gate PASS

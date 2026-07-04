@@ -233,6 +233,11 @@ local WORK_ORDERS: { WorkOrder } = {
 				needle = "latest successful GitHub Actions run",
 			},
 			{
+				label = "failing/fixed PR proof",
+				path = STATUS_PATH,
+				needle = "Real GitHub PR Failure/Recovery Proof",
+			},
+			{
 				label = "vault GitHub approval blocker preserved",
 				path = STATUS_PATH,
 				needle = "vault GitHub repo/push needs explicit approval",
