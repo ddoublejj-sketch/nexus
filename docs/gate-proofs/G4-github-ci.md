@@ -1,6 +1,6 @@
 # G4 - GitHub CI Proof Receipt
 
-status: accepted
+status: pass
 gate: G4
 updated: 2026-07-04
 
