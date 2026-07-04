@@ -18,6 +18,8 @@ jobs:
 
       - name: Install Rokit
         shell: pwsh
+        env:
+          GITHUB_PAT: ${{ github.token }}
         run: |
           Invoke-RestMethod https://raw.githubusercontent.com/rojo-rbx/rokit/main/scripts/install.ps1 | Invoke-Expression
           "$env:USERPROFILE\.rokit\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
