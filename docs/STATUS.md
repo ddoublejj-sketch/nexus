@@ -1,3 +1,19 @@
+## Golf Pro Phase 9 Launch QA - 2026-07-05
+
+Branch: `codex/golfpro-phase-9-launch-qa`
+
+Implementation in progress:
+
+- Added compact server-owned `AnalyticsService` with Phase 9 event names.
+- Wired analytics hooks for round starts/completions, holes, records, leaderboards, Mystery Range deposits, cosmetic equips, and tournament attempts.
+- Added launch/IP audit, remote-tamper, and analytics-contract tests to the shared quality gate.
+- Added `docs/product/GolfPro_Launch_QA_Checklist.md` as the final launch checklist note.
+
+Safety constraints:
+
+- No live publish.
+- No OpenAI/API-cost gameplay feature.
+- No cash/Robux/prize/wager/casino/paid-random/pay-to-win runtime feature.
 ## Golf Pro Phase 8 Tournament LiveOps MVP - 2026-07-05
 
 Built the Phase 8 tournament slice on `codex/golfpro-phase-8-tournaments-liveops`: `TournamentConfig` with `weekend_open_001`, in-memory server-owned `TournamentService`, tournament event/leaderboard remotes, compact `TournamentController`, deterministic cosmetic reward grant through `CosmeticService`, and Phase 8 tournament core/contract tests wired into the quality gate.

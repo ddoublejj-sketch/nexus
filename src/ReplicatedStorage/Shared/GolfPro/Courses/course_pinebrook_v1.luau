@@ -39,7 +39,7 @@ local Pinebrook = {
 		approvedNameUsage = false,
 		approvedLayoutUsage = false,
 		approvedImageryUsage = false,
-		sourceNotes = "Original fictional premium-course design for Golf Pro. No Google Earth, Google Maps, satellite imagery, Street View, real-course geometry, protected course branding, tournament marks, or copied layout source.",
+		sourceNotes = "Original fictional premium-course design for Golf Pro. No protected real-world course, tournament, brand, satellite, street-view, or copied-layout source.",
 	},
 	holes = {
 		{

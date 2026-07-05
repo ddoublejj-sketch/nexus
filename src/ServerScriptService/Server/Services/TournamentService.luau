@@ -4,6 +4,7 @@ local TournamentConfig =
 	require("../../../ReplicatedStorage/Shared/GolfPro/Config/TournamentConfig")
 local CosmeticService = require("./CosmeticService")
 local LeaderboardService = require("./LeaderboardService")
+local AnalyticsService = require("./AnalyticsService")
 
 local TournamentService = {}
 
@@ -181,6 +182,13 @@ function TournamentService.submitAttempt(player: any, eventId: string, result: a
 	table.insert(leaderboards[eventId], row)
 	sortedRows(eventId)
 	local rewardOk, reward = TournamentService.grantEventRewards(player, eventId)
+	AnalyticsService.log(player, "tournament_attempt_submitted", {
+		eventId = eventId,
+		roundId = row.roundId,
+		score = row.score,
+		attemptNumber = row.attemptNumber,
+		rewardGranted = rewardOk,
+	})
 	emitUpdate(player)
 	return true,
 		{

@@ -70,3 +70,4 @@
 - [GolfPro/GP-011A] Added Phase 4.5 ball and club presentation: visible local ball, BallPath flight/tracer, landing marker, shot stats, generated club-in-hand visuals, and procedural swing/strike presentation - 2026-07-05.
 - [GolfPro/Phase7] Added locker cosmetics: safe catalog, server-owned grant/equip service, locker UI, cosmetic remotes, ball/trail visual hooks, tests, PR #21, and Studio smoke proof - 2026-07-05.
 - [GolfPro/Phase8] Added Tournament/LiveOps MVP slice: Weekend Open config, server-owned attempt validation, event leaderboard, deterministic cosmetic reward, event UI, remotes, and tournament tests - 2026-07-05.
+- [GolfPro/Phase9] Added launch QA audit coverage: compact analytics logger/hooks, tamper tests, mobile/controller smoke assertions, IP/content audit, and final launch checklist note - 2026-07-05.

@@ -313,6 +313,30 @@ function QualityGate.runAll(options: RunOptions?): { CommandResult }
 	table.insert(
 		results,
 		QualityGate.runTool(
+			"Golf Pro Launch Audit Tests",
+			"lune",
+			{ "run", "tools/test_golfpro_launch_audit.luau" }
+		)
+	)
+	table.insert(
+		results,
+		QualityGate.runTool(
+			"Golf Pro Remote Tamper Tests",
+			"lune",
+			{ "run", "tools/test_golfpro_remote_tamper.luau" }
+		)
+	)
+	table.insert(
+		results,
+		QualityGate.runTool(
+			"Golf Pro Analytics Contract Tests",
+			"lune",
+			{ "run", "tools/test_golfpro_analytics_contract.luau" }
+		)
+	)
+	table.insert(
+		results,
+		QualityGate.runTool(
 			"Golf Pro Presentation Contract Tests",
 			"lune",
 			{ "run", "tools/test_golfpro_presentation_contract.luau" }
