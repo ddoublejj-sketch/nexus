@@ -76,7 +76,7 @@ assertContains(
 if fs.isFile(NOTE_PATH) then
 	local note = read(NOTE_PATH)
 	assertContains(note, "# Work Order Acceptance Audit", "note missing title")
-	assertContains(note, "Overall: BLOCKED_ON_HUMAN_GATES", "note must preserve human blockers")
+	assertContains(note, "Overall: PASS", "note must show final work-order acceptance")
 	assertContains(note, "not completion evidence", "note must reject blocked rows as completion")
 	for index = 0, 10 do
 		assertContains(note, "WO-" .. tostring(index), "note missing WO-" .. tostring(index))

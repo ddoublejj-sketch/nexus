@@ -35,6 +35,7 @@ local REQUIRED_PROOF_COMMANDS = {
 	"./nexus.ps1 open-cloud",
 	"./nexus.ps1 gatecheck --gate G1",
 	"./nexus.ps1 release --dry-run --fixture",
+	"./nexus.ps1 release --live",
 }
 
 local function assertTrue(condition: boolean, label: string)

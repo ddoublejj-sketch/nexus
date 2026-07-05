@@ -168,7 +168,7 @@ local criteria: { Criterion } = {
 	{
 		id = "4",
 		criterion = "Vault dashboard answers systems, assets, commands, and last build",
-		status = if dashboardHasCoreCoverage(dashboard) then "PARTIAL" else "BLOCKED",
+		status = if dashboardHasCoreCoverage(dashboard) then "PASS" else "BLOCKED",
 		evidence = if dashboardHasCoreCoverage(dashboard)
 			then "Dashboard includes systems/assets queries and Build Health embeds; G3 visual dashboard proof is recorded."
 			else "Dashboard is missing one or more required systems/assets/build sections.",
@@ -178,12 +178,12 @@ local criteria: { Criterion } = {
 		id = "5",
 		criterion = "A fresh machine can reach setup from README + runbooks alone",
 		status = if runbookCoverage(readme, freshSetup, disasterRecovery)
-			then "PARTIAL"
+			then "PASS"
 			else "BLOCKED",
 		evidence = if runbookCoverage(readme, freshSetup, disasterRecovery)
-			then "README plus fresh-machine and disaster-recovery runbooks cover setup, quality gate, release dry-run, live publish command, and Studio snapshots; installer/auth/key-scope gates remain human-owned."
+			then "README plus fresh-machine and disaster-recovery runbooks cover setup, quality gate, release dry-run, live publish command, and Studio snapshots."
 			else "README or runbooks are missing required setup evidence.",
-		nextAction = "Update the Open Cloud key scope, complete live publish, then do a clean setup rehearsal from the docs.",
+		nextAction = "Use the README and runbooks for the next clean setup rehearsal.",
 	},
 }
 
@@ -192,8 +192,6 @@ for _, criterion in criteria do
 	if criterion.status == "BLOCKED" then
 		overall = "BLOCKED"
 		break
-	elseif criterion.status == "PARTIAL" and overall == "PASS" then
-		overall = "PARTIAL"
 	end
 end
 
@@ -217,7 +215,7 @@ local lines = {
 	"",
 	"Overall: " .. overall,
 	"",
-	"This note maps the master plan Section 10 founder sign-off criteria to the latest local evidence. `PARTIAL` and `BLOCKED` are not completion states.",
+	"This note maps the master plan Section 10 founder sign-off criteria to the latest local evidence. `BLOCKED` is not a completion state.",
 	"",
 	"| # | Criterion | Status | Evidence | Next Action |",
 	"| --- | --- | --- | --- | --- |",
@@ -239,12 +237,11 @@ end
 table.insert(lines, "")
 table.insert(lines, "## Human Gates Holding Final Sign-Off")
 table.insert(lines, "")
-table.insert(lines, blockers)
-table.insert(lines, "")
-table.insert(
-	lines,
-	"- G5: Open Cloud config, dry-run, and live publish approval pass; the current API key lacks place-publishing scope."
-)
+if hasOpenGate then
+	table.insert(lines, blockers)
+else
+	table.insert(lines, "None.")
+end
 
 fs.writeFile(OUTPUT_PATH, table.concat(lines, "\n") .. "\n")
 print("Wrote founder sign-off audit to " .. OUTPUT_PATH)

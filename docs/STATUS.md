@@ -4,7 +4,7 @@ Last updated: 2026-07-05
 
 ## Current Phase
 
-WO-0 G1 tool closure passes locally: Git, Rokit, Rojo, VS Code `code`, GitHub CLI `gh`, Blender CLI, and Obsidian command are all available through refreshed PATH/shims. WO-1 exact local acceptance passes through `./nexus.ps1 check`. WO-2/G2 is now accepted: Rojo 7.7.0 connected to Golf Pro through the `Nexus` session at `localhost:34872`, and Studio playtest output showed Nexus server/client startup, DataService mock mode, MapService, Cmdr service, and Cmdr client online. WO-3/G3 is now accepted: Obsidian REST config is present, all required plugins are enabled, pending REST writes are flushed, and dashboard render proof is recorded. WO-4 automation scripts pass through exact `./nexus.ps1 loop --once` and the dashboard notes refresh with the accepted G2/G3 state. WO-5 asset pipeline renders real Blender PNG thumbnails for the four seed assets through `./nexus.ps1 thumbnails`. WO-6 Cmdr profile commands call DataService for inventory grants, schema-backed stat edits, Owner-confirmed profile resets, and MapService-backed `reloadmap`; Studio playtest verified Cmdr service/client startup. WO-7 data/networking baseline has direct local proof, server-owned mutation helpers, and Studio mock-mode runtime proof. WO-8/G4 is now accepted: Nexus is public, `master` branch protection requires `Quality Gate`, PR #2 passed and merged through the protected path, and the separate private `RobloxGameVault` repo was created/pushed with non-secret proof. WO-9 Open Cloud config, real dry-run, and G5 approval pass without printing secrets; live publish was attempted and blocked by Roblox because the API key has insufficient place-publishing scope. WO-10 `up/status/down` starts and stops watcher jobs cleanly, `./nexus.ps1 cold-boot` and `./nexus.ps1 wo-audit` now preserve the remaining Open Cloud key-scope blocker instead of faking completion.
+WO-0 G1 tool closure passes locally: Git, Rokit, Rojo, VS Code `code`, GitHub CLI `gh`, Blender CLI, and Obsidian command are all available through refreshed PATH/shims. WO-1 exact local acceptance passes through `./nexus.ps1 check`. WO-2/G2 is now accepted: Rojo 7.7.0 connected to Golf Pro through the `Nexus` session at `localhost:34872`, and Studio playtest output showed Nexus server/client startup, DataService mock mode, MapService, Cmdr service, and Cmdr client online. WO-3/G3 is now accepted: Obsidian REST config is present, all required plugins are enabled, pending REST writes are flushed, and dashboard render proof is recorded. WO-4 automation scripts pass through exact `./nexus.ps1 loop --once` and the dashboard notes refresh with the accepted G2/G3 state. WO-5 asset pipeline renders real Blender PNG thumbnails for the four seed assets through `./nexus.ps1 thumbnails`. WO-6 Cmdr profile commands call DataService for inventory grants, schema-backed stat edits, Owner-confirmed profile resets, and MapService-backed `reloadmap`; Studio playtest verified Cmdr service/client startup. WO-7 data/networking baseline has direct local proof, server-owned mutation helpers, and Studio mock-mode runtime proof. WO-8/G4 is now accepted: Nexus is public, `master` branch protection requires `Quality Gate`, PR #2 passed and merged through the protected path, and the separate private `RobloxGameVault` repo was created/pushed with non-secret proof. WO-9/G5 is now accepted: Open Cloud config, real dry-run, explicit founder approval, and live publish to Golf Pro all pass without printing secrets, universe ID, place ID, or response body. WO-10 final hardening is accepted: `up/status/down` starts and stops watcher jobs cleanly, `./nexus.ps1 cold-boot`, `./nexus.ps1 wo-audit`, and founder sign-off now report completion evidence with no remaining local blocker.
 
 G3/G5 gate probes now parse local secret env files and only pass when Obsidian REST and Open Cloud values are present, non-placeholder, and valid enough to use; secret values are never printed.
 
@@ -1884,7 +1884,7 @@ Quality gate PASS
 
 - G2 is accepted: Rojo 7.7.0 connected to Golf Pro and Studio playtest output proved Nexus, DataService mock mode, MapService, Cmdr service, and Cmdr client startup.
 - G4 is accepted: Nexus is public, `master` requires `Quality Gate`, PR #2 merged through the protected branch flow, and the private `RobloxGameVault` remote is pushed.
-- Open Cloud config, dry-run, and G5 approval pass. Live publish was attempted and failed with `401 Unauthorized` because the API key has insufficient scopes.
+- Open Cloud config, dry-run, G5 approval, and live publish to Golf Pro pass without printing secrets, universe ID, place ID, or response body.
 
 ### Latest Gate Revalidation - 2026-07-05 UTC
 
@@ -1892,40 +1892,40 @@ Whole-repo local quality gate:
 
 ```powershell
 ./nexus.ps1 check
-[PASS] Wally Install (0.62s, exit 0)
-[PASS] StyLua (0.11s, exit 0)
-[PASS] Selene (0.12s, exit 0)
-[PASS] Sourcemap (0.06s, exit 0)
-[PASS] Tool Gap Contract Tests (0.03s, exit 0)
-[PASS] G1 Tool Closure Tests (0.07s, exit 0)
-[PASS] Rojo Bridge Tests (0.07s, exit 0)
-[PASS] Studio Bridge Bootstrap Tests (0.10s, exit 0)
-[PASS] Migration Tests (0.05s, exit 0)
+[PASS] Wally Install (0.63s, exit 0)
+[PASS] StyLua (0.10s, exit 0)
+[PASS] Selene (0.11s, exit 0)
+[PASS] Sourcemap (0.12s, exit 0)
+[PASS] Tool Gap Contract Tests (0.02s, exit 0)
+[PASS] G1 Tool Closure Tests (0.03s, exit 0)
+[PASS] Rojo Bridge Tests (0.03s, exit 0)
+[PASS] Studio Bridge Bootstrap Tests (0.02s, exit 0)
+[PASS] Migration Tests (0.03s, exit 0)
 [PASS] DataService Contract Tests (0.03s, exit 0)
-[PASS] Vault Scaffold Tests (0.06s, exit 0)
+[PASS] Vault Scaffold Tests (0.11s, exit 0)
 [PASS] Obsidian Plugin Setup Tests (0.03s, exit 0)
 [PASS] Obsidian REST Bootstrap Tests (0.03s, exit 0)
 [PASS] GitHub CI Bootstrap Tests (0.03s, exit 0)
-[PASS] Asset Manifest Tests (0.03s, exit 0)
+[PASS] Asset Manifest Tests (0.09s, exit 0)
 [PASS] Command Surface Tests (0.03s, exit 0)
 [PASS] MapService Contract Tests (0.03s, exit 0)
-[PASS] Net Contract Tests (0.03s, exit 0)
-[PASS] CI Contract Tests (0.10s, exit 0)
-[PASS] Command Center Contract Tests (0.03s, exit 0)
+[PASS] Net Contract Tests (0.08s, exit 0)
+[PASS] CI Contract Tests (0.03s, exit 0)
+[PASS] Command Center Contract Tests (0.08s, exit 0)
 [PASS] Cold Boot Readiness Tests (0.03s, exit 0)
-[PASS] Work Order Acceptance Audit Tests (0.03s, exit 0)
+[PASS] Work Order Acceptance Audit Tests (0.07s, exit 0)
 [PASS] Human Gate Checklist Tests (0.03s, exit 0)
 [PASS] Human Gate Readiness Tests (0.03s, exit 0)
-[PASS] Human Gate Acceptance Tests (2.89s, exit 0)
-[PASS] Human Gate Receipt Tests (2.68s, exit 0)
-[PASS] Founder Sign-Off Audit Tests (0.03s, exit 0)
-[PASS] Acceptance Matrix Contract Tests (0.03s, exit 0)
+[PASS] Human Gate Acceptance Tests (3.01s, exit 0)
+[PASS] Human Gate Receipt Tests (2.75s, exit 0)
+[PASS] Founder Sign-Off Audit Tests (0.02s, exit 0)
+[PASS] Acceptance Matrix Contract Tests (0.08s, exit 0)
 [PASS] Release Contract Tests (0.02s, exit 0)
-[PASS] Open Cloud Bootstrap Tests (0.03s, exit 0)
-[PASS] Secret Scan (0.54s, exit 0)
-[PASS] Analyze (2.02s, exit 0)
-[PASS] Build (0.06s, exit 0)
-[PASS] Open Cloud Dry Run (0.03s, exit 0)
+[PASS] Open Cloud Bootstrap Tests (0.02s, exit 0)
+[PASS] Secret Scan (0.64s, exit 0)
+[PASS] Analyze (2.03s, exit 0)
+[PASS] Build (0.05s, exit 0)
+[PASS] Open Cloud Dry Run (0.02s, exit 0)
 Quality gate PASS
 ```
 
@@ -2034,12 +2034,15 @@ G5 gate probe:
 Human gate acceptance PASS
 ```
 
-G5 live publish attempt:
+G5 live publish:
 
 ```powershell
 ./nexus.ps1 release --live
-Open Cloud publish failed: 401 Unauthorized
-API Key has insufficient scopes.
+Open Cloud publish PASS
+Artifact: build/nexus.rbxl (89423 bytes)
+Universe ID: values hidden
+Place ID: values hidden
+Response body: output omitted
 ```
 
 Cold-boot and work-order audit:
@@ -2051,7 +2054,7 @@ Cold boot readiness READY_FOR_COLD_BOOT_ACCEPTANCE; wrote C:/Users/jackw/Roblox/
 
 ```powershell
 ./nexus.ps1 wo-audit
-Work order acceptance audit BLOCKED_ON_HUMAN_GATES; wrote C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Work Order Acceptance Audit.md
+Work order acceptance audit PASS; wrote C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Work Order Acceptance Audit.md
 ```
 
 Automation loop refresh:
@@ -2068,7 +2071,7 @@ Wrote human gate readiness to C:/Users/jackw/Roblox/RobloxGameVault/00_Command_C
 Wrote human gate proof receipts to C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Human Gate Proof Receipts.md
 Build health PASS; wrote C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Build Health.md
 Cold boot readiness READY_FOR_COLD_BOOT_ACCEPTANCE; wrote C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Cold Boot Readiness.md
-Work order acceptance audit BLOCKED_ON_HUMAN_GATES; wrote C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Work Order Acceptance Audit.md
+Work order acceptance audit PASS; wrote C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Work Order Acceptance Audit.md
 Wrote founder sign-off audit to C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Founder Sign-Off Audit.md
 ```
 
@@ -2085,8 +2088,8 @@ Wrote founder sign-off audit to C:/Users/jackw/Roblox/RobloxGameVault/00_Command
 | WO-6 Cmdr | Studio playtest accepted | Cmdr service/controller, DataService-backed profile commands, MapService-backed reloadmap, generated command docs, and Cmdr service/client playtest output | None locally |
 | WO-7 Data/Networking | Studio mock runtime accepted | ProfileStore wrapper, server-owned mutation helpers, migration tests, DataService contract tests, Net contract tests, typed Net, Build Health, and DataService mock-mode playtest output | None locally |
 | WO-8 CI | G4 accepted; protected CI green | Shared gate output, CI contract tests, GitHub CI bootstrap proof, workflow, runbook, origin remote, latest successful GitHub Actions run, PR #2 protected-branch merge, branch protection receipt, and private vault remote proof | None locally |
-| WO-9 Release Path | G5 approval accepted; live publish blocked by key scope | Fixture dry-run, `./nexus.ps1 release --dry-run --fixture`, Open Cloud bootstrap proof, release contract tests, secret-history scan, release checklist, real dry-run pass, and live publish attempt reached Roblox Open Cloud | G5 Open Cloud key place-publishing scope |
-| WO-10 Hardening | Up/down smoke test passed locally | Task JSON parse, command-center contract tests, cold-boot readiness tests, work-order acceptance audit tests, human gate checklist/readiness/acceptance/receipt/founder sign-off tests, dev log writes, Gate Status, Human Gate Proof Receipts, Cold Boot Readiness, Work Order Acceptance Audit, and Founder Sign-Off dashboard embeds, `./nexus.ps1 up/status/down`, full gate | G5 Open Cloud key place-publishing scope |
+| WO-9 Release Path | G5 live publish accepted | Fixture dry-run, `./nexus.ps1 release --dry-run --fixture`, Open Cloud bootstrap proof, release contract tests, secret-history scan, release checklist, real dry-run pass, G5 receipt, and `Open Cloud publish PASS` live output | None locally |
+| WO-10 Hardening | Final hardening accepted | Task JSON parse, command-center contract tests, cold-boot readiness tests, work-order acceptance audit tests, human gate checklist/readiness/acceptance/receipt/founder sign-off tests, dev log writes, Gate Status, Human Gate Proof Receipts, Cold Boot Readiness, Work Order Acceptance Audit, Founder Sign-Off dashboard embeds, `./nexus.ps1 up/status/down`, full gate, and G5 live publish pass | None locally |
 
 Acceptance Matrix contract self-test:
 
@@ -2157,7 +2160,7 @@ Wrote human gate readiness to C:/Users/jackw/Roblox/RobloxGameVault/00_Command_C
 Wrote human gate proof receipts to C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Human Gate Proof Receipts.md
 Build health PASS; wrote C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Build Health.md
 Cold boot readiness READY_FOR_COLD_BOOT_ACCEPTANCE; wrote C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Cold Boot Readiness.md
-Work order acceptance audit BLOCKED_ON_HUMAN_GATES; wrote C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Work Order Acceptance Audit.md
+Work order acceptance audit PASS; wrote C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Work Order Acceptance Audit.md
 Wrote founder sign-off audit to C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Founder Sign-Off Audit.md
 ```
 

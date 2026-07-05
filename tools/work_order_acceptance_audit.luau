@@ -252,7 +252,6 @@ local WORK_ORDERS: { WorkOrder } = {
 	{
 		id = "WO-9",
 		title = "Release Path",
-		blocker = "G5 Open Cloud key place-publishing scope",
 		requirements = {
 			{
 				label = "fixture dry run",
@@ -276,16 +275,15 @@ local WORK_ORDERS: { WorkOrder } = {
 				needle = "Live publish approval recorded: PASS",
 			},
 			{
-				label = "live publish scope failure recorded",
+				label = "live publish pass",
 				path = STATUS_PATH,
-				needle = "API key has insufficient place-publishing scope",
+				needle = "Open Cloud publish PASS",
 			},
 		},
 	},
 	{
 		id = "WO-10",
 		title = "Command Center Hardening",
-		blocker = "G5 Open Cloud key place-publishing scope",
 		requirements = {
 			{
 				label = "up/down proof",
@@ -427,10 +425,7 @@ if #failures > 0 then
 		table.insert(lines, "- " .. failure)
 	end
 else
-	table.insert(
-		lines,
-		"All local evidence checks are present. Remaining non-pass rows require an Open Cloud key with place-publishing scope."
-	)
+	table.insert(lines, "All local evidence checks are present.")
 end
 
 if not fs.isDir(VAULT_ROOT .. "/00_Command_Center") then

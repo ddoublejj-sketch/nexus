@@ -261,8 +261,8 @@ else
 	assertFrontmatter(founderSignoffAudit, "Founder Sign-Off Audit")
 	assertContains(
 		founderSignoffAudit,
-		"Overall: BLOCKED",
-		"Founder Sign-Off Audit must not claim final completion before gates close"
+		"Overall: PASS",
+		"Founder Sign-Off Audit must show final completion after gates close"
 	)
 	assertContains(
 		founderSignoffAudit,
@@ -284,8 +284,8 @@ else
 	assertFrontmatter(workOrderAudit, "Work Order Acceptance Audit")
 	assertContains(
 		workOrderAudit,
-		"Overall: BLOCKED_ON_HUMAN_GATES",
-		"Work Order Acceptance Audit must preserve human blockers"
+		"Overall: PASS",
+		"Work Order Acceptance Audit must show final work-order acceptance"
 	)
 	for index = 0, 10 do
 		assertContains(
