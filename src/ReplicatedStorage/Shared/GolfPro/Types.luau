@@ -54,6 +54,9 @@ export type CourseSpec = {
 	version: string,
 	category: string,
 	physicsVersion: string,
+	teeSets: { string },
+	pinSets: { string },
+	rankedEnabled: boolean,
 	record: nil | {
 		playerUserId: number,
 		score: number,
@@ -93,6 +96,14 @@ export type ShotResult = {
 	lateralOffsetYards: number,
 	finalPosition: Vector2Yards,
 	finalSurface: Surface,
+}
+
+export type RoundStartPayload = {
+	mode: string,
+	courseId: string,
+	teeSet: string,
+	pinSet: string,
+	ranked: boolean,
 }
 
 return {}
