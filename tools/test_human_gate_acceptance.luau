@@ -108,7 +108,11 @@ local normalProbe = process.exec("lune", {
 	"--gate",
 	"G2",
 })
-assertTrue(not normalProbe.ok, "normal G2 probe must remain blocked until human proof exists")
-assertContains(normalProbe.stdout, "NEEDS HUMAN", "normal probe must show human blocker")
+assertTrue(normalProbe.ok, "normal G2 probe must pass after human proof exists")
+assertContains(
+	normalProbe.stdout,
+	"Human gate acceptance PASS",
+	"normal probe must show accepted G2"
+)
 
 print("Human gate acceptance tests passed")

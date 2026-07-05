@@ -157,7 +157,7 @@ for _, anchor in SOURCEMAP_ANCHORS do
 end
 
 local runbook = read(RUNBOOK_PATH)
-assertContains(runbook, "Pending G2 test", "sync runbook must mark live Studio rows pending G2")
+assertContains(runbook, "G2 Accepted Results", "sync runbook must record accepted G2 proof")
 assertContains(runbook, "./nexus.ps1 serve", "sync runbook must include serve step")
 assertContains(runbook, "./nexus.ps1 map --once", "sync runbook must include map acceptance")
 assertContains(
@@ -177,11 +177,11 @@ assertContains(
 )
 
 local status = read(STATUS_PATH)
-assertContains(status, "G2 - Studio connect", "STATUS must record G2 gate")
+assertContains(status, "WO-2/G2 is now accepted", "STATUS must record accepted G2 gate")
 assertContains(
 	status,
-	"live disk-to-Studio and syncback behavior remains unverified",
-	"STATUS must not pretend G2 live bridge is complete"
+	"DataService online (mock mode)",
+	"STATUS must include Studio playtest runtime proof"
 )
 
 if fs.isDir(VAULT_ROOT) then

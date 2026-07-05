@@ -59,23 +59,26 @@ local WORK_ORDERS: { WorkOrder } = {
 	{
 		id = "WO-2",
 		title = "Studio Bridge",
-		blocker = "G2 Studio connect and live sync proof",
 		requirements = {
 			{
 				label = "sync runbook exists",
 				path = "docs/runbooks/rojo-sync-rules.md",
-				needle = "Pending G2 test",
+				needle = "G2 Accepted Results",
 			},
 			{
 				label = "sourcemap-aware analyze",
 				path = STATUS_PATH,
 				needle = "luau-lsp analyze --definitions types/globalTypes.d.luau --sourcemap sourcemap.json src",
 			},
-			{ label = "G2 request recorded", path = STATUS_PATH, needle = "Human Gate G2 Request" },
 			{
-				label = "G2 blocker preserved",
-				path = STATUS_PATH,
-				needle = "live disk-to-Studio and syncback behavior remains unverified",
+				label = "G2 connected receipt",
+				path = "docs/gate-proofs/G2-studio-connect.md",
+				needle = "Studio plugin connected: PASS",
+			},
+			{
+				label = "G2 playtest receipt",
+				path = "docs/gate-proofs/G2-studio-connect.md",
+				needle = "Studio playtest observed: PASS",
 			},
 		},
 	},
@@ -162,7 +165,6 @@ local WORK_ORDERS: { WorkOrder } = {
 	{
 		id = "WO-6",
 		title = "In-Game Developer Console",
-		blocker = "G2 Studio playtest",
 		requirements = {
 			{
 				label = "Cmdr dependency",
@@ -181,12 +183,16 @@ local WORK_ORDERS: { WorkOrder } = {
 				path = STATUS_PATH,
 				needle = "MapService contract tests passed",
 			},
+			{
+				label = "Cmdr Studio playtest",
+				path = STATUS_PATH,
+				needle = "Cmdr service online",
+			},
 		},
 	},
 	{
 		id = "WO-7",
 		title = "Data & Networking Baseline",
-		blocker = "G2 Studio runtime behavior",
 		requirements = {
 			{
 				label = "ProfileStore dependency",
@@ -201,9 +207,9 @@ local WORK_ORDERS: { WorkOrder } = {
 			},
 			{ label = "Net contract", path = STATUS_PATH, needle = "Net contract tests passed" },
 			{
-				label = "runtime blocker preserved",
+				label = "Studio mock runtime observed",
 				path = STATUS_PATH,
-				needle = "Actual Studio/runtime observation is still pending G2",
+				needle = "DataService online (mock mode)",
 			},
 		},
 	},
@@ -274,7 +280,7 @@ local WORK_ORDERS: { WorkOrder } = {
 	{
 		id = "WO-10",
 		title = "Command Center Hardening",
-		blocker = "G2 Studio connect and G5 live publish approval",
+		blocker = "G5 live publish approval",
 		requirements = {
 			{
 				label = "up/down proof",
@@ -418,7 +424,7 @@ if #failures > 0 then
 else
 	table.insert(
 		lines,
-		"All local evidence checks are present. Remaining non-pass rows require G2 or G5 human/external proof."
+		"All local evidence checks are present. Remaining non-pass rows require G5 live publish approval."
 	)
 end
 
