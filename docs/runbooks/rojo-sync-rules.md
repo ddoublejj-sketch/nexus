@@ -24,7 +24,7 @@ WO-2 proves the daily Studio bridge. The command center treats disk-owned source
 
 ## G2 Test Steps
 
-1. Start `./nexus.ps1 serve`.
+1. Start `./nexus.ps1 up` and leave it running between work orders unless the founder explicitly asks for shutdown. Use `./nexus.ps1 serve` only for a foreground Rojo-only session.
 2. Run `./nexus.ps1 studio-bridge` to confirm the project, sourcemap, runbook, snapshot archive, local Rojo server, Studio process, and G2 receipt state.
 3. Connect the Rojo Studio plugin to the local server.
 4. Edit `src/ServerScriptService/Server/Services/NexusService.luau` on disk.
@@ -44,6 +44,7 @@ Expected analyze result: exit 0 with no diagnostics.
 - 2026-07-05: Rojo 7.7.0 connected to `GOLF PRO - Roblox Studio` through the `Nexus` session at `localhost:34872`.
 - 2026-07-05: Studio playtest loaded Rojo-managed Nexus services from disk. Output showed Nexus server/client startup, DataService mock mode, MapService, Cmdr service, and Cmdr client online.
 - 2026-07-05: Disposable Studio-only syncback/export remains a project-content workflow, not a blocker for the command-center bridge.
+- 2026-07-05: `MapService.start()` auto-loads `ServerStorage.Maps.Default` and creates a minimal starter pad/spawn if that default map is empty, so Studio Play mode has a safe surface before Phase 4 builds the full course.
 
 ## Snapshot Location
 
