@@ -137,7 +137,7 @@ if fs.isDir(VAULT_ROOT) then
 
 	local note = read(VAULT_NOTE_PATH)
 	assertContains(note, "# Human Gate Proof Receipts", "receipt vault note missing title")
-	assertContains(note, "PENDING", "receipt vault note must show pending receipts")
+	assertContains(note, "PASS", "receipt vault note must show accepted receipts")
 	assertContains(note, "not completion evidence", "receipt vault note must reject pending proof")
 	for _, receipt in RECEIPTS do
 		assertContains(note, receipt.path, "receipt vault note missing " .. receipt.path)
@@ -163,7 +163,20 @@ local g5Probe = process.exec("lune", {
 	"--gate",
 	"G5",
 })
-assertTrue(not g5Probe.ok, "G5 probe must stay blocked while receipt markers are pending")
-assertContains(g5Probe.stdout, "receipt pending", "G5 probe must name pending receipt state")
+if fs.isFile("secrets/opencloud.env") then
+	assertTrue(g5Probe.ok, "G5 probe must pass when accepted receipt and local config exist")
+	assertContains(
+		g5Probe.stdout,
+		"Human gate acceptance PASS",
+		"G5 probe must show accepted receipt state"
+	)
+else
+	assertTrue(not g5Probe.ok, "G5 probe must stay blocked in CI without local config")
+	assertContains(
+		g5Probe.stdout,
+		"Open Cloud config present",
+		"G5 probe must name missing local config state"
+	)
+end
 
 print("Human gate receipt tests passed")

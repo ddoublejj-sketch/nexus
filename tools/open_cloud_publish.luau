@@ -231,7 +231,7 @@ else
 
 	print("Open Cloud publish PASS")
 	print(("Artifact: %s (%d bytes)"):format(options.artifactPath, artifactBytes))
-	print("Universe ID: " .. config.universeId)
-	print("Place ID: " .. config.placeId)
-	print(response.body)
+	print("Universe ID: values hidden")
+	print("Place ID: values hidden")
+	print("Response body: output omitted")
 end

@@ -1,8 +1,8 @@
 # G5 - Open Cloud Publish Approval Proof Receipt
 
-status: pending
+status: accepted
 gate: G5
-updated: TODO
+updated: 2026-07-05T15:04:00Z
 
 ## Completion Rule
 
@@ -10,7 +10,7 @@ Change each required marker from `PENDING` to `PASS` only after the human action
 
 ## Required Markers
 
-- Live publish approval recorded: PENDING
+- Live publish approval recorded: PASS
 
 ## Human Steps
 
@@ -20,8 +20,10 @@ Change each required marker from `PENDING` to `PASS` only after the human action
 
 ## Evidence Notes
 
-- Paste non-secret observations here after the gate is complete.
-- Include command output only if it does not reveal secrets or private IDs.
+- 2026-07-05: Founder explicitly approved G5 live publish to Golf Pro in Codex chat.
+- 2026-07-05: Fixture dry-run and full local quality gate passed immediately before the live publish attempt.
+- 2026-07-05: Live publish request reached Roblox Open Cloud but was rejected with `401 Unauthorized` because the API key has insufficient scopes. No secret, universe ID, or place ID was written here.
+- 2026-07-05: Rewrote the local Open Cloud env file as UTF-8 without BOM after the Golf Pro key swap; G5 config, real dry-run, and approval checks then passed, but the live retry still returned `401 Unauthorized` for insufficient API key scopes.
 
 ## Proof Commands
 

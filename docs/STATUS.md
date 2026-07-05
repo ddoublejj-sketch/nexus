@@ -4,7 +4,7 @@ Last updated: 2026-07-05
 
 ## Current Phase
 
-WO-0 G1 tool closure passes locally: Git, Rokit, Rojo, VS Code `code`, GitHub CLI `gh`, Blender CLI, and Obsidian command are all available through refreshed PATH/shims. WO-1 exact local acceptance passes through `./nexus.ps1 check`. WO-2/G2 is now accepted: Rojo 7.7.0 connected to Golf Pro through the `Nexus` session at `localhost:34872`, and Studio playtest output showed Nexus server/client startup, DataService mock mode, MapService, Cmdr service, and Cmdr client online. WO-3/G3 is now accepted: Obsidian REST config is present, all required plugins are enabled, pending REST writes are flushed, and dashboard render proof is recorded. WO-4 automation scripts pass through exact `./nexus.ps1 loop --once` and the dashboard notes refresh with the accepted G2/G3 state. WO-5 asset pipeline renders real Blender PNG thumbnails for the four seed assets through `./nexus.ps1 thumbnails`. WO-6 Cmdr profile commands call DataService for inventory grants, schema-backed stat edits, Owner-confirmed profile resets, and MapService-backed `reloadmap`; Studio playtest verified Cmdr service/client startup. WO-7 data/networking baseline has direct local proof, server-owned mutation helpers, and Studio mock-mode runtime proof. WO-8/G4 is now accepted: Nexus is public, `master` branch protection requires `Quality Gate`, PR #2 passed and merged through the protected path, and the separate private `RobloxGameVault` repo was created/pushed with non-secret proof. WO-9 Open Cloud config and real dry-run pass without printing secrets; live publish remains gated on explicit G5 approval. WO-10 `up/status/down` starts and stops watcher jobs cleanly, `./nexus.ps1 cold-boot` and `./nexus.ps1 wo-audit` now preserve only the remaining G5 live-publish gate instead of faking completion.
+WO-0 G1 tool closure passes locally: Git, Rokit, Rojo, VS Code `code`, GitHub CLI `gh`, Blender CLI, and Obsidian command are all available through refreshed PATH/shims. WO-1 exact local acceptance passes through `./nexus.ps1 check`. WO-2/G2 is now accepted: Rojo 7.7.0 connected to Golf Pro through the `Nexus` session at `localhost:34872`, and Studio playtest output showed Nexus server/client startup, DataService mock mode, MapService, Cmdr service, and Cmdr client online. WO-3/G3 is now accepted: Obsidian REST config is present, all required plugins are enabled, pending REST writes are flushed, and dashboard render proof is recorded. WO-4 automation scripts pass through exact `./nexus.ps1 loop --once` and the dashboard notes refresh with the accepted G2/G3 state. WO-5 asset pipeline renders real Blender PNG thumbnails for the four seed assets through `./nexus.ps1 thumbnails`. WO-6 Cmdr profile commands call DataService for inventory grants, schema-backed stat edits, Owner-confirmed profile resets, and MapService-backed `reloadmap`; Studio playtest verified Cmdr service/client startup. WO-7 data/networking baseline has direct local proof, server-owned mutation helpers, and Studio mock-mode runtime proof. WO-8/G4 is now accepted: Nexus is public, `master` branch protection requires `Quality Gate`, PR #2 passed and merged through the protected path, and the separate private `RobloxGameVault` repo was created/pushed with non-secret proof. WO-9 Open Cloud config, real dry-run, and G5 approval pass without printing secrets; live publish was attempted and blocked by Roblox because the API key has insufficient place-publishing scope. WO-10 `up/status/down` starts and stops watcher jobs cleanly, `./nexus.ps1 cold-boot` and `./nexus.ps1 wo-audit` now preserve the remaining Open Cloud key-scope blocker instead of faking completion.
 
 G3/G5 gate probes now parse local secret env files and only pass when Obsidian REST and Open Cloud values are present, non-placeholder, and valid enough to use; secret values are never printed.
 
@@ -1440,7 +1440,7 @@ Completed:
 ### Open Blockers
 
 - None for G4.
-- WO-8 is accepted; the remaining goal blocker is G5 live publish approval.
+- WO-8 is accepted; the remaining goal blocker is the Open Cloud key place-publishing scope.
 
 ## WO-9 - Release Path
 
@@ -1598,7 +1598,7 @@ When ready to publish for real:
 
 ### Open Blockers
 
-- G5 is not complete, so live publish was intentionally not attempted.
+- G5 approval is recorded, but live publish is not complete. The first live publish attempt reached Roblox Open Cloud and failed with `401 Unauthorized` because the API key has insufficient scopes.
 
 ## WO-10 - Command Center Hardening
 
@@ -1884,7 +1884,7 @@ Quality gate PASS
 
 - G2 is accepted: Rojo 7.7.0 connected to Golf Pro and Studio playtest output proved Nexus, DataService mock mode, MapService, Cmdr service, and Cmdr client startup.
 - G4 is accepted: Nexus is public, `master` requires `Quality Gate`, PR #2 merged through the protected branch flow, and the private `RobloxGameVault` remote is pushed.
-- Open Cloud config and dry-run pass. Live publish is intentionally blocked until the founder gives explicit live approval; no live publish has been attempted.
+- Open Cloud config, dry-run, and G5 approval pass. Live publish was attempted and failed with `401 Unauthorized` because the API key has insufficient scopes.
 
 ### Latest Gate Revalidation - 2026-07-05 UTC
 
@@ -2018,7 +2018,7 @@ Release checklist: PASS
 Open Cloud secret file: PASS
 Fixture dry-run: PASS
 Real dry-run: PASS
-Live approval receipt: NEEDS HUMAN
+Live approval receipt: PASS
 Wrote Open Cloud bootstrap evidence to C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Open Cloud Bootstrap.md
 ```
 
@@ -2030,8 +2030,16 @@ G5 gate probe:
 | --- | --- | --- | --- |
 | G5 | Open Cloud config present | PASS | required keys present; values not printed |
 | G5 | Build artifact present | PASS | build artifact present |
-| G5 | Live publish approval recorded | NEEDS HUMAN | receipt pending: docs/gate-proofs/G5-open-cloud-publish.md needs `Live publish approval recorded: PASS` |
-Human gate acceptance BLOCKED: 1 check(s) are not accepted.
+| G5 | Live publish approval recorded | PASS | accepted by docs/gate-proofs/G5-open-cloud-publish.md |
+Human gate acceptance PASS
+```
+
+G5 live publish attempt:
+
+```powershell
+./nexus.ps1 release --live
+Open Cloud publish failed: 401 Unauthorized
+API Key has insufficient scopes.
 ```
 
 Cold-boot and work-order audit:
@@ -2077,8 +2085,8 @@ Wrote founder sign-off audit to C:/Users/jackw/Roblox/RobloxGameVault/00_Command
 | WO-6 Cmdr | Studio playtest accepted | Cmdr service/controller, DataService-backed profile commands, MapService-backed reloadmap, generated command docs, and Cmdr service/client playtest output | None locally |
 | WO-7 Data/Networking | Studio mock runtime accepted | ProfileStore wrapper, server-owned mutation helpers, migration tests, DataService contract tests, Net contract tests, typed Net, Build Health, and DataService mock-mode playtest output | None locally |
 | WO-8 CI | G4 accepted; protected CI green | Shared gate output, CI contract tests, GitHub CI bootstrap proof, workflow, runbook, origin remote, latest successful GitHub Actions run, PR #2 protected-branch merge, branch protection receipt, and private vault remote proof | None locally |
-| WO-9 Release Path | Dry-run accepted with real config | Fixture dry-run, `./nexus.ps1 release --dry-run --fixture`, Open Cloud bootstrap proof, release contract tests, secret-history scan, release checklist, and real dry-run pass | G5 live publish approval only |
-| WO-10 Hardening | Up/down smoke test passed locally | Task JSON parse, command-center contract tests, cold-boot readiness tests, work-order acceptance audit tests, human gate checklist/readiness/acceptance/receipt/founder sign-off tests, dev log writes, Gate Status, Human Gate Proof Receipts, Cold Boot Readiness, Work Order Acceptance Audit, and Founder Sign-Off dashboard embeds, `./nexus.ps1 up/status/down`, full gate | G5 live publish approval |
+| WO-9 Release Path | G5 approval accepted; live publish blocked by key scope | Fixture dry-run, `./nexus.ps1 release --dry-run --fixture`, Open Cloud bootstrap proof, release contract tests, secret-history scan, release checklist, real dry-run pass, and live publish attempt reached Roblox Open Cloud | G5 Open Cloud key place-publishing scope |
+| WO-10 Hardening | Up/down smoke test passed locally | Task JSON parse, command-center contract tests, cold-boot readiness tests, work-order acceptance audit tests, human gate checklist/readiness/acceptance/receipt/founder sign-off tests, dev log writes, Gate Status, Human Gate Proof Receipts, Cold Boot Readiness, Work Order Acceptance Audit, and Founder Sign-Off dashboard embeds, `./nexus.ps1 up/status/down`, full gate | G5 Open Cloud key place-publishing scope |
 
 Acceptance Matrix contract self-test:
 
