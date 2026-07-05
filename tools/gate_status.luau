@@ -31,7 +31,7 @@ local function currentPhase(status: string): string
 		return "Current phase section not found."
 	end
 
-	return trim(phase):gsub("\n+", " ")
+	return trim(phase):gsub("\r", "\n"):gsub("\n+", " ")
 end
 
 local function acceptanceMatrix(status: string): { MatrixRow }

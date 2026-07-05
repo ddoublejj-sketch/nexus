@@ -149,7 +149,7 @@ local function currentPhase(): string
 		return "Current phase section not found."
 	end
 
-	return (phase:match("^%s*(.-)%s*$") or phase):gsub("\n+", " ")
+	return (phase:match("^%s*(.-)%s*$") or phase):gsub("\r", "\n"):gsub("\n+", " ")
 end
 
 local function appendBullets(lines: { string }, items: { string })
