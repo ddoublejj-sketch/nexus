@@ -88,6 +88,20 @@ local remoteDefinitions: { [string]: RemoteDefinition } = {
 		validators = { tableValue },
 		description = "Golf Pro request to equip an owned locker cosmetic.",
 	},
+	RequestTournamentEvents = {
+		name = "RequestTournamentEvents",
+		kind = "RemoteFunction",
+		direction = "ClientToServer",
+		validators = {},
+		description = "Golf Pro request for active tournament events.",
+	},
+	RequestTournamentLeaderboard = {
+		name = "RequestTournamentLeaderboard",
+		kind = "RemoteFunction",
+		direction = "ClientToServer",
+		validators = { tableValue },
+		description = "Golf Pro request for tournament leaderboard rows.",
+	},
 	RequestMysteryRangeDeposit = {
 		name = "RequestMysteryRangeDeposit",
 		kind = "RemoteEvent",
@@ -283,6 +297,13 @@ local remoteDefinitions: { [string]: RemoteDefinition } = {
 		direction = "ServerToClient",
 		validators = { tableValue },
 		description = "Golf Pro locker cosmetic inventory update.",
+	},
+	TournamentUpdated = {
+		name = "TournamentUpdated",
+		kind = "RemoteEvent",
+		direction = "ServerToClient",
+		validators = { tableValue },
+		description = "Golf Pro tournament event update.",
 	},
 	MysteryRangeUpdated = {
 		name = "MysteryRangeUpdated",
