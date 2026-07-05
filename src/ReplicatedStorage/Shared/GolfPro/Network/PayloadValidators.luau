@@ -95,6 +95,7 @@ function PayloadValidators.validateRoundStartPayload(payload: any): (boolean, st
 	if
 		mode ~= Constants.Mode.PRACTICE
 		and mode ~= Constants.Mode.SOLO_STROKE_3_DEBUG
+		and mode ~= Constants.Mode.SOLO_STROKE_18
 		and mode ~= Constants.Mode.PRIVATE_STROKE
 	then
 		return false, "Unsupported Golf Pro round mode."

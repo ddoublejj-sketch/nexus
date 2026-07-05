@@ -37,6 +37,20 @@ local function copyPosition(position)
 	}
 end
 
+local function holeCountForMode(mode: string, course): number
+	if mode == Constants.Mode.PRACTICE then
+		return 1
+	end
+	if mode == Constants.Mode.SOLO_STROKE_18 then
+		return math.min(18, #course.holes)
+	end
+	if mode == Constants.Mode.SOLO_STROKE_9 then
+		return math.min(9, #course.holes)
+	end
+
+	return math.min(3, #course.holes)
+end
+
 function RoundService.resetForTests()
 	rounds = {}
 	playerRounds = {}
@@ -55,9 +69,7 @@ function RoundService.startRound(player: any, payload: any): (boolean, any)
 	end
 
 	local course = CourseRegistry.requireCourse(payload.courseId)
-	local holeCount = if payload.mode == Constants.Mode.PRACTICE
-		then 1
-		else math.min(3, #course.holes)
+	local holeCount = holeCountForMode(payload.mode, course)
 	local firstHole = course.holes[1]
 	local round = {
 		id = nextRoundId(userId),

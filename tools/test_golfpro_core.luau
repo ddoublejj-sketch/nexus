@@ -41,6 +41,16 @@ local function assertError(callback: () -> (), label: string)
 	end
 end
 
+local function hasSurface(hole: any, surface: string): boolean
+	for _, zone in hole.zones do
+		if zone.surface == surface then
+			return true
+		end
+	end
+
+	return false
+end
+
 local function baseIntent(roundId: string, userId: number, nonce: string)
 	return {
 		roundId = roundId,
@@ -79,7 +89,21 @@ assertEqual(
 	Constants.UNCLAIMED_RECORD_DISPLAY,
 	"unclaimed record display"
 )
-assertTrue(#pinebrook.holes >= 3, "Pinebrook vertical slice needs at least 3 holes")
+assertEqual(#pinebrook.holes, 18, "Pinebrook Phase 4 must include 18 holes")
+local pinebrookParTotal = 0
+local pinebrookYardageTotal = 0
+for index, hole in pinebrook.holes do
+	assertEqual(hole.index, index, "Pinebrook holes must be sequential")
+	assertTrue(hole.par >= 3 and hole.par <= 5, "Pinebrook hole par guardrail")
+	assertTrue(hole.yardage >= 100, "Pinebrook hole yardage guardrail")
+	assertTrue(hasSurface(hole, Constants.Surface.TEE), "Pinebrook hole missing tee zone")
+	assertTrue(hasSurface(hole, Constants.Surface.GREEN), "Pinebrook hole missing green zone")
+	assertTrue(#hole.zones >= 5, "Pinebrook hole needs playable surface variety")
+	pinebrookParTotal += hole.par
+	pinebrookYardageTotal += hole.yardage
+end
+assertEqual(pinebrookParTotal, 72, "Pinebrook 18-hole par total")
+assertEqual(pinebrookYardageTotal, 7305, "Pinebrook 18-hole yardage total")
 assertEqual(practice.displayName, "Pinebrook Practice Range", "practice range course")
 
 local badLegalCourse: any = {
@@ -154,6 +178,17 @@ assertEqual(
 	Constants.Surface.ROUGH,
 	"default rough fallback"
 )
+local hole18 = pinebrook.holes[18]
+assertEqual(
+	SurfaceResolver.resolve(hole18, hole18.pin),
+	Constants.Surface.GREEN,
+	"hole 18 green resolution"
+)
+assertEqual(
+	SurfaceResolver.resolve(hole18, { x = 0, y = 314 }),
+	Constants.Surface.WATER,
+	"hole 18 water priority"
+)
 assertTrue(GreenModel.isHoled(hole1, hole1.pin, 1), "pin-speed putt should hole")
 assertFalse(GreenModel.isHoled(hole1, hole1.pin, 99), "fast putt should not hole")
 
@@ -191,6 +226,12 @@ assertFalse(
 	PayloadValidators.validateRoundStartPayload(rankedPayload),
 	"unranked slice accepted ranked start"
 )
+local roundPayload18: any = table.clone(roundPayload)
+roundPayload18.mode = Constants.Mode.SOLO_STROKE_18
+assertTrue(
+	PayloadValidators.validateRoundStartPayload(roundPayload18),
+	"18-hole round start payload rejected"
+)
 
 local scorecard = ScoreService.createScorecard(pinebrook, 3)
 ScoreService.recordShot(scorecard, 1, Constants.Surface.FAIRWAY, false)
@@ -227,6 +268,14 @@ assertTrue(
 )
 assertEqual(round.holeIndex, 2, "holed shot should advance to hole 2")
 assertEqual(round.state, Constants.RoundState.PRE_SHOT, "round should return to pre-shot")
+
+RoundService.resetForTests()
+local startedFullRound, fullRoundOrReason = RoundService.startRound(player, roundPayload18)
+assertTrue(startedFullRound, "18-hole round start failed: " .. tostring(fullRoundOrReason))
+local fullRound = fullRoundOrReason
+assertEqual(fullRound.holeCount, 18, "18-hole round count")
+assertEqual(fullRound.scorecard.holes[18].par, pinebrook.holes[18].par, "18-hole scorecard par")
+assertEqual(fullRound.scorecard.holes[18].holeIndex, 18, "18-hole scorecard final index")
 
 RoundService.resetForTests()
 ShotService.resetForTests()

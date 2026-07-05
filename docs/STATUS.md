@@ -2,6 +2,51 @@
 
 Last updated: 2026-07-05
 
+## Golf Pro Phase 4 First Course Path - 2026-07-05
+
+Built Phase 4 only on `codex/golfpro-phase-4`: Pinebrook National is now an original fictional 18-hole CourseSpec with par 72 and 7,305 yards. The existing 3-hole debug round remains intact, and `SOLO_STROKE_18` now starts an 18-hole smoke path. The Rojo `maps/Default.model.json` lane now contains the source-controlled Pinebrook blockout with tee/rough/fairway/green/bunker/water parts for every hole plus 17 connector-path parts for course traversal.
+
+Legal/source guardrails: fictional original course and map; no Google Earth, Google Maps, satellite imagery, Street View, real-course geometry, protected course names, tournament marks, live publish, OpenAI/API-cost feature, cash, Robux, wager, entry-fee, prize-money, gambling, or paid performance mechanic.
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\nexus.ps1 check
+[PASS] MapService Contract Tests (0.03s, exit 0)
+[PASS] Golf Pro Core Tests (0.07s, exit 0)
+[PASS] Analyze (2.05s, exit 0)
+[PASS] Build (0.06s, exit 0)
+Quality gate PASS
+```
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\nexus.ps1 loop --once
+Wrote 159 sourcemap rows to C:/Users/jackw/Roblox/RobloxGameVault/90_Automation/Generated/Sourcemap.md
+Wrote 33 module notes under C:/Users/jackw/Roblox/RobloxGameVault/02_Systems/Generated Modules and refreshed stale-source report
+Asset manifest reconciled 4 assets; auto-added 0; missing sources 0; missing exports 0
+Build health PASS; wrote C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Build Health.md
+Work order acceptance audit PASS; wrote C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Work Order Acceptance Audit.md
+```
+
+Studio/Rojo proof through active `GOLF PRO` Studio instance:
+
+```text
+Edit MapService.reload("Default"): currentMap=Default, baseParts=126, pathCount=17, hasSpawn=true, hasHole18Green=true, hasLastPath=true
+Play server smoke: hasMap=true, baseParts=126, hasSpawn=true, hasHole01Tee=true, hasHole18Green=true, pathCount=17, hasLastPath=true
+Play client smoke: player=jeffreyjames1201, rootY=8.471224784851075, hitName=PlaytestSpawn, isAboveVoid=true, hasHole18Green=true
+Character navigation smoke: Workspace.Map.PinebrookNational_Blockout_Phase4.Hole02.Hole02_Tee => Success
+```
+## Golf Pro Playtest Spawn Stabilization - 2026-07-05
+
+`MapService.start()` now loads the default Rojo map automatically. If the default map has no physical parts yet, it creates a small `PlaytestGround` and `PlaytestSpawn` inside `Workspace.Map` so Studio Play mode has a safe surface while Phase 4 builds the real Pinebrook course.
+
+This is intentionally not the full course map. Phase 0-3 delivered the data-driven 3-hole slice, swing/HUD, shot flow, round flow, and scoring; Phase 4 owns the source-controlled 18-hole Pinebrook geometry.
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\nexus.ps1 check
+Quality gate PASS
+```
+
+Keep-alive note: `.\nexus.ps1 up` starts persistent Rojo, sourcemap watch, and vault loop processes. Leave them running between work orders; run `.\nexus.ps1 down` only when the founder explicitly wants the command center stopped.
+
 ## Golf Pro Phase 0-3 Slice - 2026-07-05
 
 Built the remaining Phase 0-3 source slice on `codex/golfpro-phases-0-3`: practice range CourseSpec, payload validators, GreenModel, server ShotService, RoundService, ScoreService, BallPath/BallAtRest flow, client SwingController/HUDController, and expanded Golf Pro core tests.
