@@ -31,8 +31,6 @@ jobs:
 
       - name: Install Project Tools
         shell: pwsh
-        env:
-          GITHUB_PAT: ${{ github.token }}
         run: rokit install
 
       - name: Run Shared Quality Gate
