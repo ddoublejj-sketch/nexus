@@ -1,5 +1,6 @@
 # Changelog
 
+- [GolfPro/GP-012-GP-013] Added Phase 5 party/private-round and 2v2 scramble foundation: PartyService, MatchService local transport, ScrambleService vote/auto-select logic, PartyController, ScrambleController, and multiplayer tests - 2026-07-05.
 - [WO-1] Created Nexus repo scaffold, tool pins, launcher, editor tasks, and status docs - 2026-07-03.
 - [WO-1] Added hello-world Service/Controller/Config/Net scaffold - 2026-07-03.
 - [WO-3] Created Obsidian vault scaffold, templates, dashboard stubs, and initial vault commit - 2026-07-03.

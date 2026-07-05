@@ -14,6 +14,27 @@ local function nonEmptyString(value: any): boolean
 	return type(value) == "string" and value ~= ""
 end
 
+local function trim(value: string): string
+	return (value:gsub("^%s+", ""):gsub("%s+$", ""))
+end
+
+local function nonBlankString(value: any): boolean
+	return type(value) == "string" and trim(value) ~= ""
+end
+
+local function positiveInteger(value: any): boolean
+	return type(value) == "number" and value >= 1 and value % 1 == 0
+end
+
+local function validMode(mode: any): boolean
+	return mode == Constants.Mode.PRACTICE
+		or mode == Constants.Mode.SOLO_STROKE_3_DEBUG
+		or mode == Constants.Mode.SOLO_STROKE_9
+		or mode == Constants.Mode.SOLO_STROKE_18
+		or mode == Constants.Mode.PRIVATE_STROKE
+		or mode == Constants.Mode.SCRAMBLE_2V2
+end
+
 local function listContains(list: { string }, value: string): boolean
 	for _, item in list do
 		if item == value then
@@ -92,12 +113,7 @@ function PayloadValidators.validateRoundStartPayload(payload: any): (boolean, st
 	end
 
 	local mode = payload.mode
-	if
-		mode ~= Constants.Mode.PRACTICE
-		and mode ~= Constants.Mode.SOLO_STROKE_3_DEBUG
-		and mode ~= Constants.Mode.SOLO_STROKE_18
-		and mode ~= Constants.Mode.PRIVATE_STROKE
-	then
+	if not validMode(mode) then
 		return false, "Unsupported Golf Pro round mode."
 	end
 
@@ -124,6 +140,91 @@ function PayloadValidators.validateRoundStartPayload(payload: any): (boolean, st
 	end
 	if payload.ranked and not course.rankedEnabled then
 		return false, "course is not ranked-enabled."
+	end
+	if payload.ranked and mode == Constants.Mode.SCRAMBLE_2V2 then
+		return false, "ranked scramble disabled."
+	end
+
+	return true, nil
+end
+
+function PayloadValidators.validatePartyCodePayload(payload: any): (boolean, string?)
+	if type(payload) ~= "table" then
+		return false, "payload table required"
+	end
+	if not nonBlankString(payload.code) then
+		return false, "code required"
+	end
+	if #trim(payload.code) > 12 then
+		return false, "code too long"
+	end
+
+	return true, nil
+end
+
+function PayloadValidators.validatePartyConfigurePayload(payload: any): (boolean, string?)
+	if type(payload) ~= "table" then
+		return false, "payload table required"
+	end
+	if not validMode(payload.mode) then
+		return false, "mode invalid"
+	end
+	if not nonBlankString(payload.courseId) then
+		return false, "courseId required"
+	end
+	if not nonBlankString(payload.teeSet) then
+		return false, "teeSet required"
+	end
+	if not nonBlankString(payload.pinSet) then
+		return false, "pinSet required"
+	end
+	if type(payload.ranked) ~= "boolean" then
+		return false, "ranked required"
+	end
+	if payload.mode == Constants.Mode.SCRAMBLE_2V2 and payload.ranked then
+		return false, "ranked scramble disabled"
+	end
+
+	return true, nil
+end
+
+function PayloadValidators.validatePartyReadyPayload(payload: any): (boolean, string?)
+	if type(payload) ~= "table" then
+		return false, "payload table required"
+	end
+	if type(payload.ready) ~= "boolean" then
+		return false, "ready required"
+	end
+
+	return true, nil
+end
+
+function PayloadValidators.validatePartyTeamPayload(payload: any): (boolean, string?)
+	if type(payload) ~= "table" then
+		return false, "payload table required"
+	end
+	if payload.teamId ~= Constants.TeamId.RED and payload.teamId ~= Constants.TeamId.BLUE then
+		return false, "team invalid"
+	end
+
+	return true, nil
+end
+
+function PayloadValidators.validateScrambleBallVotePayload(payload: any): (boolean, string?)
+	if type(payload) ~= "table" then
+		return false, "payload table required"
+	end
+	if not nonBlankString(payload.roundId) then
+		return false, "roundId required"
+	end
+	if not positiveInteger(payload.holeIndex) then
+		return false, "holeIndex invalid"
+	end
+	if not positiveInteger(payload.shotCycle) then
+		return false, "shotCycle invalid"
+	end
+	if not nonBlankString(payload.selectedBallId) then
+		return false, "selectedBallId required"
 	end
 
 	return true, nil

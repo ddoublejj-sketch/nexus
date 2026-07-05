@@ -8,7 +8,6 @@ local ShotMath = require("../../../ReplicatedStorage/Shared/GolfPro/Simulation/S
 local Types = require("../../../ReplicatedStorage/Shared/GolfPro/Types")
 local WindModel = require("../../../ReplicatedStorage/Shared/GolfPro/Simulation/WindModel")
 local RoundService = require("./RoundService")
-local ScoreService = require("./ScoreService")
 
 type ShotResult = Types.ShotResult
 type Vector2Yards = Types.Vector2Yards
@@ -161,22 +160,6 @@ function ShotService.start()
 	started = true
 	local ReplicatedStorage = game:GetService("ReplicatedStorage")
 	local Net = require(ReplicatedStorage.Shared.Net)
-
-	Net.onServerEvent("RequestStartPrivateRound", function(player: Player, payload: any)
-		local ok, roundOrReason = RoundService.startRound(player, payload)
-		if not ok then
-			Net.fireClient("ShotRejected", player, {
-				reasonCode = Constants.Rejection.INVALID_ROUND,
-				detail = roundOrReason,
-			})
-			return
-		end
-
-		local round = roundOrReason
-		Net.fireClient("RoundStateUpdated", player, RoundService.snapshot(round))
-		Net.fireClient("HoleStarted", player, RoundService.holeSnapshot(round))
-		Net.fireClient("ScorecardUpdated", player, ScoreService.snapshot(round.scorecard))
-	end)
 
 	Net.onServerEvent("SubmitShotIntent", function(player: Player, intent: any)
 		local ok, payload = ShotService.submitShot(player, intent, os.clock())
