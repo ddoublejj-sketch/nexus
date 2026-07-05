@@ -67,6 +67,27 @@ local remoteDefinitions: { [string]: RemoteDefinition } = {
 		validators = { tableValue },
 		description = "Golf Pro request for a ranked leaderboard page.",
 	},
+	RequestMysteryRangeSnapshot = {
+		name = "RequestMysteryRangeSnapshot",
+		kind = "RemoteFunction",
+		direction = "ClientToServer",
+		validators = {},
+		description = "Golf Pro request for Mystery Range progress snapshot.",
+	},
+	RequestMysteryRangeDeposit = {
+		name = "RequestMysteryRangeDeposit",
+		kind = "RemoteEvent",
+		direction = "ClientToServer",
+		validators = { tableValue },
+		description = "Golf Pro request to deposit a full Mystery Range meter.",
+	},
+	RequestMysteryRangeUpgrade = {
+		name = "RequestMysteryRangeUpgrade",
+		kind = "RemoteEvent",
+		direction = "ClientToServer",
+		validators = { tableValue },
+		description = "Golf Pro request to buy a Mystery Range upgrade.",
+	},
 	SetDebugFlag = {
 		name = "SetDebugFlag",
 		kind = "RemoteEvent",
@@ -241,6 +262,20 @@ local remoteDefinitions: { [string]: RemoteDefinition } = {
 		direction = "ServerToClient",
 		validators = { tableValue },
 		description = "Golf Pro course record update celebration payload.",
+	},
+	MysteryRangeUpdated = {
+		name = "MysteryRangeUpdated",
+		kind = "RemoteEvent",
+		direction = "ServerToClient",
+		validators = { tableValue },
+		description = "Golf Pro Mystery Range progress update.",
+	},
+	MysteryRangeRewardRevealed = {
+		name = "MysteryRangeRewardRevealed",
+		kind = "RemoteEvent",
+		direction = "ServerToClient",
+		validators = { tableValue },
+		description = "Golf Pro Mystery Range deterministic reward reveal.",
 	},
 }
 

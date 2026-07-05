@@ -152,7 +152,7 @@ assertTrue(
 	"snapshot must not expose flags by default"
 )
 
-assertContains(profileSchema, "ProfileSchema.CURRENT_VERSION = 2", "profile schema version")
+assertContains(profileSchema, "ProfileSchema.CURRENT_VERSION = 3", "profile schema version")
 for _, field in { "schema_version", "currencies", "inventory", "stats", "flags", "golf" } do
 	assertContains(profileSchema, field, "profile schema missing " .. field)
 end
