@@ -1,6 +1,7 @@
 --!strict
 
 local CosmeticCatalog = require("../../../ReplicatedStorage/Shared/GolfPro/Config/CosmeticCatalog")
+local AnalyticsService = require("./AnalyticsService")
 
 local CosmeticService = {}
 
@@ -190,6 +191,10 @@ function CosmeticService.equipCosmetic(player: any, cosmeticId: string): (boolea
 	end
 	local result = snapshot(player)
 	emitUpdate(player, result)
+	AnalyticsService.log(player, "cosmetic_equipped", {
+		cosmeticId = cosmeticId,
+		category = item.category,
+	})
 	return true, result
 end
 

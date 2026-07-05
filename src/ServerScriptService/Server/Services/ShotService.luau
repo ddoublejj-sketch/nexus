@@ -11,6 +11,7 @@ local MysteryRangeService = require("./MysteryRangeService")
 local ResultsService = require("./ResultsService")
 local RoundAuditService = require("./RoundAuditService")
 local RoundService = require("./RoundService")
+local AnalyticsService = require("./AnalyticsService")
 
 type ShotResult = Types.ShotResult
 type Vector2Yards = Types.Vector2Yards
@@ -144,7 +145,15 @@ function ShotService.submitShot(player: any, intent: any, now: number?): (boolea
 	end
 
 	if round.courseId == Constants.DEFAULT_PRACTICE_COURSE_ID then
-		MysteryRangeService.recordPracticeShot(player, result)
+		local rangeOk, rangeResult = MysteryRangeService.recordPracticeShot(player, result)
+		if rangeOk then
+			AnalyticsService.log(player, "practice_shot_hit", {
+				roundId = round.id,
+				holeIndex = round.holeIndex,
+				targetId = rangeResult and rangeResult.targetId,
+				zoneId = rangeResult and rangeResult.zoneId,
+			})
+		end
 	end
 
 	RoundAuditService.recordShot(round.id, {

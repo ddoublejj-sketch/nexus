@@ -1,6 +1,7 @@
 --!strict
 
 local NexusService = require(script.Services.NexusService)
+local AnalyticsService = require(script.Services.AnalyticsService)
 local DataService = require(script.Services.DataService)
 local MapService = require(script.Services.MapService)
 local CmdrService = require(script.Services.CmdrService)
@@ -17,6 +18,7 @@ local MysteryRangeService = require(script.Services.MysteryRangeService)
 local ShotService = require(script.Services.ShotService)
 
 NexusService.start()
+AnalyticsService.start()
 DataService.start()
 MapService.start()
 CmdrService.start()

@@ -2,6 +2,7 @@
 
 local MysteryRangeConfig =
 	require("../../../ReplicatedStorage/Shared/GolfPro/Config/MysteryRangeConfig")
+local AnalyticsService = require("./AnalyticsService")
 
 local MysteryRangeService = {}
 
@@ -230,6 +231,11 @@ function MysteryRangeService.deposit(player: any): (boolean, any)
 		snapshot = snapshot(player),
 	}
 	emitUpdate(player, result.snapshot)
+	AnalyticsService.log(player, "mystery_range_deposit", {
+		depositCount = range.depositCount,
+		tokens = MysteryRangeConfig.depositReward.tokens,
+		shardId = shardId,
+	})
 	return true, result
 end
 

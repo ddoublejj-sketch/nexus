@@ -5,6 +5,7 @@ local DataStoreKeys = require("../Data/DataStoreKeys")
 local LeaderboardService = require("./LeaderboardService")
 local RecordService = require("./RecordService")
 local RoundAuditService = require("./RoundAuditService")
+local AnalyticsService = require("./AnalyticsService")
 
 local ResultsService = {}
 
@@ -121,6 +122,38 @@ function ResultsService.completeRound(playerOrRoundState: any, maybeRoundState: 
 	local recordResult = RecordService.tryUpdateCourseRecord(context, result)
 	local profileUpdated = updateProfile(player, context, result, recordResult)
 	RoundAuditService.completeRound(result.roundId, result)
+	AnalyticsService.log(player, "round_completed", {
+		roundId = result.roundId,
+		courseId = result.courseId,
+		mode = result.mode,
+		totalScore = result.totalScore,
+	})
+	if result.ranked == true then
+		AnalyticsService.log(player, "ranked_round_completed", {
+			roundId = result.roundId,
+			courseId = result.courseId,
+			mode = result.mode,
+			totalScore = result.totalScore,
+		})
+	end
+	AnalyticsService.log(player, "leaderboard_submit", {
+		roundId = result.roundId,
+		accepted = leaderboardOk,
+		reason = if leaderboardOk then nil else leaderboardResult,
+	})
+	if recordResult.changed == true then
+		AnalyticsService.log(
+			player,
+			if recordResult.reason == "record_beaten"
+				then "course_record_beaten"
+				else "course_record_set",
+			{
+				roundId = result.roundId,
+				score = result.totalScore,
+				recordKey = recordResult.current and recordResult.current.key,
+			}
+		)
+	end
 
 	return {
 		context = context,

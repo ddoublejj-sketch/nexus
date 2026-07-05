@@ -7,6 +7,7 @@ local PayloadValidators =
 	require("../../../ReplicatedStorage/Shared/GolfPro/Network/PayloadValidators")
 local RoundAuditService = require("./RoundAuditService")
 local ScoreService = require("./ScoreService")
+local AnalyticsService = require("./AnalyticsService")
 
 local RoundService = {}
 
@@ -100,6 +101,13 @@ function RoundService.startRound(player: any, payload: any): (boolean, any)
 	rounds[round.id] = round
 	playerRounds[userId] = round.id
 	RoundAuditService.beginRound(round)
+	AnalyticsService.log(player, "round_started", {
+		roundId = round.id,
+		courseId = round.courseId,
+		mode = round.mode,
+		ranked = round.ranked,
+		holeCount = round.holeCount,
+	})
 
 	return true, round
 end
@@ -195,6 +203,14 @@ function RoundService.finishShot(round: any, shotResult: any): (boolean, any)
 	if holed then
 		ScoreService.completeHole(round.scorecard, round.holeIndex)
 		RoundAuditService.recordHoleCompleted(round.id, {
+			holeIndex = round.holeIndex,
+			par = hole.par,
+			total = ScoreService.holeTotal(score),
+			scorecardTotal = ScoreService.total(round.scorecard),
+		})
+		AnalyticsService.log(nil, "hole_completed", {
+			roundId = round.id,
+			playerUserId = round.playerUserId,
 			holeIndex = round.holeIndex,
 			par = hole.par,
 			total = ScoreService.holeTotal(score),
