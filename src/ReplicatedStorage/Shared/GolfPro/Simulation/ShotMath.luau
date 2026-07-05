@@ -1,5 +1,6 @@
 --!strict
 
+local GreenModel = require("./GreenModel")
 local LieModel = require("./LieModel")
 local SurfaceResolver = require("./SurfaceResolver")
 local Types = require("../Types")
@@ -50,6 +51,10 @@ function ShotMath.solve(
 	local shape = clamp(intent.drawFade01, -1, 1) * club.baseDispersionYards * 0.5
 	local lateralOffsetYards = impactError * club.baseDispersionYards + shape + wind.xYards
 	local rollYards = carryYards * club.rollBias * lie.rollMultiplier * 0.18 + wind.yYards
+	if intent.shotType == "putt" then
+		carryYards = 0
+		rollYards = GreenModel.puttRollYards(intent.power01, 1, 0) + wind.yYards
+	end
 	local totalYards = math.max(0, carryYards + rollYards)
 
 	local yawRadians = math.rad(intent.aimYawDeg)

@@ -62,3 +62,4 @@
 - [WO-10] Replaced session-scoped PowerShell jobs with persistent `.nexus` PID/log processes so `up/status/down` works across terminal invocations - 2026-07-04.
 - [GolfPro/GP-001-GP-005] Imported the Golf Pro source of truth and added the first data-driven core slice: constants/types, feature flags, ranked rules, 14-club registry, Pinebrook National 3-hole CourseSpec, surface resolution, deterministic shot math, Golf Pro remotes, and `Golf Pro Core Tests` in the shared quality gate - 2026-07-05.
 - [GolfPro/CommandCenter] Promoted the Golf Pro source of truth into RobloxGameVault and added the Obsidian-linked Phase 0-3 terminal Codex work order to the dashboard/current sprint - 2026-07-05.
+- [GolfPro/GP-006-GP-010] Built the Phase 0-3 playable slice: practice range, 3-click swing/HUD basics, ShotService validation, RoundService, ScoreService, BallPath/BallAtRest flow, Studio smoke proof, and expanded tests - 2026-07-05.

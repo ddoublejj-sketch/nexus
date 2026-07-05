@@ -2,6 +2,8 @@
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
+local PayloadValidators = require(ReplicatedStorage.Shared.GolfPro.Network.PayloadValidators)
+
 export type RemoteKind = "RemoteEvent" | "RemoteFunction"
 export type RemoteDirection = "ClientToServer" | "ServerToClient" | "Bidirectional"
 export type TypeValidator = (value: any) -> boolean
@@ -31,6 +33,16 @@ end
 
 local function tableValue(value: any): boolean
 	return type(value) == "table"
+end
+
+local function shotIntentValue(value: any): boolean
+	local ok = PayloadValidators.validateShotIntent(value)
+	return ok
+end
+
+local function roundStartValue(value: any): boolean
+	local ok = PayloadValidators.validateRoundStartPayload(value)
+	return ok
 end
 
 local remoteDefinitions: { [string]: RemoteDefinition } = {
@@ -66,14 +78,14 @@ local remoteDefinitions: { [string]: RemoteDefinition } = {
 		name = "RequestStartPrivateRound",
 		kind = "RemoteEvent",
 		direction = "ClientToServer",
-		validators = { tableValue },
+		validators = { roundStartValue },
 		description = "Golf Pro party leader request to start a private round.",
 	},
 	SubmitShotIntent = {
 		name = "SubmitShotIntent",
 		kind = "RemoteEvent",
 		direction = "ClientToServer",
-		validators = { tableValue },
+		validators = { shotIntentValue },
 		description = "Golf Pro client shot request; server owns validation and result.",
 	},
 	RequestScrambleBallVote = {
@@ -90,12 +102,54 @@ local remoteDefinitions: { [string]: RemoteDefinition } = {
 		validators = { tableValue },
 		description = "Golf Pro authoritative round state snapshot.",
 	},
+	HoleStarted = {
+		name = "HoleStarted",
+		kind = "RemoteEvent",
+		direction = "ServerToClient",
+		validators = { tableValue },
+		description = "Golf Pro hole intro snapshot.",
+	},
+	ShotAccepted = {
+		name = "ShotAccepted",
+		kind = "RemoteEvent",
+		direction = "ServerToClient",
+		validators = { tableValue },
+		description = "Golf Pro accepted shot acknowledgement.",
+	},
+	ShotRejected = {
+		name = "ShotRejected",
+		kind = "RemoteEvent",
+		direction = "ServerToClient",
+		validators = { tableValue },
+		description = "Golf Pro rejected shot or round request reason.",
+	},
 	BallPath = {
 		name = "BallPath",
 		kind = "RemoteEvent",
 		direction = "ServerToClient",
 		validators = { tableValue },
 		description = "Golf Pro visual ball path generated from server shot result.",
+	},
+	BallAtRest = {
+		name = "BallAtRest",
+		kind = "RemoteEvent",
+		direction = "ServerToClient",
+		validators = { tableValue },
+		description = "Golf Pro authoritative ball resting state.",
+	},
+	ScorecardUpdated = {
+		name = "ScorecardUpdated",
+		kind = "RemoteEvent",
+		direction = "ServerToClient",
+		validators = { tableValue },
+		description = "Golf Pro scorecard update after an official server result.",
+	},
+	RoundCompleted = {
+		name = "RoundCompleted",
+		kind = "RemoteEvent",
+		direction = "ServerToClient",
+		validators = { tableValue },
+		description = "Golf Pro final round result snapshot.",
 	},
 }
 

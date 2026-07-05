@@ -2,6 +2,40 @@
 
 Last updated: 2026-07-05
 
+## Golf Pro Phase 0-3 Slice - 2026-07-05
+
+Built the remaining Phase 0-3 source slice on `codex/golfpro-phases-0-3`: practice range CourseSpec, payload validators, GreenModel, server ShotService, RoundService, ScoreService, BallPath/BallAtRest flow, client SwingController/HUDController, and expanded Golf Pro core tests.
+
+Verification:
+
+```powershell
+lune run tools/test_golfpro_core.luau
+Golf Pro core tests passed
+```
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\nexus.ps1 check
+[PASS] Golf Pro Core Tests (0.07s, exit 0)
+[PASS] Analyze (2.07s, exit 0)
+[PASS] Build (0.06s, exit 0)
+Quality gate PASS
+```
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\nexus.ps1 loop --once
+Wrote 159 sourcemap rows to C:/Users/jackw/Roblox/RobloxGameVault/90_Automation/Generated/Sourcemap.md
+Wrote 33 module notes under C:/Users/jackw/Roblox/RobloxGameVault/02_Systems/Generated Modules and refreshed stale-source report
+Build health PASS; wrote C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Build Health.md
+```
+
+Studio proof through the active `GOLF PRO` Studio MCP instance:
+
+```text
+Golf Pro Studio smoke PASS: round_777_1:studio_smoke_1 surface=fairway
+```
+
+Interactive Play-button proof was not run from this terminal because the available Studio MCP tool exposes Edit/Client/Server Luau execution but no play/stop control. Source is Rojo-synced into Studio and ready for interactive playtest.
+
 ## Current Phase
 
 WO-0 G1 tool closure passes locally: Git, Rokit, Rojo, VS Code `code`, GitHub CLI `gh`, Blender CLI, and Obsidian command are all available through refreshed PATH/shims. WO-1 exact local acceptance passes through `./nexus.ps1 check`. WO-2/G2 is now accepted: Rojo 7.7.0 connected to Golf Pro through the `Nexus` session at `localhost:34872`, and Studio playtest output showed Nexus server/client startup, DataService mock mode, MapService, Cmdr service, and Cmdr client online. WO-3/G3 is now accepted: Obsidian REST config is present, all required plugins are enabled, pending REST writes are flushed, and dashboard render proof is recorded. WO-4 automation scripts pass through exact `./nexus.ps1 loop --once` and the dashboard notes refresh with the accepted G2/G3 state. WO-5 asset pipeline renders real Blender PNG thumbnails for the four seed assets through `./nexus.ps1 thumbnails`. WO-6 Cmdr profile commands call DataService for inventory grants, schema-backed stat edits, Owner-confirmed profile resets, and MapService-backed `reloadmap`; Studio playtest verified Cmdr service/client startup. WO-7 data/networking baseline has direct local proof, server-owned mutation helpers, and Studio mock-mode runtime proof. WO-8/G4 is now accepted: Nexus is public, `master` branch protection requires `Quality Gate`, PR #2 passed and merged through the protected path, and the separate private `RobloxGameVault` repo was created/pushed with non-secret proof. WO-9/G5 is now accepted: Open Cloud config, real dry-run, explicit founder approval, and live publish to Golf Pro all pass without printing secrets, universe ID, place ID, or response body. WO-10 final hardening is accepted: `up/status/down` starts and stops watcher jobs cleanly, `./nexus.ps1 cold-boot`, `./nexus.ps1 wo-audit`, and founder sign-off now report completion evidence with no remaining local blocker.
