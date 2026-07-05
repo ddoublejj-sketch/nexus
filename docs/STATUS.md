@@ -1,3 +1,36 @@
+## Golf Pro Phase 8 Tournament LiveOps MVP - 2026-07-05
+
+Built the Phase 8 tournament slice on `codex/golfpro-phase-8-tournaments-liveops`: `TournamentConfig` with `weekend_open_001`, in-memory server-owned `TournamentService`, tournament event/leaderboard remotes, compact `TournamentController`, deterministic cosmetic reward grant through `CosmeticService`, and Phase 8 tournament core/contract tests wired into the quality gate.
+
+Scope not added: paid entry, platform-currency reward, real-money reward, stake mechanic, chance-paid reward, live publish, OpenAI/API-cost feature, protected course/tournament branding, or a client-side tournament submit remote.
+
+Verification:
+
+```powershell
+lune run tools/test_golfpro_tournament_core.luau
+# Golf Pro tournament core tests passed
+```
+
+```powershell
+lune run tools/test_golfpro_tournament_contract.luau
+# Golf Pro tournament contract tests passed
+```
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\nexus.ps1 check
+# Quality gate PASS
+```
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\nexus.ps1 loop --once
+# Build health PASS; Work order acceptance audit PASS
+```
+
+Studio/Rojo smoke through active `GOLF PRO` Studio instance: Phase 8 config/service/controller/remotes/startup synced; server smoke accepted valid ranked attempts, rejected unranked/debug/fourth attempt, ranked lower tournament score first, granted deterministic cosmetic reward, and confirmed disabled reward policy; client smoke showed `GolfProTournamentGui` with Weekend Open, attempts `0 / 3`, cosmetic reward, and leaderboard remote response.
+
+## Golf Pro Phase 7 Locker Cosmetics - 2026-07-05
+
+Merged Phase 7 through PR #21 at `cd699ed82ed8b20e3fb3f951ec191a8c12f98e51`: cosmetic catalog, locker service, locker UI, remotes, ball/trail visual hooks, and Phase 7 tests. Studio smoke passed in `GOLF PRO`; vault proof note exists locally at `05_Playtests/Sessions/Golf Pro Phase 7 Locker Cosmetics Smoke 2026-07-05.md`. Vault commit `eae3b62` is local; remote vault push is pending explicit approval to export the vault repo.
 ## Golf Pro Phase 6 Core Persistence/Records Spine - 2026-07-05
 
 Built the first Phase 6 implementation slice on `codex/golfpro-phase-6-core`: profile schema v2 Golf Pro stats/cosmetics/best-round fields, DataService server-owned mutation helpers, pure DataStore key generation, in-memory Studio-safe RoundAuditService, RecordService, LeaderboardService, ResultsService, Phase 6 record/contract tests, and quality-gate wiring.

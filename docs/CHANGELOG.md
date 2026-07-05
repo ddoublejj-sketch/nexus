@@ -68,3 +68,5 @@
 - [GolfPro/Playtest] Auto-load the default map on server start and add a minimal starter pad/spawn when the Rojo map is empty, so Play mode no longer drops players into the void before Phase 4 builds the full course - 2026-07-05.
 - [GolfPro/Phase4] Expanded Pinebrook National to an original fictional 18-hole par-72 CourseSpec, added the source-controlled Default map blockout with 18 playable hole pads and connector paths, enabled 18-hole solo smoke starts, and recorded passing command-center plus Studio/Rojo play proof - 2026-07-05.
 - [GolfPro/GP-011A] Added Phase 4.5 ball and club presentation: visible local ball, BallPath flight/tracer, landing marker, shot stats, generated club-in-hand visuals, and procedural swing/strike presentation - 2026-07-05.
+- [GolfPro/Phase7] Added locker cosmetics: safe catalog, server-owned grant/equip service, locker UI, cosmetic remotes, ball/trail visual hooks, tests, PR #21, and Studio smoke proof - 2026-07-05.
+- [GolfPro/Phase8] Added Tournament/LiveOps MVP slice: Weekend Open config, server-owned attempt validation, event leaderboard, deterministic cosmetic reward, event UI, remotes, and tournament tests - 2026-07-05.
