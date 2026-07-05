@@ -152,9 +152,14 @@ assertTrue(
 	"snapshot must not expose flags by default"
 )
 
-assertContains(profileSchema, "ProfileSchema.CURRENT_VERSION = 1", "profile schema version")
-for _, field in { "schema_version", "currencies", "inventory", "stats", "flags" } do
+assertContains(profileSchema, "ProfileSchema.CURRENT_VERSION = 2", "profile schema version")
+for _, field in { "schema_version", "currencies", "inventory", "stats", "flags", "golf" } do
 	assertContains(profileSchema, field, "profile schema missing " .. field)
+end
+for _, field in
+	{ "roundsCompleted", "rankedRoundsCompleted", "bestRounds", "courseRecordsHeld", "cosmetics" }
+do
+	assertContains(profileSchema, field, "profile schema missing phase 6 field " .. field)
 end
 
 assertContains(migrations, "MigrationLogic.migrate", "Migrations must delegate to migration logic")

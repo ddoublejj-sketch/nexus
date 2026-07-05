@@ -49,6 +49,40 @@ local function wholeYards(value: any): string
 	return tostring(math.floor(value + 0.5)) .. " yd"
 end
 
+local function formatToPar(value: any): string
+	local score = tonumber(value)
+	if score == nil then
+		return "--"
+	end
+	if score == 0 then
+		return "E"
+	end
+	if score > 0 then
+		return "+" .. tostring(score)
+	end
+	return tostring(score)
+end
+
+local function recordText(recordPayload: any): string
+	local record = recordPayload
+	if type(recordPayload) == "table" then
+		record = recordPayload.current or recordPayload.record or recordPayload
+	end
+	if type(record) ~= "table" then
+		return Constants.UNCLAIMED_RECORD_DISPLAY
+	end
+	if record.label ~= nil then
+		return tostring(record.label)
+	end
+	if record.unclaimed == true then
+		return Constants.UNCLAIMED_RECORD_DISPLAY
+	end
+	return "Course Record: "
+		.. tostring(record.score or 0)
+		.. " / "
+		.. tostring(record.holderName or "Unclaimed")
+end
+
 local function makeLabel(parent: Instance, key: string, order: number, text: string): TextLabel
 	local label = Instance.new("TextLabel")
 	label.Name = key
@@ -152,7 +186,7 @@ function HUDController.start()
 	panel.BackgroundColor3 = Color3.fromRGB(15, 31, 28)
 	panel.BackgroundTransparency = 0.08
 	panel.BorderSizePixel = 0
-	panel.Size = UDim2.fromOffset(324, 352)
+	panel.Size = UDim2.fromOffset(324, 428)
 	panel.Position = UDim2.fromOffset(18, 82)
 	panel.Parent = gui
 
@@ -167,11 +201,14 @@ function HUDController.start()
 	makeLabel(panel, "roll", 8, "Roll: --")
 	makeLabel(panel, "total", 9, "Total: --")
 	makeLabel(panel, "offline", 10, "Offline: --")
+	makeLabel(panel, "final", 11, "Final: --")
+	makeLabel(panel, "leaderboard", 12, "Leaderboard: --")
+	makeLabel(panel, "record", 13, Constants.UNCLAIMED_RECORD_DISPLAY)
 
-	makeButton(panel, "Practice", 12, 248, function()
+	makeButton(panel, "Practice", 12, 316, function()
 		fireRoundStart(Constants.Mode.PRACTICE, Constants.DEFAULT_PRACTICE_COURSE_ID)
 	end)
-	makeButton(panel, "3 Holes", 106, 248, function()
+	makeButton(panel, "3 Holes", 106, 316, function()
 		fireRoundStart(Constants.Mode.SOLO_STROKE_3_DEBUG, Constants.DEFAULT_COURSE_ID)
 	end)
 
@@ -183,7 +220,7 @@ function HUDController.start()
 	clubScroll.CanvasSize = UDim2.fromOffset(0, 154)
 	clubScroll.ScrollBarThickness = 6
 	clubScroll.Size = UDim2.fromOffset(300, 68)
-	clubScroll.Position = UDim2.fromOffset(12, 276)
+	clubScroll.Position = UDim2.fromOffset(12, 344)
 	clubScroll.Parent = panel
 
 	local grid = Instance.new("UIGridLayout")
@@ -209,6 +246,21 @@ function HUDController.start()
 	end)
 	bindRemote("ScorecardUpdated", function(payload: any)
 		labels.score.Text = "Score: " .. tostring(payload.total)
+	end)
+	bindRemote("RoundCompleted", function(payload: any)
+		local result = payload.result or {}
+		labels.final.Text = "Final: "
+			.. tostring(result.totalScore or "--")
+			.. " ("
+			.. formatToPar(result.toPar)
+			.. ")"
+		labels.leaderboard.Text = if payload.leaderboardAccepted == true
+			then "Leaderboard: Accepted"
+			else "Leaderboard: Rejected " .. tostring(payload.leaderboardRejectedReason or "")
+		labels.record.Text = recordText(payload.courseRecordDisplay or payload.courseRecord)
+	end)
+	bindRemote("CourseRecordUpdated", function(payload: any)
+		labels.record.Text = recordText(payload)
 	end)
 	bindRemote("ShotRejected", function(payload: any)
 		labels.state.Text = "Rejected: " .. tostring(payload.reasonCode)

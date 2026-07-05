@@ -75,6 +75,7 @@ local function snapshotProfile(player: Player): any
 		schema_version = data.schema_version,
 		currencies = data.currencies,
 		stats = data.stats,
+		golf = data.golf,
 	}
 end
 
@@ -109,6 +110,10 @@ function DataService.getProfile(player: Player): ProfileData?
 	return profile.Data :: ProfileData
 end
 
+function DataService.getSnapshot(player: Player): any
+	return snapshotProfile(player)
+end
+
 function DataService.setKey(player: Player, key: string, value: any): boolean
 	local profile = profiles[player]
 	if profile == nil then
@@ -128,6 +133,140 @@ function DataService.addInventoryItem(player: Player, itemKey: string, amount: n
 	local data = profile.Data :: ProfileData
 	data.inventory.items[itemKey] = (data.inventory.items[itemKey] or 0) + amount
 	return true
+end
+
+function DataService.recordRoundStarted(player: Player, _roundContext: any): boolean
+	local profile = profiles[player]
+	if profile == nil then
+		return false
+	end
+
+	local data = profile.Data :: ProfileData
+	data.stats.roundsStarted += 1
+	return true
+end
+
+function DataService.recordRoundCompleted(player: Player, roundResult: any): boolean
+	local profile = profiles[player]
+	if profile == nil then
+		return false
+	end
+
+	local data = profile.Data :: ProfileData
+	local totalScore = tonumber(roundResult.totalScore or roundResult.score or roundResult.total)
+		or 0
+	data.stats.roundsCompleted += 1
+	data.stats.totalStrokes += totalScore
+	if roundResult.ranked == true then
+		data.stats.rankedRoundsCompleted += 1
+	end
+	if
+		data.stats.bestScoreToPar == nil
+		or (roundResult.toPar or 0) < (data.stats.bestScoreToPar :: number)
+	then
+		data.stats.bestScoreToPar = roundResult.toPar or 0
+	end
+	data.stats.longestDriveYards =
+		math.max(data.stats.longestDriveYards, tonumber(roundResult.longestDriveYards) or 0)
+	return true
+end
+
+function DataService.upsertBestRound(
+	player: Player,
+	bestRoundKey: string,
+	roundResult: any
+): boolean
+	local profile = profiles[player]
+	if profile == nil then
+		return false
+	end
+
+	local data = profile.Data :: ProfileData
+	local current = data.golf.bestRounds[bestRoundKey]
+	local nextScore = tonumber(roundResult.totalScore or roundResult.score or roundResult.total)
+	if nextScore == nil then
+		return false
+	end
+	if current ~= nil and nextScore >= current.totalScore then
+		return true
+	end
+
+	data.golf.bestRounds[bestRoundKey] = {
+		roundId = roundResult.roundId,
+		totalScore = nextScore,
+		toPar = roundResult.toPar,
+		completedAtUnix = roundResult.completedAtUnix,
+	}
+	return true
+end
+
+function DataService.addCourseRecordHeld(player: Player, recordKey: string): boolean
+	local profile = profiles[player]
+	if profile == nil then
+		return false
+	end
+
+	local data = profile.Data :: ProfileData
+	data.golf.courseRecordsHeld[recordKey] = true
+	return true
+end
+
+function DataService.getBestRound(player: Player, bestRoundKey: string): any?
+	local profile = profiles[player]
+	if profile == nil then
+		return nil
+	end
+
+	local data = profile.Data :: ProfileData
+	return data.golf.bestRounds[bestRoundKey]
+end
+
+function DataService.addCurrency(
+	player: Player,
+	currencyKey: string,
+	amount: number,
+	_reason: string?
+): boolean
+	local profile = profiles[player]
+	if profile == nil then
+		return false
+	end
+
+	local data = profile.Data :: ProfileData
+	if data.currencies[currencyKey] == nil then
+		return false
+	end
+	data.currencies[currencyKey] = math.max(0, data.currencies[currencyKey] + amount)
+	return true
+end
+
+function DataService.grantCosmetic(player: Player, cosmeticId: string, _reason: string?): boolean
+	local profile = profiles[player]
+	if profile == nil then
+		return false
+	end
+
+	local data = profile.Data :: ProfileData
+	data.golf.cosmetics.owned[cosmeticId] = true
+	return true
+end
+
+function DataService.equipCosmetic(
+	player: Player,
+	slot: string,
+	cosmeticId: string
+): (boolean, string?)
+	local profile = profiles[player]
+	if profile == nil then
+		return false, "Profile is not loaded."
+	end
+
+	local data = profile.Data :: ProfileData
+	if data.golf.cosmetics.owned[cosmeticId] ~= true then
+		return false, "Cosmetic is not owned."
+	end
+	data.golf.cosmetics.equipped[slot] = cosmeticId
+	return true, nil
 end
 
 function DataService.setStat(player: Player, statKey: string, value: number): (boolean, string?)

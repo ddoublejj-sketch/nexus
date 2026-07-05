@@ -7,6 +7,8 @@ local PayloadValidators =
 local ShotMath = require("../../../ReplicatedStorage/Shared/GolfPro/Simulation/ShotMath")
 local Types = require("../../../ReplicatedStorage/Shared/GolfPro/Types")
 local WindModel = require("../../../ReplicatedStorage/Shared/GolfPro/Simulation/WindModel")
+local ResultsService = require("./ResultsService")
+local RoundAuditService = require("./RoundAuditService")
 local RoundService = require("./RoundService")
 
 type ShotResult = Types.ShotResult
@@ -140,6 +142,26 @@ function ShotService.submitShot(player: any, intent: any, now: number?): (boolea
 		return false, finishPayload
 	end
 
+	RoundAuditService.recordShot(round.id, {
+		shotId = shotId,
+		holeIndex = intent.holeIndex,
+		playerUserId = userId,
+		clubId = intent.clubId,
+		shotType = intent.shotType,
+		power01 = intent.power01,
+		accuracy01 = intent.accuracy01,
+		startPosition = startPosition,
+		finalPosition = copyPosition(result.finalPosition),
+		finalSurface = result.finalSurface,
+		holed = finishPayload.holed,
+		totalScore = finishPayload.scorecard.total,
+	})
+
+	local completionPayload = nil
+	if finishPayload.round.state == Constants.RoundState.ROUND_COMPLETE then
+		completionPayload = ResultsService.completeRound(player, round)
+	end
+
 	return true,
 		{
 			shotId = shotId,
@@ -149,6 +171,7 @@ function ShotService.submitShot(player: any, intent: any, now: number?): (boolea
 			round = finishPayload.round,
 			scorecard = finishPayload.scorecard,
 			holed = finishPayload.holed,
+			completion = completionPayload,
 		}
 end
 
@@ -177,7 +200,10 @@ function ShotService.start()
 		Net.fireClient("RoundStateUpdated", player, payload.round)
 		Net.fireClient("ScorecardUpdated", player, payload.scorecard)
 		if payload.round.state == Constants.RoundState.ROUND_COMPLETE then
-			Net.fireClient("RoundCompleted", player, payload.round)
+			Net.fireClient("RoundCompleted", player, payload.completion)
+			if payload.completion.courseRecord.changed then
+				Net.fireClient("CourseRecordUpdated", player, payload.completion.courseRecord)
+			end
 		elseif payload.holed then
 			local round = RoundService.getRound(payload.round.roundId)
 			if round ~= nil then

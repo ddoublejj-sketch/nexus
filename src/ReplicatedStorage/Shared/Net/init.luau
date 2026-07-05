@@ -60,6 +60,13 @@ local remoteDefinitions: { [string]: RemoteDefinition } = {
 		validators = {},
 		description = "Request a sanitized, read-only profile snapshot.",
 	},
+	RequestLeaderboardPage = {
+		name = "RequestLeaderboardPage",
+		kind = "RemoteFunction",
+		direction = "ClientToServer",
+		validators = { tableValue },
+		description = "Golf Pro request for a ranked leaderboard page.",
+	},
 	SetDebugFlag = {
 		name = "SetDebugFlag",
 		kind = "RemoteEvent",
@@ -227,6 +234,13 @@ local remoteDefinitions: { [string]: RemoteDefinition } = {
 		direction = "ServerToClient",
 		validators = { tableValue },
 		description = "Golf Pro final round result snapshot.",
+	},
+	CourseRecordUpdated = {
+		name = "CourseRecordUpdated",
+		kind = "RemoteEvent",
+		direction = "ServerToClient",
+		validators = { tableValue },
+		description = "Golf Pro course record update celebration payload.",
 	},
 }
 
