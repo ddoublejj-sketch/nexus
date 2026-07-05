@@ -3020,6 +3020,150 @@
                                                            ]
                                           }
                                       ]
+                     },
+                     {
+                         "Name":  "MysteryRangeRoot",
+                         "ClassName":  "Folder",
+                         "Children":  [
+                                          {
+                                              "Name":  "StarterTarget",
+                                              "ClassName":  "Part",
+                                              "Properties":  {
+                                                                 "Anchored":  true,
+                                                                 "Size":  [
+                                                                              18,
+                                                                              18,
+                                                                              2
+                                                                          ],
+                                                                 "Position":  [
+                                                                                  0,
+                                                                                  10,
+                                                                                  160
+                                                                              ],
+                                                                 "Color":  [
+                                                                               0.95,
+                                                                               0.83,
+                                                                               0.28
+                                                                           ],
+                                                                 "Material":  "Neon"
+                                                             }
+                                          },
+                                          {
+                                              "Name":  "CanyonTarget",
+                                              "ClassName":  "Part",
+                                              "Properties":  {
+                                                                 "Anchored":  true,
+                                                                 "Size":  [
+                                                                              18,
+                                                                              18,
+                                                                              2
+                                                                          ],
+                                                                 "Position":  [
+                                                                                  -85,
+                                                                                  10,
+                                                                                  225
+                                                                              ],
+                                                                 "Color":  [
+                                                                               0.74,
+                                                                               0.42,
+                                                                               0.22
+                                                                           ],
+                                                                 "Material":  "Neon"
+                                                             }
+                                          },
+                                          {
+                                              "Name":  "DeepGreenTarget",
+                                              "ClassName":  "Part",
+                                              "Properties":  {
+                                                                 "Anchored":  true,
+                                                                 "Size":  [
+                                                                              18,
+                                                                              18,
+                                                                              2
+                                                                          ],
+                                                                 "Position":  [
+                                                                                  90,
+                                                                                  10,
+                                                                                  300
+                                                                              ],
+                                                                 "Color":  [
+                                                                               0.18,
+                                                                               0.78,
+                                                                               0.52
+                                                                           ],
+                                                                 "Material":  "Neon"
+                                                             }
+                                          },
+                                          {
+                                              "Name":  "RangeVaultMachine",
+                                              "ClassName":  "Part",
+                                              "Properties":  {
+                                                                 "Anchored":  true,
+                                                                 "Size":  [
+                                                                              18,
+                                                                              18,
+                                                                              18
+                                                                          ],
+                                                                 "Position":  [
+                                                                                  34,
+                                                                                  9,
+                                                                                  78
+                                                                              ],
+                                                                 "Color":  [
+                                                                               0.22,
+                                                                               0.24,
+                                                                               0.26
+                                                                           ],
+                                                                 "Material":  "Metal"
+                                                             }
+                                          },
+                                          {
+                                              "Name":  "UpgradeBoard",
+                                              "ClassName":  "Part",
+                                              "Properties":  {
+                                                                 "Anchored":  true,
+                                                                 "Size":  [
+                                                                              32,
+                                                                              16,
+                                                                              2
+                                                                          ],
+                                                                 "Position":  [
+                                                                                  -34,
+                                                                                  9,
+                                                                                  78
+                                                                              ],
+                                                                 "Color":  [
+                                                                               0.12,
+                                                                               0.18,
+                                                                               0.22
+                                                                           ],
+                                                                 "Material":  "SmoothPlastic"
+                                                             }
+                                          },
+                                          {
+                                              "Name":  "RangeSharkObstacle",
+                                              "ClassName":  "Part",
+                                              "Properties":  {
+                                                                 "Anchored":  true,
+                                                                 "Size":  [
+                                                                              28,
+                                                                              6,
+                                                                              48
+                                                                          ],
+                                                                 "Position":  [
+                                                                                  0,
+                                                                                  4,
+                                                                                  250
+                                                                              ],
+                                                                 "Color":  [
+                                                                               0.12,
+                                                                               0.22,
+                                                                               0.32
+                                                                           ],
+                                                                 "Material":  "SmoothPlastic"
+                                                             }
+                                          }
+                                      ]
                      }
                  ]
 }

@@ -27,12 +27,20 @@ export type ProfileData = {
 			owned: { [string]: boolean },
 			equipped: { [string]: string },
 		},
+		mysteryRange: {
+			rangeTokens: number,
+			discoveryMeter: number,
+			depositCount: number,
+			unlockedZones: { [string]: boolean },
+			upgrades: { [string]: boolean },
+			cosmeticShards: { [string]: number },
+		},
 	},
 }
 
 local ProfileSchema = {}
 
-ProfileSchema.CURRENT_VERSION = 2
+ProfileSchema.CURRENT_VERSION = 3
 
 function ProfileSchema.createDefaultProfile(): ProfileData
 	return {
@@ -61,6 +69,14 @@ function ProfileSchema.createDefaultProfile(): ProfileData
 			cosmetics = {
 				owned = {},
 				equipped = {},
+			},
+			mysteryRange = {
+				rangeTokens = 0,
+				discoveryMeter = 0,
+				depositCount = 0,
+				unlockedZones = { starter = true },
+				upgrades = {},
+				cosmeticShards = {},
 			},
 		},
 	}

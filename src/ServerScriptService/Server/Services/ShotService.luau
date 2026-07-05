@@ -7,6 +7,7 @@ local PayloadValidators =
 local ShotMath = require("../../../ReplicatedStorage/Shared/GolfPro/Simulation/ShotMath")
 local Types = require("../../../ReplicatedStorage/Shared/GolfPro/Types")
 local WindModel = require("../../../ReplicatedStorage/Shared/GolfPro/Simulation/WindModel")
+local MysteryRangeService = require("./MysteryRangeService")
 local ResultsService = require("./ResultsService")
 local RoundAuditService = require("./RoundAuditService")
 local RoundService = require("./RoundService")
@@ -140,6 +141,10 @@ function ShotService.submitShot(player: any, intent: any, now: number?): (boolea
 	local finished, finishPayload = RoundService.finishShot(round, result)
 	if not finished then
 		return false, finishPayload
+	end
+
+	if round.courseId == Constants.DEFAULT_PRACTICE_COURSE_ID then
+		MysteryRangeService.recordPracticeShot(player, result)
 	end
 
 	RoundAuditService.recordShot(round.id, {

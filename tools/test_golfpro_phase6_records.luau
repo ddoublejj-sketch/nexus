@@ -124,7 +124,7 @@ local migrated = MigrationLogic.migrate({
 	stats = { level = 4, xp = 50 },
 	flags = { old = true },
 }, ProfileSchema.createDefaultProfile(), ProfileSchema.CURRENT_VERSION)
-assertEqual(migrated.schema_version, 2, "schema version")
+assertEqual(migrated.schema_version, 3, "schema version")
 assertEqual(migrated.currencies.coins, 12, "coins preserved")
 assertEqual(migrated.inventory.items.old_item, 1, "item preserved")
 assertEqual(migrated.stats.roundsCompleted, 0, "new stat default")
