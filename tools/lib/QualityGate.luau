@@ -281,6 +281,22 @@ function QualityGate.runAll(options: RunOptions?): { CommandResult }
 	table.insert(
 		results,
 		QualityGate.runTool(
+			"Golf Pro Cosmetics Core Tests",
+			"lune",
+			{ "run", "tools/test_golfpro_cosmetics_core.luau" }
+		)
+	)
+	table.insert(
+		results,
+		QualityGate.runTool(
+			"Golf Pro Cosmetics Contract Tests",
+			"lune",
+			{ "run", "tools/test_golfpro_cosmetics_contract.luau" }
+		)
+	)
+	table.insert(
+		results,
+		QualityGate.runTool(
 			"Golf Pro Presentation Contract Tests",
 			"lune",
 			{ "run", "tools/test_golfpro_presentation_contract.luau" }

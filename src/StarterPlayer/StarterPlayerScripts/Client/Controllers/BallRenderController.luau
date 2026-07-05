@@ -7,6 +7,7 @@ local TweenService = game:GetService("TweenService")
 local Workspace = game:GetService("Workspace")
 
 local PresentationConfig = require(ReplicatedStorage.Shared.GolfPro.Presentation.PresentationConfig)
+local CosmeticCatalog = require(ReplicatedStorage.Shared.GolfPro.Config.CosmeticCatalog)
 
 local LOCAL_PLAYER = Players.LocalPlayer
 
@@ -25,6 +26,9 @@ local cameraConnection: RBXScriptConnection? = nil
 local previousCameraType: any = nil
 local previousCameraSubject: any = nil
 local cameraActive = false
+local currentBallColor = PresentationConfig.DEFAULT_BALL_COLOR
+local currentBallMaterial = Enum.Material.SmoothPlastic
+local currentTrailColor = PresentationConfig.TRACER_COLOR
 
 local debugState = {
 	lastShotId = nil :: string?,
@@ -64,6 +68,50 @@ local function ensureRuntime()
 	markersFolder = getOrCreateFolder(root, "Markers")
 end
 
+local function colorFromSpec(spec: any, fallback: Color3): Color3
+	if type(spec) ~= "table" then
+		return fallback
+	end
+	local r = if type(spec.r) == "number" then spec.r else fallback.R * 255
+	local g = if type(spec.g) == "number" then spec.g else fallback.G * 255
+	local b = if type(spec.b) == "number" then spec.b else fallback.B * 255
+	return Color3.fromRGB(r, g, b)
+end
+
+local function materialFromName(name: any): Enum.Material
+	if name == "Neon" then
+		return Enum.Material.Neon
+	end
+	if name == "Metal" then
+		return Enum.Material.Metal
+	end
+	return Enum.Material.SmoothPlastic
+end
+
+local function applyBallCosmetic()
+	local ball = ballPart
+	if ball ~= nil then
+		ball.Color = currentBallColor
+		ball.Material = currentBallMaterial
+	end
+end
+
+local function applyCosmeticSnapshot(snapshot: any)
+	if type(snapshot) ~= "table" or type(snapshot.equipped) ~= "table" then
+		return
+	end
+	local ballSkin = CosmeticCatalog.get(tostring(snapshot.equipped.ball_skin or ""))
+	if ballSkin ~= nil then
+		currentBallColor = colorFromSpec(ballSkin.ballColor, PresentationConfig.DEFAULT_BALL_COLOR)
+		currentBallMaterial = materialFromName(ballSkin.material)
+	end
+	local trail = CosmeticCatalog.get(tostring(snapshot.equipped.trail or ""))
+	if trail ~= nil then
+		currentTrailColor = colorFromSpec(trail.trailColor, PresentationConfig.TRACER_COLOR)
+	end
+	applyBallCosmetic()
+end
+
 local function ensureBall(): Part
 	ensureRuntime()
 	local existing = (ballsFolder :: Folder):FindFirstChild(BALL_NAME)
@@ -80,8 +128,8 @@ local function ensureBall(): Part
 		PresentationConfig.BALL_RADIUS_STUDS * 2,
 		PresentationConfig.BALL_RADIUS_STUDS * 2
 	)
-	ball.Material = Enum.Material.SmoothPlastic
-	ball.Color = PresentationConfig.DEFAULT_BALL_COLOR
+	ball.Material = currentBallMaterial
+	ball.Color = currentBallColor
 	ball.Anchored = true
 	ball.CanCollide = false
 	ball.CanTouch = false
@@ -219,6 +267,7 @@ function BallRenderController.start()
 	bindRemote("BallAtRest", function(payload: any)
 		BallRenderController.applyBallAtRest(payload)
 	end)
+	bindRemote("CosmeticInventoryUpdated", applyCosmeticSnapshot)
 end
 
 function BallRenderController.yardsPointToWorld(point: any): Vector3
@@ -239,6 +288,7 @@ function BallRenderController.placeBallAtYards(position: any, surface: string?)
 	local ball = ensureBall()
 	ball.Position = BallRenderController.yardsPointToWorld(position)
 	ball.Transparency = 0
+	applyBallCosmetic()
 	debugState.lastSurface = surface
 end
 
@@ -277,7 +327,7 @@ function BallRenderController.renderPath(payload: any)
 		segment.CanTouch = false
 		segment.CanQuery = false
 		segment.Material = Enum.Material.Neon
-		segment.Color = PresentationConfig.TRACER_COLOR
+		segment.Color = currentTrailColor
 		segment.Size = Vector3.new(
 			PresentationConfig.TRACER_THICKNESS_STUDS,
 			PresentationConfig.TRACER_THICKNESS_STUDS,
@@ -362,6 +412,8 @@ function BallRenderController.getDebugState()
 		lastSurface = debugState.lastSurface,
 		lastPointCount = debugState.lastPointCount,
 		lastTotalYards = debugState.lastTotalYards,
+		ballColor = currentBallColor,
+		trailColor = currentTrailColor,
 		cameraActive = cameraActive,
 	}
 end
