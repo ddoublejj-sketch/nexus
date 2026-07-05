@@ -41,7 +41,7 @@ local function holeCountForMode(mode: string, course): number
 	if mode == Constants.Mode.PRACTICE then
 		return 1
 	end
-	if mode == Constants.Mode.SOLO_STROKE_18 then
+	if mode == Constants.Mode.SOLO_STROKE_18 or mode == Constants.Mode.PRIVATE_STROKE then
 		return math.min(18, #course.holes)
 	end
 	if mode == Constants.Mode.SOLO_STROKE_9 then

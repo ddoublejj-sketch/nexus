@@ -1,3 +1,47 @@
+## Golf Pro Phase 5 Multiplayer and Scramble - 2026-07-05
+
+Built Phase 5 only on `codex/golfpro-phase-5-multiplayer-scramble`: in-memory `PartyService`, local-transport `MatchService`, pure server `ScrambleService` vote/auto-select/team-score logic, compact `PartyController`, compact `ScrambleController`, Phase 5 payload validators/remotes, and automated multiplayer tests. `RequestStartPrivateRound` is now owned by `MatchService`; `ShotService` still owns shot submission and the existing solo/practice BallPath/BallAtRest flow.
+
+Scope not added: DataStore persistence, OrderedDataStores, records, leaderboards, real reserved-server teleport, monetization, tournaments, live publish, OpenAI/API-cost features, protected course/equipment IP, prizes, wagers, entry fees, or paid stat advantages.
+
+Verification snippets:
+
+```powershell
+stylua src tools
+# PASS
+```
+
+```powershell
+lune run tools/test_golfpro_multiplayer_core.luau
+# Golf Pro multiplayer core tests passed
+```
+
+```powershell
+lune run tools/test_golfpro_phase5_contract.luau
+# Golf Pro phase 5 contract tests passed
+```
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\nexus.ps1 check
+# Quality gate PASS
+```
+
+Studio/Rojo smoke through open `GOLF PRO` Studio instance:
+
+```text
+Rojo localhost:34872 reconnect: PASS before Play smoke; later reconnect flapped after final RoundService private-18 fix, while terminal status showed NexusRojoServe Running.
+Existing GolfProHUD appears: PASS
+Existing Phase 4.5 generated club appears in hand: PASS
+Party panel appears: PASS
+Create Party: PASS (party code shown)
+Ready toggle: PASS (member ready/wait state changed)
+Private 18 button: PASS for local MatchFound/private_stroke flow; automated service test now asserts private_stroke starts 18 holes.
+2v2 Scramble button with one player: PASS friendly server refusal (`scramble needs four players`).
+Client/server app-code errors from PartyController/ScrambleController/PartyService/MatchService/ScrambleService/ShotService/Net: none observed in Output during smoke.
+Manual 4-player Studio proof: deferred.
+```
+
+Deferred Phase 5.1 items: live ShotService-to-ScrambleService shot-option integration, real reserved-server teleport handoff, and full 4-player Studio multi-client proof. Phase 6+ items remain deferred: persistence, records, leaderboards, monetization, tournaments, and live publish.
 # Nexus Command Center Status
 
 Last updated: 2026-07-05

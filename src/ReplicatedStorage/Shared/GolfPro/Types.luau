@@ -106,4 +106,58 @@ export type RoundStartPayload = {
 	ranked: boolean,
 }
 
+export type PartyMember = {
+	userId: number,
+	displayName: string,
+	role: string,
+	ready: boolean,
+	teamId: string?,
+}
+
+export type PartyState = {
+	partyId: string,
+	code: string,
+	leaderUserId: number,
+	status: string,
+	desiredMode: string,
+	courseId: string,
+	teeSet: string,
+	pinSet: string,
+	ranked: boolean,
+	members: { PartyMember },
+}
+
+export type MatchInfo = {
+	matchId: string,
+	partyId: string,
+	mode: string,
+	courseId: string,
+	transport: string,
+	accessCode: string?,
+	placeId: number?,
+	playerUserIds: { number },
+	teams: any?,
+}
+
+export type ScrambleBallOption = {
+	ballId: string,
+	playerUserId: number,
+	teamId: string,
+	position: Vector2Yards,
+	surface: Surface,
+	holed: boolean,
+	penalty: boolean,
+	distanceToPinYards: number,
+}
+
+export type ScrambleVoteState = {
+	roundId: string,
+	holeIndex: number,
+	shotCycle: number,
+	teamId: string,
+	options: { ScrambleBallOption },
+	votesByUserId: { [number]: string },
+	selectedBallId: string?,
+	expiresAtUnix: number,
+}
 return {}

@@ -10,6 +10,11 @@ Constants.DEFAULT_PRACTICE_COURSE_ID = "course_practice_range_v1"
 Constants.DEFAULT_TEE_SET = "debug"
 Constants.DEFAULT_PIN_SET = "debug"
 Constants.UNCLAIMED_RECORD_DISPLAY = "Course Record: 0 / Unclaimed"
+Constants.MAX_PARTY_SIZE = 4
+Constants.MIN_PRIVATE_ROUND_PLAYERS = 1
+Constants.SCRAMBLE_TEAM_SIZE = 2
+Constants.SCRAMBLE_PLAYER_COUNT = 4
+Constants.SCRAMBLE_VOTE_SECONDS = 20
 
 Constants.Surface = {
 	TEE = "tee",
@@ -28,6 +33,28 @@ Constants.Mode = {
 	SOLO_STROKE_18 = "solo_stroke_18",
 	PRIVATE_STROKE = "private_stroke",
 	SCRAMBLE_2V2 = "scramble_2v2",
+}
+
+Constants.PartyRole = {
+	LEADER = "leader",
+	MEMBER = "member",
+}
+
+Constants.PartyStatus = {
+	IDLE = "idle",
+	CONFIGURING = "configuring",
+	READY = "ready",
+	IN_MATCH = "in_match",
+}
+
+Constants.TeamId = {
+	RED = "red",
+	BLUE = "blue",
+}
+
+Constants.MatchTransport = {
+	LOCAL = "local",
+	RESERVED_DEFERRED = "reserved_deferred",
 }
 
 Constants.RoundState = {
