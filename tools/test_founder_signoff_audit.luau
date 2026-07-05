@@ -73,7 +73,6 @@ assertContains(
 )
 assertContains(script, "Overall: ", "Audit generator must compute an overall status")
 assertContains(script, "BLOCKED", "Audit generator must preserve blocked sign-off states")
-assertContains(script, "PARTIAL", "Audit generator must preserve partial sign-off states")
 assertContains(script, "Secret Scan", "Audit generator must cite secret-scan evidence")
 
 for _, criterion in CRITERIA do
@@ -81,7 +80,7 @@ for _, criterion in CRITERIA do
 end
 
 assertContains(script, '"G1"', "Audit generator must still inspect G1 in the acceptance matrix")
-assertContains(script, "G5:", "Audit generator missing remaining human gate G5")
+assertContains(script, '"G5"', "Audit generator must still inspect G5 in the acceptance matrix")
 
 assertContains(launcher, '"audit" {', "Launcher must expose audit subcommand")
 assertContains(
@@ -115,9 +114,7 @@ if fs.isDir(VAULT_ROOT) then
 	local audit = read(AUDIT_NOTE_PATH)
 	assertFrontmatter(audit, "Founder Sign-Off Audit")
 	assertContains(audit, "# Founder Sign-Off Audit", "Audit note missing title")
-	assertContains(audit, "Overall: BLOCKED", "Audit note must not claim final sign-off yet")
-	assertContains(audit, "PARTIAL", "Audit note must show partial criteria")
-	assertContains(audit, "BLOCKED", "Audit note must show blocked criteria")
+	assertContains(audit, "Overall: PASS", "Audit note must show final sign-off")
 	assertContains(
 		audit,
 		"| 3 | Zero secrets in either Git history | PASS |",
@@ -136,8 +133,7 @@ if fs.isDir(VAULT_ROOT) then
 		"Open gate evidence remains in STATUS.md: G1,",
 		"Audit blocker summary must not list closed G1"
 	)
-	assertContains(audit, "G5:", "Audit note missing remaining G5 blocker")
-	for _, closedGate in { "G2:", "G3:", "G4:" } do
+	for _, closedGate in { "G2:", "G3:", "G4:", "G5:" } do
 		assertNotContains(audit, closedGate, "Audit note must not list closed gate " .. closedGate)
 	end
 	assertNotContains(audit, "OBSIDIAN_API_KEY=", "Audit note must not expose Obsidian key values")

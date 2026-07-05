@@ -112,15 +112,15 @@ local GATES: { Gate } = {
 	{
 		id = "G5",
 		title = "Open Cloud Key",
-		state = "Approval accepted; live publish blocked by Open Cloud key scope",
+		state = "Closed locally; Open Cloud live publish to Golf Pro is accepted",
 		human = {
-			"Edit the Open Cloud API key in Creator Hub so it has place-publishing write permission for Golf Pro.",
-			"After saving the key scope, tell Codex the Open Cloud key scope is updated.",
+			"No current G5 action remains.",
+			"Keep the Open Cloud key scoped only to the Golf Pro place-publishing permission needed for releases.",
 		},
 		codex = {
 			"Keep the G5 approval receipt accepted.",
 			"Run fixture dry-run first, then real dry-run with the secret file.",
-			"Retry `./nexus.ps1 release --live` after the key scope is updated.",
+			"Run `./nexus.ps1 release --live` only after explicit founder approval for the target place.",
 		},
 		proof = {
 			"./nexus.ps1 receipts",
@@ -129,6 +129,7 @@ local GATES: { Gate } = {
 			"lune run tools/open_cloud_publish.luau --dry-run",
 			"lune run tools/secret_scan.luau",
 			"./nexus.ps1 gatecheck --gate G5",
+			"./nexus.ps1 release --live",
 		},
 	},
 }

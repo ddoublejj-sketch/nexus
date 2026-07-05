@@ -24,6 +24,7 @@ Change each required marker from `PENDING` to `PASS` only after the human action
 - 2026-07-05: Fixture dry-run and full local quality gate passed immediately before the live publish attempt.
 - 2026-07-05: Live publish request reached Roblox Open Cloud but was rejected with `401 Unauthorized` because the API key has insufficient scopes. No secret, universe ID, or place ID was written here.
 - 2026-07-05: Rewrote the local Open Cloud env file as UTF-8 without BOM after the Golf Pro key swap; G5 config, real dry-run, and approval checks then passed, but the live retry still returned `401 Unauthorized` for insufficient API key scopes.
+- 2026-07-05: After the Open Cloud key scope was corrected and Roblox Studio was closed, `./nexus.ps1 release --live` returned `Open Cloud publish PASS` for Golf Pro. Secrets, universe ID, place ID, and response body were not written here.
 
 ## Proof Commands
 
@@ -32,4 +33,5 @@ Change each required marker from `PENDING` to `PASS` only after the human action
 lune run tools/open_cloud_publish.luau --dry-run
 lune run tools/secret_scan.luau
 ./nexus.ps1 gatecheck --gate G5
+./nexus.ps1 release --live
 ```

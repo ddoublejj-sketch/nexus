@@ -99,15 +99,15 @@ local EXPECTED_ROWS = {
 	},
 	{
 		id = "WO-9 Release Path",
-		status = "G5 approval accepted; live publish blocked by key scope",
-		evidence = "live publish attempt reached Roblox Open Cloud",
-		blocker = "G5 Open Cloud key place-publishing scope",
+		status = "G5 live publish accepted",
+		evidence = "Open Cloud publish PASS",
+		blocker = "None locally",
 	},
 	{
 		id = "WO-10 Hardening",
-		status = "Up/down smoke test passed locally",
+		status = "Final hardening accepted",
 		evidence = "`./nexus.ps1 up/status/down`",
-		blocker = "G5 Open Cloud key place-publishing scope",
+		blocker = "None locally",
 	},
 }
 
@@ -197,16 +197,7 @@ assertContains(status, "WO-0 G1 tool closure passes locally", "Current phase mus
 assertContains(status, "WO-2/G2 is now accepted", "Current phase must show G2 accepted")
 assertContains(status, "WO-3/G3 is now accepted", "Current phase must show G3 accepted")
 assertContains(status, "WO-8/G4 is now accepted", "Current phase must show G4 accepted")
-assertContains(
-	status,
-	"blocked by Roblox because the API key has insufficient place-publishing scope",
-	"Current phase must preserve the Open Cloud key-scope blocker"
-)
-assertContains(
-	status,
-	"instead of faking completion",
-	"STATUS must explicitly mark gate-dependent work as incomplete"
-)
+assertContains(status, "WO-9/G5 is now accepted", "Current phase must show G5 accepted")
 
 local latest =
 	section(status, "### Latest Gate Revalidation - 2026-07-05 UTC", "## Acceptance Matrix")
