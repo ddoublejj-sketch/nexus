@@ -24,6 +24,7 @@ local REQUIRED_GATE_LABELS = {
 	"Command Surface Tests",
 	"MapService Contract Tests",
 	"Net Contract Tests",
+	"Golf Pro Core Tests",
 	"CI Contract Tests",
 	"Command Center Contract Tests",
 	"Cold Boot Readiness Tests",
