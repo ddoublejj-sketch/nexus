@@ -1,0 +1,93 @@
+--!strict
+
+local PresentationConfig = {
+	STUDS_PER_YARD = 1,
+	BALL_RADIUS_STUDS = 0.65,
+	BALL_HEIGHT_OFFSET_STUDS = 1.05,
+	BALL_FLIGHT_MIN_SECONDS = 0.55,
+	BALL_FLIGHT_MAX_SECONDS = 2.75,
+	TRACER_THICKNESS_STUDS = 0.18,
+	TRACER_LIFETIME_SECONDS = 5,
+	LANDING_MARKER_RADIUS_STUDS = 4,
+	SHOT_CAMERA_ENABLED = true,
+	SHOT_CAMERA_HEIGHT_STUDS = 18,
+	SHOT_CAMERA_BACK_STUDS = 28,
+	SHOT_CAMERA_RESTORE_DELAY_SECONDS = 0.35,
+	DEFAULT_BALL_COLOR = Color3.fromRGB(245, 245, 238),
+	TRACER_COLOR = Color3.fromRGB(120, 225, 255),
+	LANDING_MARKER_COLOR = Color3.fromRGB(255, 232, 120),
+	CLUB_VISUALS = {
+		wood = {
+			shaftLength = 4.7,
+			shaftThickness = 0.12,
+			headSize = Vector3.new(1.05, 0.46, 0.7),
+			headOffset = CFrame.new(0.36, -4.65, -0.1) * CFrame.Angles(0, math.rad(12), 0),
+			gripSize = Vector3.new(0.22, 1.05, 0.22),
+			addressC0 = CFrame.new(0.35, -0.45, -0.35)
+				* CFrame.Angles(math.rad(-18), math.rad(16), math.rad(76)),
+			topTransform = CFrame.Angles(math.rad(-72), math.rad(12), math.rad(32)),
+			impactTransform = CFrame.Angles(math.rad(18), math.rad(-10), math.rad(-18)),
+			shaftColor = Color3.fromRGB(190, 196, 198),
+			headColor = Color3.fromRGB(42, 48, 55),
+			gripColor = Color3.fromRGB(28, 31, 34),
+		},
+		hybrid = {
+			shaftLength = 4.35,
+			shaftThickness = 0.11,
+			headSize = Vector3.new(0.82, 0.38, 0.55),
+			headOffset = CFrame.new(0.3, -4.3, -0.08) * CFrame.Angles(0, math.rad(8), 0),
+			gripSize = Vector3.new(0.21, 0.98, 0.21),
+			addressC0 = CFrame.new(0.33, -0.43, -0.32)
+				* CFrame.Angles(math.rad(-17), math.rad(14), math.rad(74)),
+			topTransform = CFrame.Angles(math.rad(-66), math.rad(10), math.rad(28)),
+			impactTransform = CFrame.Angles(math.rad(16), math.rad(-8), math.rad(-15)),
+			shaftColor = Color3.fromRGB(188, 192, 194),
+			headColor = Color3.fromRGB(55, 66, 76),
+			gripColor = Color3.fromRGB(31, 35, 38),
+		},
+		iron = {
+			shaftLength = 4.05,
+			shaftThickness = 0.1,
+			headSize = Vector3.new(0.86, 0.22, 0.28),
+			headOffset = CFrame.new(0.34, -4.02, -0.02) * CFrame.Angles(0, 0, math.rad(-8)),
+			gripSize = Vector3.new(0.2, 0.92, 0.2),
+			addressC0 = CFrame.new(0.31, -0.42, -0.3)
+				* CFrame.Angles(math.rad(-16), math.rad(12), math.rad(72)),
+			topTransform = CFrame.Angles(math.rad(-60), math.rad(8), math.rad(25)),
+			impactTransform = CFrame.Angles(math.rad(14), math.rad(-7), math.rad(-12)),
+			shaftColor = Color3.fromRGB(194, 198, 200),
+			headColor = Color3.fromRGB(132, 138, 142),
+			gripColor = Color3.fromRGB(34, 36, 38),
+		},
+		wedge = {
+			shaftLength = 3.7,
+			shaftThickness = 0.1,
+			headSize = Vector3.new(0.92, 0.28, 0.34),
+			headOffset = CFrame.new(0.36, -3.68, -0.03) * CFrame.Angles(0, 0, math.rad(-14)),
+			gripSize = Vector3.new(0.2, 0.88, 0.2),
+			addressC0 = CFrame.new(0.3, -0.4, -0.28)
+				* CFrame.Angles(math.rad(-15), math.rad(10), math.rad(70)),
+			topTransform = CFrame.Angles(math.rad(-54), math.rad(6), math.rad(22)),
+			impactTransform = CFrame.Angles(math.rad(13), math.rad(-6), math.rad(-10)),
+			shaftColor = Color3.fromRGB(198, 200, 201),
+			headColor = Color3.fromRGB(150, 146, 137),
+			gripColor = Color3.fromRGB(38, 36, 33),
+		},
+		putter = {
+			shaftLength = 3.15,
+			shaftThickness = 0.09,
+			headSize = Vector3.new(1.05, 0.18, 0.24),
+			headOffset = CFrame.new(0.45, -3.12, 0),
+			gripSize = Vector3.new(0.24, 0.86, 0.24),
+			addressC0 = CFrame.new(0.25, -0.38, -0.24)
+				* CFrame.Angles(math.rad(-10), math.rad(6), math.rad(66)),
+			topTransform = CFrame.Angles(math.rad(-30), math.rad(4), math.rad(14)),
+			impactTransform = CFrame.Angles(math.rad(8), math.rad(-4), math.rad(-8)),
+			shaftColor = Color3.fromRGB(188, 190, 190),
+			headColor = Color3.fromRGB(62, 64, 66),
+			gripColor = Color3.fromRGB(20, 26, 30),
+		},
+	},
+}
+
+return PresentationConfig

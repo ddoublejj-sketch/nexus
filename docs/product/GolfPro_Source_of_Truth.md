@@ -1706,6 +1706,17 @@ Deliverables:
 - Course flyover/cameras.
 - Optimization pass.
 
+### Phase 4.5 - Ball and club presentation
+
+Deliverables:
+
+- Visible golf ball model driven by authoritative `BallPath` and `BallAtRest` remotes.
+- Shot tracer, landing marker, and optional shot-follow camera.
+- Visible generic club model attached to the player's hand.
+- Club visual swaps when the selected ClubSpec changes.
+- Procedural swing/strike presentation synced to 3-click swing timing.
+- No branded club designs, paid stat changes, or client-owned official shot results.
+
 ### Phase 5 - Multiplayer and scramble
 
 Deliverables:
@@ -1871,6 +1882,18 @@ Acceptance:
 - Full round playable.
 - Par and yardage match CourseSpec.
 - No protected real-world IP appears.
+
+### GP-011A: Ball and club presentation
+
+Implement the visual golf layer that sits on top of the existing server-owned shot system.
+
+Acceptance:
+
+- Player sees an actual ball before and after each shot.
+- `BallPath` renders visible ball flight, tracer, landing marker, and shot camera feedback.
+- Selected club appears in the player's hand and swaps when the selected ClubSpec changes.
+- Swing/strike presentation is synced to the 3-click swing flow without changing ranked shot math.
+- Visuals remain cosmetic/client-side; server remains authoritative for final ball position and scoring.
 
 ### GP-012: PartyService
 

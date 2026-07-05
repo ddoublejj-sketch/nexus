@@ -2,6 +2,46 @@
 
 Last updated: 2026-07-05
 
+## Golf Pro Phase 4.5 Ball and Club Presentation - 2026-07-05
+
+Built Phase 4.5 only on `codex/golfpro-phase-4-5-presentation`: generated club-in-hand visuals, club category swaps for all 14 default clubs, a local visual golf ball, BallPath flight rendering, shot tracer segments, landing marker, temporary shot camera with restore, procedural backswing/strike presentation, and HUD shot stats. Official shot result, final ball position, score, and lie remain server-authoritative through existing `ShotService`, `RoundService`, and remotes.
+
+This does not implement Phase 5 multiplayer, parties, persistence, leaderboards, tournaments, monetization, live publish, OpenAI/API-cost features, branded equipment, real-course IP, paid stat advantages, prizes, wagers, or entry fees.
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\nexus.ps1 check
+[PASS] MapService Contract Tests
+[PASS] Golf Pro Core Tests
+[PASS] Golf Pro Presentation Contract Tests
+[PASS] Analyze
+[PASS] Build
+Quality gate PASS
+```
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\nexus.ps1 loop --once
+Wrote 163 sourcemap rows to C:/Users/jackw/Roblox/RobloxGameVault/90_Automation/Generated/Sourcemap.md
+Wrote 36 module notes under C:/Users/jackw/Roblox/RobloxGameVault/02_Systems/Generated Modules and refreshed stale-source report
+Build health PASS; wrote C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Build Health.md
+Work order acceptance audit PASS; wrote C:/Users/jackw/Roblox/RobloxGameVault/00_Command_Center/Work Order Acceptance Audit.md
+```
+
+Studio/Rojo proof through active `GOLF PRO` Studio instance connected to `localhost:34872`:
+
+```text
+Visible ball before shot: PASS
+Selected generated club visible in hand: PASS
+Club swap Driver -> Putter -> Sand Wedge changes head silhouettes: PASS
+3-click swing path moves the club head during backswing/strike: PASS
+Server BallPath received and visual ball flight rendered: PASS
+Tracer appears: PASS
+Landing marker appears: PASS
+HUD shot stats update: PASS (Carry: 245 yd, Total: 267 yd in smoke run)
+Camera restores after shot: PASS
+Player still spawns on playable course: PASS (PlaytestSpawn raycast hit)
+Output caveat: no errors from EquipmentController, BallRenderController, HUDController, SwingController, ShotService, or Net; one Studio AssistantCommand error came from a blocked VirtualInputManager probe and was not app code.
+``r
+
 ## Golf Pro Phase 4 First Course Path - 2026-07-05
 
 Built Phase 4 only on `codex/golfpro-phase-4`: Pinebrook National is now an original fictional 18-hole CourseSpec with par 72 and 7,305 yards. The existing 3-hole debug round remains intact, and `SOLO_STROKE_18` now starts an 18-hole smoke path. The Rojo `maps/Default.model.json` lane now contains the source-controlled Pinebrook blockout with tee/rough/fairway/green/bunker/water parts for every hole plus 17 connector-path parts for course traversal.

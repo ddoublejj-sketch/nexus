@@ -5,6 +5,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UserInputService = game:GetService("UserInputService")
 
 local Constants = require(ReplicatedStorage.Shared.GolfPro.Constants)
+local EquipmentController = require(script.Parent.EquipmentController)
 
 local SwingController = {}
 
@@ -55,6 +56,7 @@ end
 
 function SwingController.setClub(clubId: string)
 	currentClubId = clubId
+	EquipmentController.setClub(clubId)
 end
 
 function SwingController.getState()
@@ -65,6 +67,7 @@ function SwingController.click(now: number): any?
 	if state.phase == "idle" then
 		state.phase = "power"
 		state.powerStartedAt = now
+		EquipmentController.playBackswing(0)
 		return nil
 	end
 
@@ -72,12 +75,14 @@ function SwingController.click(now: number): any?
 		state.phase = "accuracy"
 		state.power01 = triangle01(now - state.powerStartedAt, 1.6)
 		state.accuracyStartedAt = now
+		EquipmentController.playBackswing(state.power01)
 		return nil
 	end
 
 	if state.phase == "accuracy" then
 		state.phase = "idle"
 		state.accuracy01 = triangle01(now - state.accuracyStartedAt, 1.1)
+		EquipmentController.playStrike(state.accuracy01)
 		return {
 			power01 = state.power01,
 			accuracy01 = state.accuracy01,
