@@ -22,6 +22,7 @@ local REQUIRED_GATE_LABELS = {
 	"Asset Manifest Tests",
 	"Command Surface Tests",
 	"Net Contract Tests",
+	"Golf Pro Core Tests",
 	"CI Contract Tests",
 	"Command Center Contract Tests",
 	"Human Gate Checklist Tests",

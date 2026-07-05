@@ -29,6 +29,10 @@ local function booleanValue(value: any): boolean
 	return type(value) == "boolean"
 end
 
+local function tableValue(value: any): boolean
+	return type(value) == "table"
+end
+
 local remoteDefinitions: { [string]: RemoteDefinition } = {
 	Ping = {
 		name = "Ping",
@@ -57,6 +61,41 @@ local remoteDefinitions: { [string]: RemoteDefinition } = {
 		direction = "ServerToClient",
 		validators = { stringValue, anyValue },
 		description = "Deliver a server-authored UI/system message to a client.",
+	},
+	RequestStartPrivateRound = {
+		name = "RequestStartPrivateRound",
+		kind = "RemoteEvent",
+		direction = "ClientToServer",
+		validators = { tableValue },
+		description = "Golf Pro party leader request to start a private round.",
+	},
+	SubmitShotIntent = {
+		name = "SubmitShotIntent",
+		kind = "RemoteEvent",
+		direction = "ClientToServer",
+		validators = { tableValue },
+		description = "Golf Pro client shot request; server owns validation and result.",
+	},
+	RequestScrambleBallVote = {
+		name = "RequestScrambleBallVote",
+		kind = "RemoteEvent",
+		direction = "ClientToServer",
+		validators = { tableValue },
+		description = "Golf Pro 2v2 scramble selected-ball vote.",
+	},
+	RoundStateUpdated = {
+		name = "RoundStateUpdated",
+		kind = "RemoteEvent",
+		direction = "ServerToClient",
+		validators = { tableValue },
+		description = "Golf Pro authoritative round state snapshot.",
+	},
+	BallPath = {
+		name = "BallPath",
+		kind = "RemoteEvent",
+		direction = "ServerToClient",
+		validators = { tableValue },
+		description = "Golf Pro visual ball path generated from server shot result.",
 	},
 }
 

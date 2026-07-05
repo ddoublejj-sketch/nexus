@@ -60,3 +60,5 @@
 - [WO-8/G4] Accepted GitHub gate: public Nexus repo, protected master requiring Quality Gate, PR #2 protected merge, and private vault remote proof - 2026-07-04.
 - [WO-10] Locked zero OpenAI API spend for the command center; Codex usage remains outside the repo in the user's Codex plan - 2026-07-04.
 - [WO-10] Replaced session-scoped PowerShell jobs with persistent `.nexus` PID/log processes so `up/status/down` works across terminal invocations - 2026-07-04.
+- [GolfPro/GP-001-GP-005] Imported the Golf Pro source of truth and added the first data-driven core slice: constants/types, feature flags, ranked rules, 14-club registry, Pinebrook National 3-hole CourseSpec, surface resolution, deterministic shot math, Golf Pro remotes, and `Golf Pro Core Tests` in the shared quality gate - 2026-07-05.
+- [GolfPro/CommandCenter] Promoted the Golf Pro source of truth into RobloxGameVault and added the Obsidian-linked Phase 0-3 terminal Codex work order to the dashboard/current sprint - 2026-07-05.

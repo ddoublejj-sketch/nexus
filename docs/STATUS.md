@@ -8,6 +8,22 @@ WO-0 G1 tool closure passes locally: Git, Rokit, Rojo, VS Code `code`, GitHub CL
 
 G3/G5 gate probes now parse local secret env files and only pass when Obsidian REST and Open Cloud values are present, non-placeholder, and valid enough to use; secret values are never printed.
 
+## Golf Pro Build Kickoff - 2026-07-05
+
+Imported the Codex-ready Golf Pro source of truth into `docs/product/GolfPro_Source_of_Truth.md`. Added the first build slice for GP-001 through GP-005: Golf Pro constants/types, safe feature flags, ranked rules, the 14-club default registry, Pinebrook National 3-hole fictional CourseSpec, surface resolution, deterministic shot math, and Golf Pro remotes through the existing `Net` wrapper.
+
+Promoted the same source of truth into `C:\Users\jackw\Roblox\RobloxGameVault\01_Game_Design\Golf Pro Source of Truth.md` and added the paste-ready terminal-worker prompt at `C:\Users\jackw\Roblox\RobloxGameVault\00_Command_Center\Golf Pro Phase 0-3 Work Order.md`. The vault dashboard now embeds the source, the work order, and the current Golf Pro sprint checklist.
+
+```powershell
+C:\Users\jackw\.rokit\tool-storage\lune-org\lune\0.10.5\lune.exe run tools/test_golfpro_core.luau
+Golf Pro core tests passed
+```
+
+```powershell
+./nexus.ps1 check
+Quality gate PASS
+```
+
 ## WO-0 - Close the Tool Gaps
 
 ### Audit Output
@@ -1910,6 +1926,7 @@ Whole-repo local quality gate:
 [PASS] Command Surface Tests (0.03s, exit 0)
 [PASS] MapService Contract Tests (0.03s, exit 0)
 [PASS] Net Contract Tests (0.08s, exit 0)
+[PASS] Golf Pro Core Tests (0.03s, exit 0)
 [PASS] CI Contract Tests (0.03s, exit 0)
 [PASS] Command Center Contract Tests (0.08s, exit 0)
 [PASS] Cold Boot Readiness Tests (0.03s, exit 0)
