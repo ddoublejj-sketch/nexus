@@ -232,6 +232,14 @@ function QualityGate.runAll(options: RunOptions?): { CommandResult }
 	)
 	table.insert(
 		results,
+		QualityGate.runTool(
+			"Golf Pro Presentation Contract Tests",
+			"lune",
+			{ "run", "tools/test_golfpro_presentation_contract.luau" }
+		)
+	)
+	table.insert(
+		results,
 		QualityGate.runTool("CI Contract Tests", "lune", { "run", "tools/test_ci_contract.luau" })
 	)
 	table.insert(
