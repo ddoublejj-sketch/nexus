@@ -1440,7 +1440,7 @@ Completed:
 ### Open Blockers
 
 - None for G4.
-- WO-8 is accepted; remaining goal blockers are G2 Studio proof and G5 live publish approval.
+- WO-8 is accepted; the remaining goal blocker is G5 live publish approval.
 
 ## WO-9 - Release Path
 
@@ -1625,7 +1625,7 @@ When ready to publish for real:
 - Added `tools/cold_boot_readiness.luau`, `./nexus.ps1 cold-boot`, the `Nexus: Cold Boot Readiness` VS Code task, and a dashboard embed for `00_Command_Center/Cold Boot Readiness.md`.
 - Added `tools/test_cold_boot_readiness.luau` to the shared quality gate. It verifies the cold-boot readiness note, launcher/task wiring, loop refresh, and G2/G3 proof honesty.
 - Added `tools/work_order_acceptance_audit.luau`, `./nexus.ps1 wo-audit`, the `Nexus: Work Order Acceptance Audit` VS Code task, and a dashboard embed for `00_Command_Center/Work Order Acceptance Audit.md`.
-- Added `tools/test_work_order_acceptance_audit.luau` to the shared quality gate. It verifies WO-0 through WO-10 acceptance evidence coverage while preserving G2/G3/G4/G5 blockers.
+- Added `tools/test_work_order_acceptance_audit.luau` to the shared quality gate. It verifies WO-0 through WO-10 acceptance evidence coverage while preserving the G5 live-publish blocker.
 
 ### Verification Evidence
 
