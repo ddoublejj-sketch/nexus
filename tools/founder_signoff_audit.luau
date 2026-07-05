@@ -119,12 +119,17 @@ local latestGatePasses = contains(status, "Quality gate PASS")
 	and contains(status, "[PASS] Secret Scan")
 	and contains(status, "[PASS] Open Cloud Dry Run")
 local blockers = gateBlockerSummary(status)
+local hasOpenGate = blockers ~= "No G1-G5 blockers found in STATUS.md."
 
 local criteria: { Criterion } = {
 	{
 		id = "1",
 		criterion = "Every WO acceptance command has real pasted output in STATUS.md",
-		status = if matrixRows == 11 and latestGatePasses then "PARTIAL" else "BLOCKED",
+		status = if matrixRows == 11
+				and latestGatePasses
+				and not hasOpenGate
+			then "PASS"
+			else "BLOCKED",
 		evidence = if matrixRows == 11 and latestGatePasses
 			then "Acceptance Matrix has 11 work-order rows and the latest whole-repo verification includes Quality gate PASS. "
 				.. blockers
@@ -176,9 +181,9 @@ local criteria: { Criterion } = {
 			then "PARTIAL"
 			else "BLOCKED",
 		evidence = if runbookCoverage(readme, freshSetup, disasterRecovery)
-			then "README plus fresh-machine and disaster-recovery runbooks cover setup, quality gate, release dry-run, and Studio snapshots; installer/auth gates remain human-owned."
+			then "README plus fresh-machine and disaster-recovery runbooks cover setup, quality gate, release dry-run, live publish command, and Studio snapshots; installer/auth/key-scope gates remain human-owned."
 			else "README or runbooks are missing required setup evidence.",
-		nextAction = "Complete G5, then do a clean setup rehearsal from the docs.",
+		nextAction = "Update the Open Cloud key scope, complete live publish, then do a clean setup rehearsal from the docs.",
 	},
 }
 
@@ -238,7 +243,7 @@ table.insert(lines, blockers)
 table.insert(lines, "")
 table.insert(
 	lines,
-	"- G5: Open Cloud config and dry-run pass; live publish approval remains pending."
+	"- G5: Open Cloud config, dry-run, and live publish approval pass; the current API key lacks place-publishing scope."
 )
 
 fs.writeFile(OUTPUT_PATH, table.concat(lines, "\n") .. "\n")

@@ -90,7 +90,7 @@ local function isAllowed(line: string): boolean
 end
 
 local function runGit(target: ScanTarget): string
-	local args = { "-C", target.path }
+	local args = { "-c", "safe.directory=" .. target.path, "-C", target.path }
 	for _, arg in target.args do
 		table.insert(args, arg)
 	end

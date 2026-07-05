@@ -97,6 +97,8 @@ else
 	assertTrue(fs.isDir(pathJoin(VAULT_ROOT, ".git")), "Vault must be its own Git repo")
 
 	local gitLog = process.exec("git", {
+		"-c",
+		"safe.directory=" .. VAULT_ROOT,
 		"-C",
 		VAULT_ROOT,
 		"log",

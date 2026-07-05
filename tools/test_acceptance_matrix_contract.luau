@@ -99,15 +99,15 @@ local EXPECTED_ROWS = {
 	},
 	{
 		id = "WO-9 Release Path",
-		status = "Dry-run accepted with real config",
-		evidence = "real dry-run pass",
-		blocker = "G5 live publish approval only",
+		status = "G5 approval accepted; live publish blocked by key scope",
+		evidence = "live publish attempt reached Roblox Open Cloud",
+		blocker = "G5 Open Cloud key place-publishing scope",
 	},
 	{
 		id = "WO-10 Hardening",
 		status = "Up/down smoke test passed locally",
 		evidence = "`./nexus.ps1 up/status/down`",
-		blocker = "G5 live publish approval",
+		blocker = "G5 Open Cloud key place-publishing scope",
 	},
 }
 
@@ -197,7 +197,11 @@ assertContains(status, "WO-0 G1 tool closure passes locally", "Current phase mus
 assertContains(status, "WO-2/G2 is now accepted", "Current phase must show G2 accepted")
 assertContains(status, "WO-3/G3 is now accepted", "Current phase must show G3 accepted")
 assertContains(status, "WO-8/G4 is now accepted", "Current phase must show G4 accepted")
-assertContains(status, "live publish remains gated", "Current phase must preserve G5")
+assertContains(
+	status,
+	"blocked by Roblox because the API key has insufficient place-publishing scope",
+	"Current phase must preserve the Open Cloud key-scope blocker"
+)
 assertContains(
 	status,
 	"instead of faking completion",

@@ -73,6 +73,12 @@ assertContains(
 	"Live request was not sent.",
 	"dry-run output must state no live request"
 )
+assertContains(releaseScript, "Universe ID: values hidden", "live output must hide universe id")
+assertContains(
+	releaseScript,
+	"Response body: output omitted",
+	"live output must omit response body"
+)
 assertContains(releaseScript, 'method = "POST"', "live publish must use POST")
 assertContains(
 	releaseScript,

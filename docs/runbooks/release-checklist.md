@@ -39,6 +39,8 @@ ROBLOX_PLACE_ID=replace_with_numeric_place_id
 ./nexus.ps1 release --live
 ```
 
+If Roblox returns `401 Unauthorized` with insufficient scopes, edit the Open Cloud API key in Creator Hub and add the place-publishing write permission for the Golf Pro experience/place, then rerun the same live command.
+
 ## Secret Safety Check
 
 ```powershell

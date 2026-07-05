@@ -252,7 +252,7 @@ local WORK_ORDERS: { WorkOrder } = {
 	{
 		id = "WO-9",
 		title = "Release Path",
-		blocker = "G5 explicit live publish approval",
+		blocker = "G5 Open Cloud key place-publishing scope",
 		requirements = {
 			{
 				label = "fixture dry run",
@@ -271,16 +271,21 @@ local WORK_ORDERS: { WorkOrder } = {
 				needle = "Complete G5",
 			},
 			{
-				label = "G5 blocker preserved",
+				label = "G5 approval receipt",
+				path = "docs/gate-proofs/G5-open-cloud-publish.md",
+				needle = "Live publish approval recorded: PASS",
+			},
+			{
+				label = "live publish scope failure recorded",
 				path = STATUS_PATH,
-				needle = "live publish was intentionally not attempted",
+				needle = "API key has insufficient place-publishing scope",
 			},
 		},
 	},
 	{
 		id = "WO-10",
 		title = "Command Center Hardening",
-		blocker = "G5 live publish approval",
+		blocker = "G5 Open Cloud key place-publishing scope",
 		requirements = {
 			{
 				label = "up/down proof",
@@ -424,7 +429,7 @@ if #failures > 0 then
 else
 	table.insert(
 		lines,
-		"All local evidence checks are present. Remaining non-pass rows require G5 live publish approval."
+		"All local evidence checks are present. Remaining non-pass rows require an Open Cloud key with place-publishing scope."
 	)
 end
 

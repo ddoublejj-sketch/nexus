@@ -112,14 +112,15 @@ local GATES: { Gate } = {
 	{
 		id = "G5",
 		title = "Open Cloud Key",
-		state = "Config and dry-run accepted; blocked only on explicit live publish approval",
+		state = "Approval accepted; live publish blocked by Open Cloud key scope",
 		human = {
-			"Give explicit live publish approval only when ready to publish the target place.",
+			"Edit the Open Cloud API key in Creator Hub so it has place-publishing write permission for Golf Pro.",
+			"After saving the key scope, tell Codex the Open Cloud key scope is updated.",
 		},
 		codex = {
-			"Mark the required marker in `docs/gate-proofs/G5-open-cloud-publish.md` as `PASS` after explicit live publish approval.",
+			"Keep the G5 approval receipt accepted.",
 			"Run fixture dry-run first, then real dry-run with the secret file.",
-			"Attempt live publish only after explicit approval and green release checklist.",
+			"Retry `./nexus.ps1 release --live` after the key scope is updated.",
 		},
 		proof = {
 			"./nexus.ps1 receipts",
