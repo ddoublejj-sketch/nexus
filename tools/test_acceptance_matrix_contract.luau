@@ -57,9 +57,9 @@ local EXPECTED_ROWS = {
 	},
 	{
 		id = "WO-2 Studio Bridge",
-		status = "Runbook added, live bridge blocked",
+		status = "G2 accepted",
 		evidence = "Rojo bridge tests",
-		blocker = "G2:",
+		blocker = "None locally",
 	},
 	{
 		id = "WO-3 Vault",
@@ -81,15 +81,15 @@ local EXPECTED_ROWS = {
 	},
 	{
 		id = "WO-6 Cmdr",
-		status = "Implemented and analyzed",
-		evidence = "DataService-backed profile commands",
-		blocker = "G2 Studio playtest",
+		status = "Studio playtest accepted",
+		evidence = "Cmdr service/client playtest output",
+		blocker = "None locally",
 	},
 	{
 		id = "WO-7 Data/Networking",
-		status = "Implemented and tested locally",
-		evidence = "server-owned mutation helpers",
-		blocker = "G2 Studio playtest",
+		status = "Studio mock runtime accepted",
+		evidence = "DataService mock-mode playtest output",
+		blocker = "None locally",
 	},
 	{
 		id = "WO-8 CI",
@@ -107,7 +107,7 @@ local EXPECTED_ROWS = {
 		id = "WO-10 Hardening",
 		status = "Up/down smoke test passed locally",
 		evidence = "`./nexus.ps1 up/status/down`",
-		blocker = "G2 Studio connect",
+		blocker = "G5 live publish approval",
 	},
 }
 
@@ -194,7 +194,7 @@ for _, expected in EXPECTED_ROWS do
 end
 
 assertContains(status, "WO-0 G1 tool closure passes locally", "Current phase must close G1")
-assertContains(status, "blocked on **G2 - Studio connect**", "Current phase must preserve G2")
+assertContains(status, "WO-2/G2 is now accepted", "Current phase must show G2 accepted")
 assertContains(status, "WO-3/G3 is now accepted", "Current phase must show G3 accepted")
 assertContains(status, "WO-8/G4 is now accepted", "Current phase must show G4 accepted")
 assertContains(status, "live publish remains gated", "Current phase must preserve G5")
@@ -205,7 +205,7 @@ assertContains(
 )
 
 local latest =
-	section(status, "### Latest Gate Revalidation - 2026-07-04 UTC", "## Acceptance Matrix")
+	section(status, "### Latest Gate Revalidation - 2026-07-05 UTC", "## Acceptance Matrix")
 assertTrue(latest ~= "", "Missing Latest Gate Revalidation section")
 assertContains(latest, "./nexus.ps1 check", "Latest verification must run launcher check")
 assertContains(latest, "Quality gate PASS", "Latest verification must include gate pass")

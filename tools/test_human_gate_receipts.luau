@@ -85,7 +85,8 @@ for _, receipt in RECEIPTS do
 	local contents = read(receipt.path)
 	assertTrue(
 		contents:find("status: pending", 1, true) ~= nil
-			or contents:find("status: pass", 1, true) ~= nil,
+			or contents:find("status: pass", 1, true) ~= nil
+			or contents:find("status: accepted", 1, true) ~= nil,
 		receipt.path .. " missing receipt status"
 	)
 	assertContains(contents, "## Required Markers", receipt.path .. " missing marker section")
@@ -149,7 +150,20 @@ local g2Probe = process.exec("lune", {
 	"--gate",
 	"G2",
 })
-assertTrue(not g2Probe.ok, "G2 probe must stay blocked while receipt markers are pending")
-assertContains(g2Probe.stdout, "receipt pending", "G2 probe must name pending receipt state")
+assertTrue(g2Probe.ok, "G2 probe must pass after receipt markers are accepted")
+assertContains(
+	g2Probe.stdout,
+	"Human gate acceptance PASS",
+	"G2 probe must show accepted receipt state"
+)
+
+local g5Probe = process.exec("lune", {
+	"run",
+	"tools/human_gate_acceptance.luau",
+	"--gate",
+	"G5",
+})
+assertTrue(not g5Probe.ok, "G5 probe must stay blocked while receipt markers are pending")
+assertContains(g5Probe.stdout, "receipt pending", "G5 probe must name pending receipt state")
 
 print("Human gate receipt tests passed")

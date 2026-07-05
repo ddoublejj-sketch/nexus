@@ -1,8 +1,8 @@
 # G2 - Studio Connect Proof Receipt
 
-status: pending
+status: accepted
 gate: G2
-updated: TODO
+updated: 2026-07-05T14:33:09Z
 
 ## Completion Rule
 
@@ -10,8 +10,8 @@ Change each required marker from `PENDING` to `PASS` only after the human action
 
 ## Required Markers
 
-- Studio plugin connected: PENDING
-- Studio playtest observed: PENDING
+- Studio plugin connected: PASS
+- Studio playtest observed: PASS
 
 ## Human Steps
 
@@ -22,8 +22,8 @@ Change each required marker from `PENDING` to `PASS` only after the human action
 
 ## Evidence Notes
 
-- Paste non-secret observations here after the gate is complete.
-- Include command output only if it does not reveal secrets or private IDs.
+- 2026-07-05: Rojo 7.7.0 plugin connected to `Nexus` at `localhost:34872` in `GOLF PRO - Roblox Studio`.
+- 2026-07-05: Studio playtest observed Nexus server/client startup, DataService mock mode, MapService, Cmdr service, and Cmdr client online in Output.
 
 ## Proof Commands
 

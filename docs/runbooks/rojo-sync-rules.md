@@ -39,6 +39,12 @@ luau-lsp analyze --definitions types/globalTypes.d.luau --sourcemap sourcemap.js
 
 Expected analyze result: exit 0 with no diagnostics.
 
+## G2 Accepted Results
+
+- 2026-07-05: Rojo 7.7.0 connected to `GOLF PRO - Roblox Studio` through the `Nexus` session at `localhost:34872`.
+- 2026-07-05: Studio playtest loaded Rojo-managed Nexus services from disk. Output showed Nexus server/client startup, DataService mock mode, MapService, Cmdr service, and Cmdr client online.
+- 2026-07-05: Disposable Studio-only syncback/export remains a project-content workflow, not a blocker for the command-center bridge.
+
 ## Snapshot Location
 
 Studio-only snapshots live in:

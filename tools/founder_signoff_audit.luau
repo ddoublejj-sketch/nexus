@@ -134,11 +134,16 @@ local criteria: { Criterion } = {
 	{
 		id = "2",
 		criterion = "Cold-boot test passes",
-		status = "BLOCKED",
-		evidence = if contains(status, "Exact Up/Down Evidence")
-			then "Local up/status/down smoke test is recorded, but cold boot still requires G2 Studio sync proof."
+		status = if contains(status, "Cold boot readiness READY_FOR_COLD_BOOT_ACCEPTANCE")
+			then "PASS"
+			else "BLOCKED",
+		evidence = if contains(status, "Cold boot readiness READY_FOR_COLD_BOOT_ACCEPTANCE")
+			then "Cold boot readiness accepted after G2/G3 receipts."
+			elseif
+				contains(status, "Exact Up/Down Evidence")
+			then "Local up/status/down smoke test is recorded, but cold boot readiness has not been refreshed after G2."
 			else "Cold-boot proof has not been recorded.",
-		nextAction = "After G2, run the WO-10 cold-boot path and paste the output into STATUS.md.",
+		nextAction = "Rerun `./nexus.ps1 cold-boot` after launcher, Studio, or dashboard gate changes.",
 	},
 	{
 		id = "3",
@@ -173,7 +178,7 @@ local criteria: { Criterion } = {
 		evidence = if runbookCoverage(readme, freshSetup, disasterRecovery)
 			then "README plus fresh-machine and disaster-recovery runbooks cover setup, quality gate, release dry-run, and Studio snapshots; installer/auth gates remain human-owned."
 			else "README or runbooks are missing required setup evidence.",
-		nextAction = "Complete G2 and G5, then do a clean setup rehearsal from the docs.",
+		nextAction = "Complete G5, then do a clean setup rehearsal from the docs.",
 	},
 }
 
@@ -231,15 +236,6 @@ table.insert(lines, "## Human Gates Holding Final Sign-Off")
 table.insert(lines, "")
 table.insert(lines, blockers)
 table.insert(lines, "")
-table.insert(lines, "- G2: Roblox Studio Rojo plugin connect and live sync proof.")
-table.insert(
-	lines,
-	"- G3: Obsidian REST, plugin load, pending flush, and dashboard proof accepted."
-)
-table.insert(
-	lines,
-	"- G4: Accepted; Nexus is public, master requires Quality Gate, and the private vault remote is pushed."
-)
 table.insert(
 	lines,
 	"- G5: Open Cloud config and dry-run pass; live publish approval remains pending."

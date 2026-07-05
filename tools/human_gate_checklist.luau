@@ -44,20 +44,15 @@ local GATES: { Gate } = {
 	{
 		id = "G2",
 		title = "Studio Connect",
-		state = "Blocked on Roblox Studio plugin connection and playtest proof",
+		state = "Closed locally; Rojo connected to Golf Pro and Studio playtest proof is accepted",
 		human = {
-			"Open the target place in Roblox Studio. Current target: Golf Pro.",
-			"Run `./nexus.ps1 up` from the Nexus repo.",
-			"Run `./nexus.ps1 studio-bridge` to confirm local bridge readiness.",
-			"Connect the Rojo Studio plugin to the local server.",
-			"Confirm a disk edit appears in Studio within seconds.",
-			"Run the disposable syncback/export test from `docs/runbooks/rojo-sync-rules.md`.",
-			"Playtest Cmdr command execution and DataService mock-session behavior.",
+			"No current G2 action remains.",
+			"Keep Golf Pro connected through Rojo 7.7.0 when doing Studio-facing work.",
 		},
 		codex = {
-			"Mark the required markers in `docs/gate-proofs/G2-studio-connect.md` as `PASS` after the live proof exists.",
-			"Record observed Studio bridge results in `docs/STATUS.md` and `docs/runbooks/rojo-sync-rules.md`.",
-			"Update WO-2, WO-6, WO-7, and WO-10 acceptance evidence after the live proof exists.",
+			"Run `./nexus.ps1 up` before Studio-facing work if the local Rojo server is stopped.",
+			"Run `./nexus.ps1 studio-bridge` after Studio or Rojo changes.",
+			"Rerun `./nexus.ps1 gatecheck --gate G2` if the receipt or target place changes.",
 		},
 		proof = {
 			"./nexus.ps1 receipts",

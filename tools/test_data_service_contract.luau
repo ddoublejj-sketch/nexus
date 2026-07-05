@@ -177,8 +177,8 @@ assertContains(saveDataNote, "OnSessionEnd", "Save Data note must document sessi
 assertContains(saveDataNote, "DataService.release(player)", "Save Data note must document release")
 assertContains(
 	saveDataNote,
-	"Studio runtime proof is still pending G2",
-	"Save Data note must preserve G2 honesty"
+	"Studio runtime proof was accepted",
+	"Save Data note must preserve G2 runtime proof"
 )
 
 print("DataService contract tests passed")
