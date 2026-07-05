@@ -5,6 +5,7 @@ local CourseRegistry = require("../../../ReplicatedStorage/Shared/GolfPro/Course
 local GreenModel = require("../../../ReplicatedStorage/Shared/GolfPro/Simulation/GreenModel")
 local PayloadValidators =
 	require("../../../ReplicatedStorage/Shared/GolfPro/Network/PayloadValidators")
+local RoundAuditService = require("./RoundAuditService")
 local ScoreService = require("./ScoreService")
 
 local RoundService = {}
@@ -74,6 +75,8 @@ function RoundService.startRound(player: any, payload: any): (boolean, any)
 	local round = {
 		id = nextRoundId(userId),
 		courseId = course.id,
+		courseVersion = course.version or "v1",
+		physicsVersion = course.physicsVersion or Constants.PHYSICS_VERSION,
 		course = course,
 		mode = payload.mode,
 		teeSet = payload.teeSet or Constants.DEFAULT_TEE_SET,
@@ -96,6 +99,7 @@ function RoundService.startRound(player: any, payload: any): (boolean, any)
 
 	rounds[round.id] = round
 	playerRounds[userId] = round.id
+	RoundAuditService.beginRound(round)
 
 	return true, round
 end
@@ -190,6 +194,12 @@ function RoundService.finishShot(round: any, shotResult: any): (boolean, any)
 
 	if holed then
 		ScoreService.completeHole(round.scorecard, round.holeIndex)
+		RoundAuditService.recordHoleCompleted(round.id, {
+			holeIndex = round.holeIndex,
+			par = hole.par,
+			total = ScoreService.holeTotal(score),
+			scorecardTotal = ScoreService.total(round.scorecard),
+		})
 		if round.holeIndex >= round.holeCount then
 			round.ball = {
 				position = copyPosition(hole.pin),
@@ -197,6 +207,8 @@ function RoundService.finishShot(round: any, shotResult: any): (boolean, any)
 				moving = false,
 			}
 			round.state = Constants.RoundState.ROUND_COMPLETE
+			round.completed = true
+			round.completedAtUnix = os.time()
 		else
 			round.state = Constants.RoundState.HOLE_COMPLETE
 			round.holeIndex += 1
@@ -251,6 +263,7 @@ function RoundService.snapshot(round: any)
 		roundId = round.id,
 		courseId = round.courseId,
 		mode = round.mode,
+		ranked = round.ranked,
 		state = round.state,
 		holeIndex = round.holeIndex,
 		holeCount = round.holeCount,

@@ -12,13 +12,27 @@ export type ProfileData = {
 	stats: {
 		level: number,
 		xp: number,
+		roundsStarted: number,
+		roundsCompleted: number,
+		rankedRoundsCompleted: number,
+		totalStrokes: number,
+		bestScoreToPar: number?,
+		longestDriveYards: number,
 	},
 	flags: { [string]: boolean },
+	golf: {
+		bestRounds: { [string]: any },
+		courseRecordsHeld: { [string]: boolean },
+		cosmetics: {
+			owned: { [string]: boolean },
+			equipped: { [string]: string },
+		},
+	},
 }
 
 local ProfileSchema = {}
 
-ProfileSchema.CURRENT_VERSION = 1
+ProfileSchema.CURRENT_VERSION = 2
 
 function ProfileSchema.createDefaultProfile(): ProfileData
 	return {
@@ -33,8 +47,22 @@ function ProfileSchema.createDefaultProfile(): ProfileData
 		stats = {
 			level = 1,
 			xp = 0,
+			roundsStarted = 0,
+			roundsCompleted = 0,
+			rankedRoundsCompleted = 0,
+			totalStrokes = 0,
+			bestScoreToPar = nil,
+			longestDriveYards = 0,
 		},
 		flags = {},
+		golf = {
+			bestRounds = {},
+			courseRecordsHeld = {},
+			cosmetics = {
+				owned = {},
+				equipped = {},
+			},
+		},
 	}
 end
 

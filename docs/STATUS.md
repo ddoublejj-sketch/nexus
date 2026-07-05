@@ -1,3 +1,19 @@
+## Golf Pro Phase 6 Core Persistence/Records Spine - 2026-07-05
+
+Built the first Phase 6 implementation slice on `codex/golfpro-phase-6-core`: profile schema v2 Golf Pro stats/cosmetics/best-round fields, DataService server-owned mutation helpers, pure DataStore key generation, in-memory Studio-safe RoundAuditService, RecordService, LeaderboardService, ResultsService, Phase 6 record/contract tests, and quality-gate wiring.
+
+This slice proves the server-owned record rules: `0 / Unclaimed` display with internal nil record, first valid ranked 18-hole completion sets a record, lower score replaces it, ties keep the existing holder, and unranked/debug/9-hole completions are rejected. Live OrderedDataStore persistence, results UI polish, Studio smoke proof, PR merge, and vault proof are still remaining Phase 6 work.
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\nexus.ps1 check
+Quality gate PASS
+```
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\nexus.ps1 loop --once
+Build health PASS
+```
+
 ## Golf Pro Phase 5 Multiplayer and Scramble - 2026-07-05
 
 Built Phase 5 only on `codex/golfpro-phase-5-multiplayer-scramble`: in-memory `PartyService`, local-transport `MatchService`, pure server `ScrambleService` vote/auto-select/team-score logic, compact `PartyController`, compact `ScrambleController`, Phase 5 payload validators/remotes, and automated multiplayer tests. `RequestStartPrivateRound` is now owned by `MatchService`; `ShotService` still owns shot submission and the existing solo/practice BallPath/BallAtRest flow.
