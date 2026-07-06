@@ -83,6 +83,9 @@ for _, needle in
 		"BallPath",
 		"BallAtRest",
 		"RoundStateUpdated",
+		"GolfProBallTrackerGui",
+		"BallDirectionMarker",
+		"WorldToViewportPoint",
 		"function BallRenderController.renderPath",
 		"function BallRenderController.applyBallAtRest",
 		"function BallRenderController.yardsPointToWorld",
@@ -117,6 +120,8 @@ local swing = read("src/StarterPlayer/StarterPlayerScripts/Client/Controllers/Sw
 assertContains(swing, "EquipmentController", "SwingController must require EquipmentController")
 assertContains(swing, "EquipmentController.playBackswing", "SwingController must play backswing")
 assertContains(swing, "EquipmentController.playStrike", "SwingController must play strike")
+assertContains(swing, "GolfProSwingMeterGui", "SwingController must show swing meter")
+assertContains(swing, "RunService.RenderStepped", "SwingController meter must animate")
 
 local net = read("src/ReplicatedStorage/Shared/Net/init.luau")
 assertContains(net, "BallPath", "Net must declare BallPath")

@@ -22,6 +22,8 @@ local ballsFolder: Folder? = nil
 local tracersFolder: Folder? = nil
 local markersFolder: Folder? = nil
 local ballPart: Part? = nil
+local trackerLabel: TextLabel? = nil
+local trackerConnection: RBXScriptConnection? = nil
 local animationToken = 0
 local cameraConnection: RBXScriptConnection? = nil
 local previousCameraType: any = nil
@@ -71,6 +73,74 @@ local function ensureRuntime()
 	ballsFolder = getOrCreateFolder(root, "Balls")
 	tracersFolder = getOrCreateFolder(root, "Tracers")
 	markersFolder = getOrCreateFolder(root, "Markers")
+end
+
+local function ensureBallTracker()
+	if trackerLabel ~= nil then
+		return
+	end
+
+	local playerGui = LOCAL_PLAYER:WaitForChild("PlayerGui")
+	local screen = Instance.new("ScreenGui")
+	screen.Name = "GolfProBallTrackerGui"
+	screen.ResetOnSpawn = false
+	screen.IgnoreGuiInset = true
+	screen.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+	screen.Parent = playerGui
+
+	local label = Instance.new("TextLabel")
+	label.Name = "BallDirectionMarker"
+	label.AnchorPoint = Vector2.new(0.5, 0.5)
+	label.BackgroundColor3 = Color3.fromRGB(10, 17, 15)
+	label.BackgroundTransparency = 0.18
+	label.BorderSizePixel = 0
+	label.Font = Enum.Font.GothamBold
+	label.Text = "v BALL"
+	label.TextColor3 = Color3.fromRGB(244, 248, 240)
+	label.TextSize = 13
+	label.Size = UDim2.fromOffset(74, 26)
+	label.Visible = false
+	label.Parent = screen
+
+	local corner = Instance.new("UICorner")
+	corner.CornerRadius = UDim.new(0, 6)
+	corner.Parent = label
+
+	trackerLabel = label
+end
+
+local function updateBallTracker()
+	ensureBallTracker()
+	local label = trackerLabel :: TextLabel
+	local ball = ballPart
+	local camera = Workspace.CurrentCamera
+	if ball == nil or camera == nil or ball.Transparency >= 1 then
+		label.Visible = false
+		return
+	end
+
+	local screenPoint, onScreen = camera:WorldToViewportPoint(ball.Position + Vector3.new(0, 8, 0))
+	local viewport = camera.ViewportSize
+	local x = clamp(screenPoint.X, 42, math.max(42, viewport.X - 42))
+	local y = clamp(screenPoint.Y, 42, math.max(42, viewport.Y - 42))
+	label.Position = UDim2.fromOffset(x, y)
+	label.Visible = true
+	if onScreen and screenPoint.Z > 0 then
+		label.Text = "v BALL"
+		label.Rotation = 0
+		return
+	end
+
+	label.Text = "> BALL"
+	local dx = screenPoint.X - viewport.X * 0.5
+	local dy = screenPoint.Y - viewport.Y * 0.5
+	if math.abs(dx) < 0.001 then
+		label.Rotation = if dy >= 0 then 90 else -90
+		return
+	end
+
+	local angle = math.deg(math.atan(dy / dx))
+	label.Rotation = if dx < 0 then angle + 180 else angle
 end
 
 local function colorFromSpec(spec: any, fallback: Color3): Color3
@@ -268,6 +338,8 @@ function BallRenderController.start()
 
 	started = true
 	ensureBall()
+	ensureBallTracker()
+	trackerConnection = RunService.RenderStepped:Connect(updateBallTracker)
 
 	bindRemote("RoundStateUpdated", function(snapshot: any)
 		updateWorldOrigin(snapshot)
@@ -440,6 +512,7 @@ function BallRenderController.getDebugState()
 		ballColor = currentBallColor,
 		trailColor = currentTrailColor,
 		cameraActive = cameraActive,
+		trackerActive = trackerConnection ~= nil,
 	}
 end
 

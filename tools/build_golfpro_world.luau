@@ -120,7 +120,12 @@ local function rectPart(
 		x = (bounds.minX + bounds.maxX) * 0.5,
 		y = (bounds.minY + bounds.maxY) * 0.5,
 	}
-	return part(name, { width, height, depth }, world(origin, center, y), color, material)
+	local guide = part(name, { width, height, depth }, world(origin, center, y), color, material)
+	guide.Properties.Transparency = 0.62
+	guide.Properties.CanCollide = false
+	guide.Properties.CanTouch = false
+	guide.Properties.CanQuery = false
+	return guide
 end
 
 local function surfaceMeta(surface: string): (string, { number }, string, number, number)
@@ -346,6 +351,56 @@ local function destinations(): any
 	return folder("WorldDestinations", children)
 end
 
+local function cartSpawn(name: string, position: { number }): any
+	local marker = part(name, { 22, 1, 28 }, position, COLORS.gold, MATERIALS.neon)
+	marker.Properties.Transparency = 0.35
+	marker.Properties.CanCollide = false
+	marker.Properties.CanTouch = false
+	marker.Properties.CanQuery = false
+	return marker
+end
+
+local function cartSpawns(): any
+	local children = {
+		cartSpawn("ClubhouseCartSpawn", { -360, 3, -310 }),
+		cartSpawn(
+			"DrivingRangeCartSpawn",
+			world(
+				WorldConfig.originFor(PracticeRange.id, Constants.Mode.PRACTICE, 1),
+				{ x = 54, y = -20 },
+				3
+			)
+		),
+	}
+	for _, index in { 1, 6, 12, 18 } do
+		table.insert(
+			children,
+			cartSpawn(
+				("PinebrookHole%02dCartSpawn"):format(index),
+				world(
+					WorldConfig.originFor(Pinebrook.id, Constants.Mode.SOLO_STROKE_18, index),
+					{ x = 58, y = -22 },
+					3
+				)
+			)
+		)
+	end
+	for index = 1, 3 do
+		table.insert(
+			children,
+			cartSpawn(
+				("PracticeHole%02dCartSpawn"):format(index),
+				world(
+					WorldConfig.originFor(Pinebrook.id, Constants.Mode.SOLO_STROKE_3_DEBUG, index),
+					{ x = 48, y = -18 },
+					3
+				)
+			)
+		)
+	end
+	return folder("WorldCartSpawns", children)
+end
+
 local function hub(): any
 	local children = {
 		part("ClubhousePlaza", { 900, 1, 540 }, { 0, 0, -540 }, COLORS.stone, MATERIALS.stone),
@@ -424,6 +479,7 @@ local model = {
 	Children = {
 		hub(),
 		destinations(),
+		cartSpawns(),
 		courseFolder("DrivingRange_UltraPass", PracticeRange, Constants.Mode.PRACTICE, 1),
 		courseFolder("PracticeHoles_UltraPass", Pinebrook, Constants.Mode.SOLO_STROKE_3_DEBUG, 3),
 		courseFolder(
