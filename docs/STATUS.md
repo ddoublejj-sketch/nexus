@@ -1,15 +1,16 @@
-## Golf Pro Phase 9 Launch QA - 2026-07-05
+## Golf Pro Final MVP Gap Fixes - 2026-07-05
 
-Branch: `codex/golfpro-phase-9-launch-qa`
+Branch: `codex/golfpro-final-mvp-gap-fixes`
 
-Implementation in progress:
+Follow-up after final MVP review:
 
-- Added compact server-owned `AnalyticsService` with Phase 9 event names.
-- Wired analytics hooks for round starts/completions, holes, records, leaderboards, Mystery Range deposits, cosmetic equips, and tournament attempts.
-- Added launch/IP audit, remote-tamper, and analytics-contract tests to the shared quality gate.
-- Added `docs/product/GolfPro_Launch_QA_Checklist.md` as the final launch checklist note.
+- Adding live-only durable store paths for course records, leaderboards, round audits, and tournament attempts while keeping Studio/Lune on in-memory/mock paths.
+- Enforcing clean completed audit evidence before ranked leaderboard or course-record writes.
+- Wiring live scramble swing submissions through `ShotService` into `ScrambleService.recordShotOption`.
+- Calling `DataService.recordRoundStarted` from the real `RoundService.startRound` path.
+- Cleaning stale final-proof/status language.
 
-Safety constraints:
+Safety constraints remain:
 
 - No live publish.
 - No OpenAI/API-cost gameplay feature.

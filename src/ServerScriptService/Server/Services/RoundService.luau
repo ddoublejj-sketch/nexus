@@ -14,6 +14,7 @@ local RoundService = {}
 local rounds: { [string]: any } = {}
 local playerRounds: { [number]: string } = {}
 local roundCounter = 0
+local dataServiceOverride: any? = nil
 
 local function playerUserId(player: any): number
 	local ok, value = pcall(function()
@@ -53,10 +54,29 @@ local function holeCountForMode(mode: string, course): number
 	return math.min(3, #course.holes)
 end
 
+local function dataService(): any?
+	if dataServiceOverride ~= nil then
+		return dataServiceOverride
+	end
+	if game == nil then
+		return nil
+	end
+
+	local ok, service = pcall(function()
+		return require(script.Parent.DataService)
+	end)
+	return if ok then service else nil
+end
+
 function RoundService.resetForTests()
 	rounds = {}
 	playerRounds = {}
 	roundCounter = 0
+	dataServiceOverride = nil
+end
+
+function RoundService.setDataServiceForTests(service: any?)
+	dataServiceOverride = service
 end
 
 function RoundService.startRound(player: any, payload: any): (boolean, any)
@@ -101,6 +121,10 @@ function RoundService.startRound(player: any, payload: any): (boolean, any)
 	rounds[round.id] = round
 	playerRounds[userId] = round.id
 	RoundAuditService.beginRound(round)
+	local service = dataService()
+	if service ~= nil then
+		service.recordRoundStarted(player, round)
+	end
 	AnalyticsService.log(player, "round_started", {
 		roundId = round.id,
 		courseId = round.courseId,

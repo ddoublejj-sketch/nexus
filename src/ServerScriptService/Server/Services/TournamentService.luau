@@ -2,12 +2,16 @@
 
 local TournamentConfig =
 	require("../../../ReplicatedStorage/Shared/GolfPro/Config/TournamentConfig")
+local DurableStore = require("../Data/DurableStore")
 local CosmeticService = require("./CosmeticService")
 local LeaderboardService = require("./LeaderboardService")
 local AnalyticsService = require("./AnalyticsService")
 
 local TournamentService = {}
 
+local TOURNAMENT_ATTEMPT_STORE_NAME = "GolfProTournamentAttempts_v1"
+local TOURNAMENT_BOARD_STORE_NAME = "GolfProTournamentBoards_v1"
+local TOURNAMENT_BOARD_META_STORE_NAME = "GolfProTournamentRows_v1"
 local started = false
 local attempts: { [string]: { [number]: number } } = {}
 local leaderboards: { [string]: { any } } = {}
@@ -47,12 +51,52 @@ local function net(): any?
 	return if ok then service else nil
 end
 
+local function attemptStore(): any?
+	return DurableStore.getDataStore(TOURNAMENT_ATTEMPT_STORE_NAME)
+end
+
+local function boardStore(eventId: string): any?
+	return DurableStore.getOrderedDataStore(
+		(TOURNAMENT_BOARD_STORE_NAME .. "_" .. eventId):sub(1, 50)
+	)
+end
+
+local function boardMetaStore(): any?
+	return DurableStore.getDataStore(TOURNAMENT_BOARD_META_STORE_NAME)
+end
+
+local function attemptKey(eventId: string, userId: number): string
+	return ("%s|%d"):format(eventId, userId)
+end
+
+local function rowKey(eventId: string, row: any): string
+	return ("%s|%s|%s"):format(
+		eventId,
+		tostring(row.playerUserId or 0),
+		tostring(row.roundId or "round")
+	)
+end
+
 local function attemptsUsed(eventId: string, player: any): number
 	local byEvent = attempts[eventId]
-	if byEvent == nil then
-		return 0
+	local userId = playerUserId(player)
+	if byEvent ~= nil and byEvent[userId] ~= nil then
+		return byEvent[userId]
 	end
-	return byEvent[playerUserId(player)] or 0
+
+	local store = attemptStore()
+	if store ~= nil then
+		local ok, stored = pcall(function()
+			return store:GetAsync(attemptKey(eventId, userId))
+		end)
+		if ok and type(stored) == "number" then
+			attempts[eventId] = attempts[eventId] or {}
+			attempts[eventId][userId] = stored
+			return stored
+		end
+	end
+
+	return 0
 end
 
 local function eventSnapshot(event: any, player: any?): any
@@ -179,6 +223,23 @@ function TournamentService.submitAttempt(player: any, eventId: string, result: a
 		attemptNumber = attempts[eventId][userId],
 	}
 	leaderboards[eventId] = leaderboards[eventId] or {}
+	local orderedStore = boardStore(eventId)
+	local metaStore = boardMetaStore()
+	if orderedStore ~= nil and metaStore ~= nil then
+		local keyForRow = rowKey(eventId, row)
+		local storeOk = pcall(function()
+			orderedStore:SetAsync(keyForRow, row.packedScore)
+			metaStore:SetAsync(keyForRow, row)
+			local store = attemptStore()
+			if store ~= nil then
+				store:SetAsync(attemptKey(eventId, userId), attempts[eventId][userId])
+			end
+		end)
+		if not storeOk then
+			attempts[eventId][userId] -= 1
+			return false, "tournament_store_failed"
+		end
+	end
 	table.insert(leaderboards[eventId], row)
 	sortedRows(eventId)
 	local rewardOk, reward = TournamentService.grantEventRewards(player, eventId)
@@ -202,6 +263,36 @@ end
 function TournamentService.getEventLeaderboard(eventId: string, cursor: any?): any
 	local pageSize = math.clamp(tonumber(cursor and cursor.pageSize) or 10, 1, 50)
 	local startIndex = math.max(tonumber(cursor and cursor.startIndex) or 1, 1)
+	local orderedStore = boardStore(eventId)
+	local metaStore = boardMetaStore()
+	if orderedStore ~= nil and metaStore ~= nil then
+		local ok, page = pcall(function()
+			return orderedStore:GetSortedAsync(true, pageSize)
+		end)
+		if ok and page ~= nil then
+			local pageRows = {}
+			for index, entry in page:GetCurrentPage() do
+				local metaOk, meta = pcall(function()
+					return metaStore:GetAsync(entry.key)
+				end)
+				local row = if metaOk and type(meta) == "table" then meta else {}
+				table.insert(pageRows, {
+					rank = index,
+					playerUserId = row.playerUserId,
+					playerName = row.playerName or "Unknown",
+					score = row.score or math.floor((tonumber(entry.value) or 0) / 1000000000),
+					roundId = row.roundId,
+					attemptNumber = row.attemptNumber,
+				})
+			end
+			return {
+				eventId = eventId,
+				rows = pageRows,
+				nextCursor = nil,
+			}
+		end
+	end
+
 	local rows = sortedRows(eventId)
 	local pageRows = {}
 	for index = startIndex, math.min(#rows, startIndex + pageSize - 1) do

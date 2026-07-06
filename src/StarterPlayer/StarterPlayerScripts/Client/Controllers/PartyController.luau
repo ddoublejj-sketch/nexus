@@ -4,6 +4,7 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Constants = require(ReplicatedStorage.Shared.GolfPro.Constants)
+local SwingController = require(script.Parent.SwingController)
 
 local PartyController = {}
 
@@ -245,6 +246,19 @@ function PartyController.start()
 	end)
 	bindRemote("MatchFound", function(payload: any)
 		latestMatch = payload
+		if payload.mode == Constants.Mode.SCRAMBLE_2V2 then
+			SwingController.setRoundSnapshot({
+				roundId = payload.roundId,
+				mode = Constants.Mode.SCRAMBLE_2V2,
+				holeIndex = 1,
+				holeCount = 18,
+				state = Constants.RoundState.PRE_SHOT,
+				ball = {
+					surface = Constants.Surface.TEE,
+					moving = false,
+				},
+			})
+		end
 		updateLabels()
 	end)
 	bindRemote("ScrambleVoteUpdated", function(payload: any)

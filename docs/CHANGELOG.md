@@ -1,5 +1,6 @@
 # Changelog
 
+- [GolfPro/FinalMVP] Fixed final MVP review gaps: live-only durable store paths for records/leaderboards/audits/tournament attempts, clean-audit enforcement before ranked record writes, live scramble shot routing, round-start stat recording, and final-gap tests - 2026-07-05.
 - [GolfPro/GP-014-GP-016] Added Phase 6 core persistence/records/leaderboard spine: schema v2 golf stats, DataService mutation helpers, DataStoreKeys, RoundAuditService, RecordService, LeaderboardService, ResultsService, Phase 6 tests, and quality-gate wiring - 2026-07-05.
 - [GolfPro/GP-012-GP-013] Added Phase 5 party/private-round and 2v2 scramble foundation: PartyService, MatchService local transport, ScrambleService vote/auto-select logic, PartyController, ScrambleController, and multiplayer tests - 2026-07-05.
 - [WO-1] Created Nexus repo scaffold, tool pins, launcher, editor tasks, and status docs - 2026-07-03.

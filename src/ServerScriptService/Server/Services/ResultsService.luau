@@ -118,10 +118,27 @@ function ResultsService.completeRound(playerOrRoundState: any, maybeRoundState: 
 	local result = ResultsService.buildRoundResults(roundState)
 	fillPlayerFields(player, result)
 
-	local leaderboardOk, leaderboardResult = LeaderboardService.submitRound(context, result)
-	local recordResult = RecordService.tryUpdateCourseRecord(context, result)
+	local auditCompleteOk = RoundAuditService.completeRound(result.roundId, result)
+	local auditOk = result.ranked ~= true
+		or (
+			auditCompleteOk == true
+			and RoundAuditService.isRankedCompletionAuditable(result.roundId)
+		)
+	local leaderboardOk, leaderboardResult
+	local recordResult
+	if auditOk then
+		leaderboardOk, leaderboardResult = LeaderboardService.submitRound(context, result)
+		recordResult = RecordService.tryUpdateCourseRecord(context, result)
+	else
+		leaderboardOk = false
+		leaderboardResult = "audit_not_clean"
+		recordResult = {
+			changed = false,
+			reason = "audit_not_clean",
+			current = RecordService.getCourseRecord(context),
+		}
+	end
 	local profileUpdated = updateProfile(player, context, result, recordResult)
-	RoundAuditService.completeRound(result.roundId, result)
 	AnalyticsService.log(player, "round_completed", {
 		roundId = result.roundId,
 		courseId = result.courseId,
