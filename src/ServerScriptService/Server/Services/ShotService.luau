@@ -4,6 +4,7 @@ local ClubRegistry = require("../../../ReplicatedStorage/Shared/GolfPro/Clubs/Cl
 local Constants = require("../../../ReplicatedStorage/Shared/GolfPro/Constants")
 local PayloadValidators =
 	require("../../../ReplicatedStorage/Shared/GolfPro/Network/PayloadValidators")
+local GreenModel = require("../../../ReplicatedStorage/Shared/GolfPro/Simulation/GreenModel")
 local ShotMath = require("../../../ReplicatedStorage/Shared/GolfPro/Simulation/ShotMath")
 local Types = require("../../../ReplicatedStorage/Shared/GolfPro/Types")
 local WindModel = require("../../../ReplicatedStorage/Shared/GolfPro/Simulation/WindModel")
@@ -11,6 +12,7 @@ local MysteryRangeService = require("./MysteryRangeService")
 local ResultsService = require("./ResultsService")
 local RoundAuditService = require("./RoundAuditService")
 local RoundService = require("./RoundService")
+local ScrambleService = require("./ScrambleService")
 local AnalyticsService = require("./AnalyticsService")
 
 type ShotResult = Types.ShotResult
@@ -77,6 +79,99 @@ local function clubAllowedFromLie(club, surface: string, shotType: string): (boo
 	return true, nil
 end
 
+local function submitScrambleShot(
+	player: any,
+	intent: any,
+	userId: number,
+	now: number?
+): (boolean, any)
+	local contextOk, context = ScrambleService.getShotContext(player, intent.roundId)
+	if not contextOk then
+		return false, if context == "round not found" then Constants.Rejection.NO_ROUND else context
+	end
+	if intent.holeIndex ~= context.holeIndex then
+		return false, Constants.Rejection.NOT_TURN
+	end
+	if context.shotState.nonces[intent.clientShotNonce] then
+		return false, Constants.Rejection.DUPLICATE_NONCE
+	end
+
+	local shotTime = now or os.clock()
+	if
+		context.shotState.lastShotAt > 0
+		and shotTime - context.shotState.lastShotAt < RATE_LIMIT_SECONDS
+	then
+		return false, Constants.Rejection.RATE_LIMIT
+	end
+
+	local club = ClubRegistry.get(intent.clubId)
+	if club == nil then
+		return false, Constants.Rejection.INVALID_CLUB
+	end
+
+	local lieOk, lieReason = clubAllowedFromLie(club, context.ball.surface, intent.shotType)
+	if not lieOk then
+		return false, lieReason or Constants.Rejection.INVALID_LIE
+	end
+
+	local startPosition = copyPosition(context.ball.position)
+	local result = ShotMath.solve(
+		club :: any,
+		context.hole,
+		startPosition,
+		context.ball.surface,
+		intent,
+		WindModel.daily(context.courseId, context.holeIndex)
+	)
+	local shotId = ("%s:%s"):format(context.roundId, intent.clientShotNonce)
+	context.shotState.nonces[intent.clientShotNonce] = true
+	context.shotState.lastShotAt = shotTime
+	local holed =
+		GreenModel.isHoled(context.hole, result.finalPosition, math.max(0, result.rollYards))
+	local optionOk, optionOrReason = ScrambleService.recordShotOption(context.roundId, player, {
+		shotId = shotId,
+		result = result,
+		position = result.finalPosition,
+		surface = result.finalSurface,
+		holed = holed,
+	})
+	if not optionOk then
+		return false, optionOrReason
+	end
+
+	return true,
+		{
+			shotId = shotId,
+			result = result,
+			path = buildPath(shotId, startPosition, result),
+			ballAtRest = {
+				roundId = context.roundId,
+				holeIndex = context.holeIndex,
+				position = copyPosition(result.finalPosition),
+				surface = result.finalSurface,
+				moving = false,
+				holed = holed,
+			},
+			round = {
+				roundId = context.roundId,
+				courseId = context.courseId,
+				mode = Constants.Mode.SCRAMBLE_2V2,
+				state = Constants.RoundState.PRE_SHOT,
+				holeIndex = context.holeIndex,
+				holeCount = context.holeCount,
+				currentTurnUserId = userId,
+				ball = {
+					position = copyPosition(result.finalPosition),
+					surface = result.finalSurface,
+					moving = false,
+				},
+			},
+			scorecard = { holes = {}, total = 0, completed = false },
+			holed = false,
+			scrambleOption = optionOrReason,
+		}
+end
+
 function ShotService.resetForTests()
 	started = false
 end
@@ -94,6 +189,9 @@ function ShotService.submitShot(player: any, intent: any, now: number?): (boolea
 
 	local round = RoundService.getRound(intent.roundId)
 	if round == nil or round.playerUserId ~= userId then
+		if round == nil then
+			return submitScrambleShot(player, intent, userId, now)
+		end
 		return false, Constants.Rejection.NO_ROUND
 	end
 	if round.ball.moving or round.state == Constants.RoundState.BALL_IN_FLIGHT then

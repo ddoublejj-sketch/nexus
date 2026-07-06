@@ -7,6 +7,7 @@ local MigrationLogic = require("../src/ReplicatedStorage/Shared/Data/MigrationLo
 local ProfileSchema = require("../src/ReplicatedStorage/Shared/Data/ProfileSchema")
 local RecordService = require("../src/ServerScriptService/Server/Services/RecordService")
 local ResultsService = require("../src/ServerScriptService/Server/Services/ResultsService")
+local RoundAuditService = require("../src/ServerScriptService/Server/Services/RoundAuditService")
 
 local function assertTrue(condition: boolean, label: string)
 	if not condition then
@@ -51,6 +52,7 @@ end
 
 RecordService.resetForTests()
 LeaderboardService.resetForTests()
+RoundAuditService.resetForTests()
 
 local recordContext = context()
 local display = RecordService.getDisplayRecord(recordContext)
@@ -129,6 +131,41 @@ assertEqual(migrated.currencies.coins, 12, "coins preserved")
 assertEqual(migrated.inventory.items.old_item, 1, "item preserved")
 assertEqual(migrated.stats.roundsCompleted, 0, "new stat default")
 assertTrue(migrated.golf.bestRounds ~= nil, "best rounds added")
+
+local missingAudit = ResultsService.completeRound({
+	roundId = "round_no_audit",
+	playerUserId = 998,
+	playerName = "NoAudit",
+	courseId = Constants.DEFAULT_COURSE_ID,
+	mode = Constants.Mode.SOLO_STROKE_18,
+	ranked = true,
+	completed = true,
+	holeCount = 18,
+	scorecard = {
+		total = 60,
+		holes = {
+			{ par = 4 },
+			{ par = 4 },
+		},
+	},
+})
+assertEqual(missingAudit.leaderboardAccepted, false, "missing audit leaderboard rejected")
+assertEqual(missingAudit.leaderboardRejectedReason, "audit_not_clean", "missing audit reason")
+assertEqual(missingAudit.courseRecord.changed, false, "missing audit record rejected")
+assertEqual(
+	(RecordService.getCourseRecord(recordContext) :: any).score,
+	70,
+	"missing audit cannot beat record"
+)
+
+RoundAuditService.beginRound({
+	roundId = "round_complete",
+	courseId = Constants.DEFAULT_COURSE_ID,
+	mode = Constants.Mode.SOLO_STROKE_18,
+	ranked = true,
+	holeCount = 18,
+	playerUserId = 999,
+})
 
 local completion = ResultsService.completeRound({
 	roundId = "round_complete",

@@ -353,6 +353,7 @@ function ScrambleService.startScrambleRound(party: any, payload: any): (boolean,
 			[Constants.TeamId.RED] = {},
 			[Constants.TeamId.BLUE] = {},
 		},
+		shotStatesByUserId = {},
 		voteStatesByTeam = {},
 		lastSelectedByTeam = {},
 		completed = false,
@@ -361,6 +362,55 @@ function ScrambleService.startScrambleRound(party: any, payload: any): (boolean,
 	roundsById[round.roundId] = round
 
 	return true, ScrambleService.snapshot(round.roundId)
+end
+
+function ScrambleService.getShotContext(player: any, roundId: string): (boolean, any)
+	local round = roundsById[roundId]
+	if round == nil then
+		return false, "round not found"
+	end
+	if round.completed then
+		return false, "round complete"
+	end
+
+	local userId = playerUserId(player)
+	local teamId = userTeam(round, userId)
+	if teamId == nil then
+		return false, "player not on team"
+	end
+	if teamId ~= round.currentTeamId then
+		return false, Constants.Rejection.NOT_TURN
+	end
+	if round.teamBallPositions[teamId].holed then
+		return false, "team holed"
+	end
+
+	local shotState = round.shotStatesByUserId[userId] or {
+		nonces = {},
+		lastShotAt = 0,
+	}
+	round.shotStatesByUserId[userId] = shotState
+	local ball = round.teamBallPositions[teamId]
+
+	return true,
+		{
+			roundId = round.roundId,
+			courseId = round.courseId,
+			mode = Constants.Mode.SCRAMBLE_2V2,
+			course = round.course,
+			hole = currentHole(round),
+			holeIndex = round.holeIndex,
+			holeCount = round.holeCount,
+			teamId = teamId,
+			playerUserId = userId,
+			currentTurnUserId = userId,
+			shotState = shotState,
+			ball = {
+				position = copyPosition(ball.position),
+				surface = ball.surface,
+				moving = false,
+			},
+		}
 end
 
 function ScrambleService.recordShotOption(

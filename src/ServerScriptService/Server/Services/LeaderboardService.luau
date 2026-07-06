@@ -2,9 +2,12 @@
 
 local Constants = require("../../../ReplicatedStorage/Shared/GolfPro/Constants")
 local DataStoreKeys = require("../Data/DataStoreKeys")
+local DurableStore = require("../Data/DurableStore")
 
 local LeaderboardService = {}
 
+local LEADERBOARD_STORE_NAME = "GolfProLeaderboards_v1"
+local LEADERBOARD_META_STORE_NAME = "GolfProLeaderboardRows_v1"
 local boards: { [string]: { any } } = {}
 local started = false
 
@@ -29,6 +32,26 @@ local function contextFromRequest(payload: any): any
 		rulesetId = payload.rulesetId or Constants.DEFAULT_RULESET_ID,
 		physicsVersion = payload.physicsVersion or Constants.PHYSICS_VERSION,
 	}
+end
+
+local function scopedStoreName(baseName: string, key: string): string
+	return (baseName .. "_" .. key:gsub("[^%w_%-]", "_")):sub(1, 50)
+end
+
+local function liveOrderedStore(key: string): any?
+	return DurableStore.getOrderedDataStore(scopedStoreName(LEADERBOARD_STORE_NAME, key))
+end
+
+local function liveMetaStore(): any?
+	return DurableStore.getDataStore(LEADERBOARD_META_STORE_NAME)
+end
+
+local function rowKey(key: string, row: any): string
+	return ("%s|%s|%s"):format(
+		key,
+		tostring(row.playerUserId or 0),
+		tostring(row.roundId or "round")
+	)
 end
 
 function LeaderboardService.start()
@@ -77,6 +100,20 @@ function LeaderboardService.submitRound(context: any, roundResult: any): (boolea
 		roundId = roundResult.roundId,
 		completedAtUnix = tonumber(roundResult.completedAtUnix) or os.time(),
 	}
+
+	local orderedStore = liveOrderedStore(key)
+	local metaStore = liveMetaStore()
+	if orderedStore ~= nil and metaStore ~= nil then
+		local keyForRow = rowKey(key, row)
+		local ok = pcall(function()
+			orderedStore:SetAsync(keyForRow, row.packedScore)
+			metaStore:SetAsync(keyForRow, row)
+		end)
+		if not ok then
+			return false, "leaderboard_store_failed"
+		end
+	end
+
 	table.insert(board, row)
 	sortedBoard(board)
 
@@ -87,6 +124,37 @@ function LeaderboardService.getPage(context: any, cursor: any): any
 	local key = DataStoreKeys.leaderboard(context)
 	local pageSize = math.clamp(tonumber(cursor and cursor.pageSize) or 10, 1, 50)
 	local startIndex = math.max(tonumber(cursor and cursor.startIndex) or 1, 1)
+
+	local orderedStore = liveOrderedStore(key)
+	local metaStore = liveMetaStore()
+	if orderedStore ~= nil and metaStore ~= nil then
+		local ok, page = pcall(function()
+			return orderedStore:GetSortedAsync(true, pageSize)
+		end)
+		if ok and page ~= nil then
+			local rows = {}
+			local entries = page:GetCurrentPage()
+			for index, entry in entries do
+				local metaOk, meta = pcall(function()
+					return metaStore:GetAsync(entry.key)
+				end)
+				local row = if metaOk and type(meta) == "table" then meta else {}
+				table.insert(rows, {
+					rank = index,
+					playerUserId = row.playerUserId,
+					playerName = row.playerName or "Unknown",
+					score = row.score or math.floor((tonumber(entry.value) or 0) / 1000000000),
+					roundId = row.roundId,
+				})
+			end
+			return {
+				key = key,
+				rows = rows,
+				nextCursor = nil,
+			}
+		end
+	end
+
 	local board = sortedBoard(boards[key] or {})
 	local rows = {}
 

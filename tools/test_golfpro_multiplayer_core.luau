@@ -5,6 +5,7 @@ local PartyService = require("../src/ServerScriptService/Server/Services/PartySe
 local MatchService = require("../src/ServerScriptService/Server/Services/MatchService")
 local ScrambleService = require("../src/ServerScriptService/Server/Services/ScrambleService")
 local RoundService = require("../src/ServerScriptService/Server/Services/RoundService")
+local ShotService = require("../src/ServerScriptService/Server/Services/ShotService")
 
 local function assertTrue(condition: boolean, label: string)
 	if not condition then
@@ -63,6 +64,25 @@ local function resetAll()
 	MatchService.resetForTests()
 	ScrambleService.resetForTests()
 	RoundService.resetForTests()
+	ShotService.resetForTests()
+end
+
+local function shotIntent(roundId: string, player: any, nonce: string): any
+	return {
+		roundId = roundId,
+		holeIndex = 1,
+		playerUserId = player.UserId,
+		clubId = "driver",
+		shotType = Constants.ShotType.NORMAL,
+		aimYawDeg = 0,
+		aimPitchDeg = 0,
+		power01 = 0.6,
+		accuracy01 = 0.5,
+		spin01 = 0,
+		drawFade01 = 0,
+		clientShotNonce = nonce,
+		clientTimestamp = 1,
+	}
 end
 
 local function memberByUserId(snapshot: any, userId: number): any?
@@ -176,6 +196,12 @@ local okStart, scrambleRound =
 	ScrambleService.startScrambleRound(serviceParty, scramblePayload(false))
 assertTrue(okStart, "start scramble round")
 local roundId = scrambleRound.roundId
+local liveShotOk =
+	select(1, ShotService.submitShot(A, shotIntent(roundId, A, "scramble_live_a"), 20))
+assertTrue(liveShotOk, "live scramble swing accepted")
+local liveVote = ScrambleService.getVoteState(roundId, Constants.TeamId.RED)
+assertTrue(liveVote ~= nil, "live scramble shot creates vote")
+assertEqual(liveVote.options[1].playerUserId, A.UserId, "live scramble option owner")
 assertTrue(
 	select(
 		1,

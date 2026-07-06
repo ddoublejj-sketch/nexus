@@ -8,6 +8,7 @@ local MysteryRangeService =
 	require("../src/ServerScriptService/Server/Services/MysteryRangeService")
 local RecordService = require("../src/ServerScriptService/Server/Services/RecordService")
 local ResultsService = require("../src/ServerScriptService/Server/Services/ResultsService")
+local RoundAuditService = require("../src/ServerScriptService/Server/Services/RoundAuditService")
 local RoundService = require("../src/ServerScriptService/Server/Services/RoundService")
 local TournamentService = require("../src/ServerScriptService/Server/Services/TournamentService")
 
@@ -60,6 +61,7 @@ local expectedEvents = {
 
 AnalyticsService.resetForTests()
 RoundService.resetForTests()
+RoundAuditService.resetForTests()
 LeaderboardService.resetForTests()
 RecordService.resetForTests()
 CosmeticService.resetForTests()
@@ -104,12 +106,16 @@ assertEqual(
 )
 assertEvent("hole_completed", "hole_completed logged")
 
-ResultsService.completeRound(result(72))
+local recordSetResult = result(72)
+RoundAuditService.beginRound(recordSetResult)
+ResultsService.completeRound(recordSetResult)
 assertEvent("round_completed", "round_completed logged")
 assertEvent("ranked_round_completed", "ranked_round_completed logged")
 assertEvent("leaderboard_submit", "leaderboard_submit logged")
 assertEvent("course_record_set", "course_record_set logged")
-ResultsService.completeRound(result(70))
+local recordBeatResult = result(70)
+RoundAuditService.beginRound(recordBeatResult)
+ResultsService.completeRound(recordBeatResult)
 assertEvent("course_record_beaten", "course_record_beaten logged")
 
 CosmeticService.grantCosmetic(player, "sunrise_gold_ball", "analytics_test")
