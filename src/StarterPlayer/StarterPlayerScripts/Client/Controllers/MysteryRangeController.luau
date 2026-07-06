@@ -3,6 +3,8 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
+local UIController = require(script.Parent.UIController)
+
 local MysteryRangeController = {}
 
 local started = false
@@ -131,20 +133,13 @@ function MysteryRangeController.start()
 	end
 	started = true
 
-	local playerGui = Players.LocalPlayer:WaitForChild("PlayerGui")
-	local gui = Instance.new("ScreenGui")
-	gui.Name = "GolfProMysteryRangeGui"
-	gui.ResetOnSpawn = false
-	gui.Parent = playerGui
-
-	local panel = Instance.new("Frame")
-	panel.Name = "MysteryRangePanel"
+	Players.LocalPlayer:WaitForChild("PlayerGui")
+	UIController.start()
+	local panel =
+		UIController.createToolPanel("MysteryRangePanel", "Range", UDim2.fromOffset(306, 178))
+	panel:SetAttribute("LegacyGuiName", "GolfProMysteryRangeGui")
 	panel.BackgroundColor3 = Color3.fromRGB(28, 30, 24)
 	panel.BackgroundTransparency = 0.08
-	panel.BorderSizePixel = 0
-	panel.Size = UDim2.fromOffset(306, 178)
-	panel.Position = UDim2.fromOffset(828, 82)
-	panel.Parent = gui
 
 	makeLabel(panel, "title", 8, "Mystery Range")
 	makeLabel(panel, "tokens", 29, "Tokens: 0")

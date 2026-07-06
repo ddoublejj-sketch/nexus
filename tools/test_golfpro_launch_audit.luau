@@ -92,9 +92,18 @@ do
 	assertTrue(checklist:find(expected, 1, true) ~= nil, "launch checklist missing " .. expected)
 end
 
+local ui = read("src/StarterPlayer/StarterPlayerScripts/Client/Controllers/UIController.luau")
+for _, needle in { "GolfProUI", "MenuLayer", "PlayLayer", "LeftDock", "RightDock", "OverlayDock" } do
+	assertTrue(ui:find(needle, 1, true) ~= nil, "UI shell missing " .. needle)
+end
+for _, needle in { "showMenu", "enterPlay", "setMainMenuActions", "createToolPanel" } do
+	assertTrue(ui:find(needle, 1, true) ~= nil, "UI shell missing " .. needle)
+end
+
 local hud = read("src/StarterPlayer/StarterPlayerScripts/Client/Controllers/HUDController.luau")
 assertTrue(
-	hud:find("panel.Size = UDim2.fromOffset(324, 428)", 1, true) ~= nil,
+	hud:find("UIController.createHudPanel", 1, true) ~= nil
+		and hud:find("UDim2.fromOffset(324, 428)", 1, true) ~= nil,
 	"HUD panel has stable mobile-sized dimensions"
 )
 assertTrue(
@@ -103,8 +112,11 @@ assertTrue(
 )
 assertTrue(hud:find("12 + order * 21", 1, true) ~= nil, "HUD label rows have non-overlap spacing")
 assertTrue(
-	hud:find("button.Size = UDim2.fromOffset(86, 28)", 1, true) ~= nil,
-	"HUD buttons fit mobile panel"
+	hud:find("UIController.setMainMenuActions", 1, true) ~= nil
+		and hud:find("Driving Range", 1, true) ~= nil
+		and hud:find("Pinebrook 18", 1, true) ~= nil
+		and hud:find("Party Lobby", 1, true) ~= nil,
+	"HUD must register startup menu actions"
 )
 
 local swing = read("src/StarterPlayer/StarterPlayerScripts/Client/Controllers/SwingController.luau")

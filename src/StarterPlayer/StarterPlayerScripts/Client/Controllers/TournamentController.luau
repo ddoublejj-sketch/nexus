@@ -3,6 +3,8 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
+local UIController = require(script.Parent.UIController)
+
 local TournamentController = {}
 
 local started = false
@@ -138,20 +140,13 @@ function TournamentController.start()
 	end
 	started = true
 
-	local playerGui = Players.LocalPlayer:WaitForChild("PlayerGui")
-	local gui = Instance.new("ScreenGui")
-	gui.Name = "GolfProTournamentGui"
-	gui.ResetOnSpawn = false
-	gui.Parent = playerGui
-
-	local panel = Instance.new("Frame")
-	panel.Name = "TournamentPanel"
+	Players.LocalPlayer:WaitForChild("PlayerGui")
+	UIController.start()
+	local panel =
+		UIController.createToolPanel("TournamentPanel", "Events", UDim2.fromOffset(316, 134))
+	panel:SetAttribute("LegacyGuiName", "GolfProTournamentGui")
 	panel.BackgroundColor3 = Color3.fromRGB(31, 29, 37)
 	panel.BackgroundTransparency = 0.08
-	panel.BorderSizePixel = 0
-	panel.Size = UDim2.fromOffset(316, 134)
-	panel.Position = UDim2.fromOffset(340, 300)
-	panel.Parent = gui
 
 	makeLabel(panel, "title", 8, "Tournament")
 	makeLabel(panel, "event", 30, "Event: Weekend Open")

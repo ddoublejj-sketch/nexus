@@ -1,3 +1,30 @@
+## Golf Pro UI Super Upgrade - 2026-07-06
+
+Branch: `codex/golfpro-ui-ss4-upgrade`
+
+Current UI rebuild:
+
+- Added a startup main menu in `UIController` so Golf Pro opens menu-first instead of dumping every panel onto the player.
+- Menu actions now route to Driving Range, Practice Holes, Pinebrook 18, or Party Lobby.
+- HUD, Party, Locker, Mystery Range, Tournament, and Scramble panels now mount into one shared shell with left/right/overlay docks instead of separate fixed-position ScreenGuis.
+- Tool panels are hidden until selected, which removes the panel pileup/overlap problem.
+- Added `tools/test_golfpro_ui_shell.luau` and wired it into the quality gate.
+
+Verification:
+
+```powershell
+stylua src tools
+powershell -ExecutionPolicy Bypass -File .\nexus.ps1 check
+powershell -ExecutionPolicy Bypass -File .\nexus.ps1 loop --once
+```
+
+Result: PASS.
+
+Safety constraints remain:
+
+- No live publish.
+- No OpenAI/API-cost gameplay feature.
+- No cash/Robux/prize/wager/casino/paid-random/pay-to-win runtime feature.
 ## Golf Pro Final MVP Gap Fixes - 2026-07-05
 
 Branch: `codex/golfpro-final-mvp-gap-fixes`
@@ -9,12 +36,6 @@ Follow-up after final MVP review:
 - Wiring live scramble swing submissions through `ShotService` into `ScrambleService.recordShotOption`.
 - Calling `DataService.recordRoundStarted` from the real `RoundService.startRound` path.
 - Cleaning stale final-proof/status language.
-
-Safety constraints remain:
-
-- No live publish.
-- No OpenAI/API-cost gameplay feature.
-- No cash/Robux/prize/wager/casino/paid-random/pay-to-win runtime feature.
 ## Golf Pro Phase 8 Tournament LiveOps MVP - 2026-07-05
 
 Built the Phase 8 tournament slice on `codex/golfpro-phase-8-tournaments-liveops`: `TournamentConfig` with `weekend_open_001`, in-memory server-owned `TournamentService`, tournament event/leaderboard remotes, compact `TournamentController`, deterministic cosmetic reward grant through `CosmeticService`, and Phase 8 tournament core/contract tests wired into the quality gate.
