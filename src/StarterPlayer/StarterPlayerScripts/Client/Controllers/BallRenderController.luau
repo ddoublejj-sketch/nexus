@@ -8,6 +8,7 @@ local Workspace = game:GetService("Workspace")
 
 local PresentationConfig = require(ReplicatedStorage.Shared.GolfPro.Presentation.PresentationConfig)
 local CosmeticCatalog = require(ReplicatedStorage.Shared.GolfPro.Config.CosmeticCatalog)
+local WorldConfig = require(ReplicatedStorage.Shared.GolfPro.World.WorldConfig)
 
 local LOCAL_PLAYER = Players.LocalPlayer
 
@@ -29,6 +30,10 @@ local cameraActive = false
 local currentBallColor = PresentationConfig.DEFAULT_BALL_COLOR
 local currentBallMaterial = Enum.Material.SmoothPlastic
 local currentTrailColor = PresentationConfig.TRACER_COLOR
+local currentCourseId: string? = nil
+local currentMode: string? = nil
+local currentHoleIndex = 1
+local currentOrigin = WorldConfig.originFor(nil, nil, 1)
 
 local debugState = {
 	lastShotId = nil :: string?,
@@ -155,6 +160,22 @@ local function bindRemote(name: string, callback: (...any) -> ())
 	end)
 end
 
+local function updateWorldOrigin(payload: any)
+	if type(payload) ~= "table" then
+		return
+	end
+	if type(payload.courseId) == "string" then
+		currentCourseId = payload.courseId
+	end
+	if type(payload.mode) == "string" then
+		currentMode = payload.mode
+	end
+	if type(payload.holeIndex) == "number" then
+		currentHoleIndex = payload.holeIndex
+	end
+	currentOrigin = WorldConfig.originFor(currentCourseId, currentMode, currentHoleIndex)
+end
+
 local function restoreCamera()
 	if cameraConnection ~= nil then
 		cameraConnection:Disconnect()
@@ -249,6 +270,7 @@ function BallRenderController.start()
 	ensureBall()
 
 	bindRemote("RoundStateUpdated", function(snapshot: any)
+		updateWorldOrigin(snapshot)
 		if type(snapshot) == "table" and type(snapshot.ball) == "table" then
 			local ball = snapshot.ball
 			if type(ball.position) == "table" then
@@ -257,14 +279,17 @@ function BallRenderController.start()
 		end
 	end)
 	bindRemote("HoleStarted", function(payload: any)
+		updateWorldOrigin(payload)
 		if type(payload) == "table" and type(payload.tee) == "table" then
 			BallRenderController.placeBallAtYards(payload.tee, "tee")
 		end
 	end)
 	bindRemote("BallPath", function(payload: any)
+		updateWorldOrigin(payload)
 		BallRenderController.renderPath(payload)
 	end)
 	bindRemote("BallAtRest", function(payload: any)
+		updateWorldOrigin(payload)
 		BallRenderController.applyBallAtRest(payload)
 	end)
 	bindRemote("CosmeticInventoryUpdated", applyCosmeticSnapshot)
@@ -278,9 +303,9 @@ function BallRenderController.yardsPointToWorld(point: any): Vector3
 		else PresentationConfig.BALL_HEIGHT_OFFSET_STUDS
 
 	return Vector3.new(
-		x * PresentationConfig.STUDS_PER_YARD,
+		currentOrigin.x + x * WorldConfig.STUDS_PER_YARD,
 		y + PresentationConfig.BALL_HEIGHT_OFFSET_STUDS,
-		z * PresentationConfig.STUDS_PER_YARD
+		currentOrigin.z + z * WorldConfig.STUDS_PER_YARD
 	)
 end
 

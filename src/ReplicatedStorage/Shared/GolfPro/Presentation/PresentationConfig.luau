@@ -1,7 +1,7 @@
 --!strict
 
 local PresentationConfig = {
-	STUDS_PER_YARD = 1,
+	STUDS_PER_YARD = 3,
 	BALL_RADIUS_STUDS = 0.65,
 	BALL_HEIGHT_OFFSET_STUDS = 1.05,
 	BALL_FLIGHT_MIN_SECONDS = 0.55,

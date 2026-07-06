@@ -138,7 +138,7 @@ local function ensureGui()
 	makeText(
 		hero,
 		"Subtitle",
-		"Choose where you want to play. The course UI stays hidden until you enter a mode.",
+		"Pick a destination. The course UI appears after the server moves you to the matching space.",
 		116,
 		16
 	).TextColor3 =

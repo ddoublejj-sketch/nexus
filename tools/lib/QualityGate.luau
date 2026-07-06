@@ -221,6 +221,14 @@ function QualityGate.runAll(options: RunOptions?): { CommandResult }
 			{ "run", "tools/test_map_service_contract.luau" }
 		)
 	)
+	table.insert(
+		results,
+		QualityGate.runTool(
+			"Golf Pro World Routing Tests",
+			"lune",
+			{ "run", "tools/test_golfpro_world_routing.luau" }
+		)
+	)
 	table.insert(results, localVaultTest("Net Contract Tests", "tools/test_net_contract.luau"))
 	table.insert(
 		results,
