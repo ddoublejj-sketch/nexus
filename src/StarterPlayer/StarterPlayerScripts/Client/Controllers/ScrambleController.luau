@@ -3,6 +3,8 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
+local UIController = require(script.Parent.UIController)
+
 local ScrambleController = {}
 
 local started = false
@@ -45,24 +47,13 @@ local function ensureGui()
 		return
 	end
 
-	local playerGui = Players.LocalPlayer:WaitForChild("PlayerGui")
-	local screen = playerGui:FindFirstChild("GolfProPartyGui")
-	if not (screen and screen:IsA("ScreenGui")) then
-		screen = Instance.new("ScreenGui")
-		screen.Name = "GolfProScrambleGui"
-		screen.ResetOnSpawn = false
-		screen.Parent = playerGui
-	end
-
-	local frame = Instance.new("Frame")
-	frame.Name = "ScramblePanel"
+	Players.LocalPlayer:WaitForChild("PlayerGui")
+	UIController.start()
+	local frame = UIController.createOverlayPanel("ScramblePanel", UDim2.fromOffset(450, 150))
+	frame:SetAttribute("LegacyGuiName", "GolfProScrambleGui")
 	frame.BackgroundColor3 = Color3.fromRGB(28, 38, 45)
 	frame.BackgroundTransparency = 0.08
-	frame.BorderSizePixel = 0
-	frame.Size = UDim2.fromOffset(450, 150)
-	frame.Position = UDim2.fromOffset(360, 300)
 	frame.Visible = false
-	frame.Parent = screen
 	panel = frame
 
 	local title = Instance.new("TextLabel")

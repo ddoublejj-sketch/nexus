@@ -5,6 +5,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Constants = require(ReplicatedStorage.Shared.GolfPro.Constants)
 local SwingController = require(script.Parent.SwingController)
+local UIController = require(script.Parent.UIController)
 
 local PartyController = {}
 
@@ -12,7 +13,7 @@ local started = false
 local latestParty: any = nil
 local latestMatch: any = nil
 local latestScrambleVote: any = nil
-local gui: ScreenGui? = nil
+local panel: Frame? = nil
 local labels: { [string]: any } = {}
 local joinBox: TextBox? = nil
 
@@ -157,38 +158,24 @@ local function makeButton(parent: Instance, text: string, x: number, y: number, 
 end
 
 local function ensureGui()
-	if gui ~= nil then
+	if panel ~= nil then
 		return
 	end
 
-	local playerGui = Players.LocalPlayer:WaitForChild("PlayerGui")
-	local existing = playerGui:FindFirstChild("GolfProPartyGui")
-	if existing and existing:IsA("ScreenGui") then
-		gui = existing
-		return
-	end
+	UIController.start()
+	local frame = UIController.createToolPanel("PartyPanel", "Party", UDim2.fromOffset(450, 210))
+	frame:SetAttribute("LegacyGuiName", "GolfProPartyGui")
+	panel = frame
+	frame.Name = "PartyPanel"
+	frame.BackgroundColor3 = Color3.fromRGB(17, 29, 36)
+	frame.BackgroundTransparency = 0.08
 
-	local screen = Instance.new("ScreenGui")
-	screen.Name = "GolfProPartyGui"
-	screen.ResetOnSpawn = false
-	screen.Parent = playerGui
-	gui = screen
-
-	local panel = Instance.new("Frame")
-	panel.Name = "PartyPanel"
-	panel.BackgroundColor3 = Color3.fromRGB(17, 29, 36)
-	panel.BackgroundTransparency = 0.08
-	panel.BorderSizePixel = 0
-	panel.Size = UDim2.fromOffset(450, 210)
-	panel.Position = UDim2.fromOffset(360, 82)
-	panel.Parent = screen
-
-	makeLabel(panel, "code", 8, "Party: none")
-	makeLabel(panel, "mode", 29, "Mode: --")
-	makeLabel(panel, "members", 50, "Members: --")
-	makeLabel(panel, "match", 71, "Match: --")
-	makeLabel(panel, "scramble", 92, "Scramble: --")
-	makeLabel(panel, "message", 113, "")
+	makeLabel(frame, "code", 8, "Party: none")
+	makeLabel(frame, "mode", 29, "Mode: --")
+	makeLabel(frame, "members", 50, "Members: --")
+	makeLabel(frame, "match", 71, "Match: --")
+	makeLabel(frame, "scramble", 92, "Scramble: --")
+	makeLabel(frame, "message", 113, "")
 
 	local box = Instance.new("TextBox")
 	box.Name = "JoinCode"
@@ -202,32 +189,32 @@ local function ensureGui()
 	box.TextSize = 12
 	box.Size = UDim2.fromOffset(92, 26)
 	box.Position = UDim2.fromOffset(106, 139)
-	box.Parent = panel
+	box.Parent = frame
 	joinBox = box
 
-	makeButton(panel, "Create", 10, 139, function()
+	makeButton(frame, "Create", 10, 139, function()
 		PartyController.createParty()
 	end)
-	makeButton(panel, "Join", 204, 139, function()
+	makeButton(frame, "Join", 204, 139, function()
 		PartyController.joinByCode(if joinBox ~= nil then joinBox.Text else "")
 	end)
-	makeButton(panel, "Leave", 302, 139, function()
+	makeButton(frame, "Leave", 302, 139, function()
 		PartyController.leaveParty()
 	end)
-	makeButton(panel, "Ready", 10, 173, function()
+	makeButton(frame, "Ready", 10, 173, function()
 		local member = localMember()
 		PartyController.setReady(not (member and member.ready == true))
 	end)
-	makeButton(panel, "Private 18", 106, 173, function()
+	makeButton(frame, "Private 18", 106, 173, function()
 		PartyController.startPrivateRound(Constants.Mode.PRIVATE_STROKE)
 	end)
-	makeButton(panel, "2v2 Scramble", 204, 173, function()
+	makeButton(frame, "2v2 Scramble", 204, 173, function()
 		PartyController.startPrivateRound(Constants.Mode.SCRAMBLE_2V2)
 	end)
-	makeButton(panel, "Red", 302, 173, function()
+	makeButton(frame, "Red", 302, 173, function()
 		PartyController.setTeam(Constants.TeamId.RED)
 	end)
-	makeButton(panel, "Blue", 362, 173, function()
+	makeButton(frame, "Blue", 362, 173, function()
 		PartyController.setTeam(Constants.TeamId.BLUE)
 	end).Size =
 		UDim2.fromOffset(78, 26)

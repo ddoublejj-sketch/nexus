@@ -4,6 +4,7 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local CosmeticCatalog = require(ReplicatedStorage.Shared.GolfPro.Config.CosmeticCatalog)
+local UIController = require(script.Parent.UIController)
 
 local LockerController = {}
 
@@ -197,20 +198,12 @@ function LockerController.start()
 	end
 	started = true
 
-	local playerGui = Players.LocalPlayer:WaitForChild("PlayerGui")
-	local gui = Instance.new("ScreenGui")
-	gui.Name = "GolfProLockerGui"
-	gui.ResetOnSpawn = false
-	gui.Parent = playerGui
-
-	local panel = Instance.new("Frame")
-	panel.Name = "LockerPanel"
+	Players.LocalPlayer:WaitForChild("PlayerGui")
+	UIController.start()
+	local panel = UIController.createToolPanel("LockerPanel", "Locker", UDim2.fromOffset(312, 330))
+	panel:SetAttribute("LegacyGuiName", "GolfProLockerGui")
 	panel.BackgroundColor3 = Color3.fromRGB(25, 31, 30)
 	panel.BackgroundTransparency = 0.08
-	panel.BorderSizePixel = 0
-	panel.Size = UDim2.fromOffset(312, 330)
-	panel.Position = UDim2.fromOffset(18, 300)
-	panel.Parent = gui
 
 	makeLabel(panel, "title", 8, "Locker")
 	makeLabel(panel, "equipped", 30, "Ball: classic_white_ball  Trail: classic_arc_trail")

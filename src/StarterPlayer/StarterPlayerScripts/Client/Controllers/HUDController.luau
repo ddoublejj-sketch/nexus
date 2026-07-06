@@ -7,6 +7,7 @@ local ClubRegistry = require(ReplicatedStorage.Shared.GolfPro.Clubs.ClubRegistry
 local Constants = require(ReplicatedStorage.Shared.GolfPro.Constants)
 local EquipmentController = require(script.Parent.EquipmentController)
 local SwingController = require(script.Parent.SwingController)
+local UIController = require(script.Parent.UIController)
 
 local HUDController = {}
 
@@ -115,22 +116,6 @@ local function fireRoundStart(mode: string, courseId: string)
 	})
 end
 
-local function makeButton(parent: Instance, text: string, x: number, y: number, callback: () -> ())
-	local button = Instance.new("TextButton")
-	button.BackgroundColor3 = Color3.fromRGB(22, 86, 62)
-	button.BorderSizePixel = 0
-	button.Font = Enum.Font.GothamBold
-	button.TextColor3 = Color3.fromRGB(255, 255, 255)
-	button.TextSize = 13
-	button.Size = UDim2.fromOffset(86, 28)
-	button.Position = UDim2.fromOffset(x, y)
-	button.Text = text
-	button.Parent = parent
-	button.Activated:Connect(callback)
-
-	return button
-end
-
 local function makeClubButton(parent: Instance, text: string, callback: () -> ())
 	local button = Instance.new("TextButton")
 	button.BackgroundColor3 = Color3.fromRGB(26, 74, 72)
@@ -175,20 +160,45 @@ function HUDController.start()
 	end
 
 	started = true
-	local playerGui = Players.LocalPlayer:WaitForChild("PlayerGui")
-	local gui = Instance.new("ScreenGui")
-	gui.Name = "GolfProHUD"
-	gui.ResetOnSpawn = false
-	gui.Parent = playerGui
+	Players.LocalPlayer:WaitForChild("PlayerGui")
+	UIController.start()
+	UIController.setMainMenuActions({
+		{
+			id = "DrivingRange",
+			title = "Driving Range",
+			subtitle = "Free swing tuning with Mystery Range progress.",
+			callback = function()
+				fireRoundStart(Constants.Mode.PRACTICE, Constants.DEFAULT_PRACTICE_COURSE_ID)
+			end,
+		},
+		{
+			id = "PracticeHoles",
+			title = "Practice Holes",
+			subtitle = "Three-hole warmup route for fast testing.",
+			callback = function()
+				fireRoundStart(Constants.Mode.SOLO_STROKE_3_DEBUG, Constants.DEFAULT_COURSE_ID)
+			end,
+		},
+		{
+			id = "Pinebrook18",
+			title = "Pinebrook 18",
+			subtitle = "Full solo stroke round on the championship blockout.",
+			callback = function()
+				fireRoundStart(Constants.Mode.SOLO_STROKE_18, Constants.DEFAULT_COURSE_ID)
+			end,
+		},
+		{
+			id = "PartyLobby",
+			title = "Party Lobby",
+			subtitle = "Private stroke setup and 2v2 scramble teams.",
+			panelName = "PartyPanel",
+		},
+	})
 
-	local panel = Instance.new("Frame")
-	panel.Name = "Panel"
+	local panel = UIController.createHudPanel("GolfProHUD", UDim2.fromOffset(324, 428))
+	panel:SetAttribute("LegacyGuiName", "GolfProHUD")
 	panel.BackgroundColor3 = Color3.fromRGB(15, 31, 28)
 	panel.BackgroundTransparency = 0.08
-	panel.BorderSizePixel = 0
-	panel.Size = UDim2.fromOffset(324, 428)
-	panel.Position = UDim2.fromOffset(18, 82)
-	panel.Parent = gui
 
 	makeLabel(panel, "club", 0, "Club: Driver")
 	makeLabel(panel, "distance", 1, "Hole: --")
@@ -205,22 +215,15 @@ function HUDController.start()
 	makeLabel(panel, "leaderboard", 12, "Leaderboard: --")
 	makeLabel(panel, "record", 13, Constants.UNCLAIMED_RECORD_DISPLAY)
 
-	makeButton(panel, "Practice", 12, 316, function()
-		fireRoundStart(Constants.Mode.PRACTICE, Constants.DEFAULT_PRACTICE_COURSE_ID)
-	end)
-	makeButton(panel, "3 Holes", 106, 316, function()
-		fireRoundStart(Constants.Mode.SOLO_STROKE_3_DEBUG, Constants.DEFAULT_COURSE_ID)
-	end)
-
 	local clubScroll = Instance.new("ScrollingFrame")
 	clubScroll.Name = "ClubScroll"
 	clubScroll.BackgroundColor3 = Color3.fromRGB(10, 24, 22)
 	clubScroll.BackgroundTransparency = 0.1
 	clubScroll.BorderSizePixel = 0
-	clubScroll.CanvasSize = UDim2.fromOffset(0, 154)
+	clubScroll.CanvasSize = UDim2.fromOffset(0, 180)
 	clubScroll.ScrollBarThickness = 6
-	clubScroll.Size = UDim2.fromOffset(300, 68)
-	clubScroll.Position = UDim2.fromOffset(12, 344)
+	clubScroll.Size = UDim2.fromOffset(300, 88)
+	clubScroll.Position = UDim2.fromOffset(12, 328)
 	clubScroll.Parent = panel
 
 	local grid = Instance.new("UIGridLayout")
