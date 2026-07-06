@@ -36,6 +36,15 @@ local function childNamed(parent: any, name: string): any?
 	return nil
 end
 
+local function countClass(parent: any, className: string): number
+	local count = if parent.ClassName == className then 1 else 0
+	for _, child in parent.Children or {} do
+		count += countClass(child, className)
+	end
+
+	return count
+end
+
 local project = serde.decode("json", read(PROJECT_PATH)) :: any
 local serverStorage = project.tree.ServerStorage
 assertTrue(type(serverStorage) == "table", "Rojo project must define ServerStorage")
@@ -46,11 +55,45 @@ assertTrue(
 
 local defaultMap = serde.decode("json", read(DEFAULT_MAP_PATH)) :: any
 assertTrue(defaultMap.ClassName == "Folder", "Default map must be a Rojo Folder model")
+assertTrue(
+	childNamed(defaultMap, "WorldHub_UltraPass") ~= nil,
+	"Default map must contain the upgraded clubhouse hub"
+)
+assertTrue(
+	childNamed(defaultMap, "DrivingRange_UltraPass") ~= nil,
+	"Default map must contain a separated driving range"
+)
+assertTrue(
+	childNamed(defaultMap, "PracticeHoles_UltraPass") ~= nil,
+	"Default map must contain separated practice holes"
+)
 local pinebrookBlockout = childNamed(defaultMap, "PinebrookNational_Blockout_Phase4")
-assertTrue(pinebrookBlockout ~= nil, "Default map must contain Pinebrook Phase 4 blockout")
+assertTrue(pinebrookBlockout ~= nil, "Default map must contain Pinebrook championship course")
 assertTrue(
 	childNamed(pinebrookBlockout, "PlaytestSpawn") ~= nil,
 	"Default map must contain a playtest spawn"
+)
+local destinations = childNamed(defaultMap, "WorldDestinations")
+assertTrue(destinations ~= nil, "Default map must contain world destinations")
+for _, destinationName in
+	{
+		"ClubhouseSpawn",
+		"DrivingRange_Hole01_Spawn",
+		"PracticeHoles_Hole01_Spawn",
+		"PracticeHoles_Hole03_Spawn",
+		"Pinebrook18_Hole01_Spawn",
+		"Pinebrook18_Hole18_Spawn",
+	}
+do
+	assertTrue(
+		childNamed(destinations, destinationName) ~= nil,
+		"Default map missing destination " .. destinationName
+	)
+end
+assertTrue(countClass(defaultMap, "Part") >= 300, "Default map must be a dense playable world")
+assertTrue(
+	countClass(defaultMap, "SpawnLocation") >= 24,
+	"Default map must contain every route spawn"
 )
 for index = 1, 18 do
 	local holeName = ("Hole%02d"):format(index)
@@ -125,6 +168,26 @@ assertContains(
 	mapService,
 	"function MapService.getReloadVersion",
 	"MapService must expose reload version"
+)
+assertContains(
+	mapService,
+	"function MapService.teleportPlayerToDestination",
+	"MapService must expose destination teleport"
+)
+assertContains(
+	mapService,
+	"function MapService.teleportPlayerToRound",
+	"MapService must expose round teleport"
+)
+assertContains(
+	mapService,
+	"WorldConfig.destinationName",
+	"MapService must route rounds through WorldConfig destinations"
+)
+assertContains(
+	mapService,
+	'Workspace:FindFirstChild("Map")',
+	"MapService destination lookup must read Workspace.Map"
 )
 
 local command = read(RELOAD_COMMAND_PATH)

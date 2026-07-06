@@ -14,6 +14,7 @@ local RoundAuditService = require("./RoundAuditService")
 local RoundService = require("./RoundService")
 local ScrambleService = require("./ScrambleService")
 local AnalyticsService = require("./AnalyticsService")
+local MapService = require("./MapService")
 
 type ShotResult = Types.ShotResult
 type Vector2Yards = Types.Vector2Yards
@@ -42,7 +43,12 @@ local function copyPosition(position: Vector2Yards): Vector2Yards
 	}
 end
 
-local function buildPath(shotId: string, startPosition: Vector2Yards, result: ShotResult)
+local function buildPath(
+	shotId: string,
+	startPosition: Vector2Yards,
+	result: ShotResult,
+	roundContext: any
+)
 	local endPosition = result.finalPosition
 	local mid = {
 		x = (startPosition.x + endPosition.x) * 0.5,
@@ -52,6 +58,9 @@ local function buildPath(shotId: string, startPosition: Vector2Yards, result: Sh
 
 	return {
 		shotId = shotId,
+		courseId = roundContext.courseId,
+		mode = roundContext.mode,
+		holeIndex = roundContext.holeIndex,
 		points = {
 			{ x = startPosition.x, y = startPosition.y, z = 0 },
 			mid,
@@ -143,7 +152,7 @@ local function submitScrambleShot(
 		{
 			shotId = shotId,
 			result = result,
-			path = buildPath(shotId, startPosition, result),
+			path = buildPath(shotId, startPosition, result, context),
 			ballAtRest = {
 				roundId = context.roundId,
 				holeIndex = context.holeIndex,
@@ -241,6 +250,9 @@ function ShotService.submitShot(player: any, intent: any, now: number?): (boolea
 	if not finished then
 		return false, finishPayload
 	end
+	if finishPayload.holed and finishPayload.round.state == Constants.RoundState.PRE_SHOT then
+		MapService.teleportPlayerToRound(player, finishPayload.round)
+	end
 
 	if round.courseId == Constants.DEFAULT_PRACTICE_COURSE_ID then
 		local rangeOk, rangeResult = MysteryRangeService.recordPracticeShot(player, result)
@@ -278,7 +290,7 @@ function ShotService.submitShot(player: any, intent: any, now: number?): (boolea
 		{
 			shotId = shotId,
 			result = result,
-			path = buildPath(shotId, startPosition, result),
+			path = buildPath(shotId, startPosition, result, round),
 			ballAtRest = finishPayload.ballAtRest,
 			round = finishPayload.round,
 			scorecard = finishPayload.scorecard,

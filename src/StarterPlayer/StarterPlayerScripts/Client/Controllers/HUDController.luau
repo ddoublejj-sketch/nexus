@@ -166,7 +166,7 @@ function HUDController.start()
 		{
 			id = "DrivingRange",
 			title = "Driving Range",
-			subtitle = "Free swing tuning with Mystery Range progress.",
+			subtitle = "Teleport to the separated range for swing tuning and Mystery progress.",
 			callback = function()
 				fireRoundStart(Constants.Mode.PRACTICE, Constants.DEFAULT_PRACTICE_COURSE_ID)
 			end,
@@ -174,7 +174,7 @@ function HUDController.start()
 		{
 			id = "PracticeHoles",
 			title = "Practice Holes",
-			subtitle = "Three-hole warmup route for fast testing.",
+			subtitle = "Teleport to a three-hole warmup course with full swing flow.",
 			callback = function()
 				fireRoundStart(Constants.Mode.SOLO_STROKE_3_DEBUG, Constants.DEFAULT_COURSE_ID)
 			end,
@@ -182,7 +182,7 @@ function HUDController.start()
 		{
 			id = "Pinebrook18",
 			title = "Pinebrook 18",
-			subtitle = "Full solo stroke round on the championship blockout.",
+			subtitle = "Par 72, 7,305-yard championship route across all 18 holes.",
 			callback = function()
 				fireRoundStart(Constants.Mode.SOLO_STROKE_18, Constants.DEFAULT_COURSE_ID)
 			end,

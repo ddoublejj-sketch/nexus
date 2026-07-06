@@ -290,7 +290,10 @@ function RoundService.holeSnapshot(round: any)
 	local hole = RoundService.currentHole(round)
 	return {
 		roundId = round.id,
+		courseId = round.courseId,
+		mode = round.mode,
 		holeIndex = round.holeIndex,
+		holeCount = round.holeCount,
 		par = hole.par,
 		yardage = hole.yardage,
 		pin = copyPosition(hole.pin),

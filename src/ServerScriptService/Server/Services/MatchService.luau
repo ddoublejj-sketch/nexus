@@ -5,6 +5,7 @@ local RoundService = require("./RoundService")
 local ScoreService = require("./ScoreService")
 local PartyService = require("./PartyService")
 local ScrambleService = require("./ScrambleService")
+local MapService = require("./MapService")
 
 local MatchService = {}
 
@@ -98,6 +99,19 @@ local function broadcastMatch(party: any, matchInfo: any)
 	end
 end
 
+local function teleportPartyToRound(party: any, round: any)
+	if playersService == nil then
+		return
+	end
+
+	for _, member in party.members do
+		local player = playersService:GetPlayerByUserId(member.userId)
+		if player ~= nil then
+			MapService.teleportPlayerToRound(player, round)
+		end
+	end
+end
+
 function MatchService.start()
 	if started then
 		return
@@ -157,6 +171,7 @@ function MatchService.startPrivateRound(player: any, payload: any): (boolean, an
 			return false, roundOrReason
 		end
 
+		MapService.teleportPlayerToRound(player, roundOrReason)
 		fireRoundStart(player, roundOrReason)
 		return true, roundOrReason
 	end
@@ -176,6 +191,11 @@ function MatchService.startPrivateRound(player: any, payload: any): (boolean, an
 
 		matchInfo.roundId = scrambleOrReason.roundId
 		matchesById[matchInfo.matchId] = matchInfo
+		teleportPartyToRound(party, {
+			courseId = roundPayload.courseId,
+			mode = roundPayload.mode,
+			holeIndex = 1,
+		})
 		broadcastMatch(party, matchInfo)
 		return true, matchInfo
 	end
@@ -187,6 +207,7 @@ function MatchService.startPrivateRound(player: any, payload: any): (boolean, an
 
 	matchInfo.roundId = roundOrReason.id
 	matchesById[matchInfo.matchId] = matchInfo
+	teleportPartyToRound(party, roundOrReason)
 	fireRoundStart(player, roundOrReason)
 	broadcastMatch(party, matchInfo)
 	return true, matchInfo

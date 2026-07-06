@@ -1,7 +1,6 @@
 --!strict
 
-local ServerStorage = game:GetService("ServerStorage")
-local Workspace = game:GetService("Workspace")
+local WorldConfig = require("../../../ReplicatedStorage/Shared/GolfPro/World/WorldConfig")
 
 local MapService = {}
 
@@ -10,7 +9,28 @@ local DEFAULT_MAP_NAME = "Default"
 local currentMapName = DEFAULT_MAP_NAME
 local reloadVersion = 0
 
+local function getServerStorage(): any?
+	if game == nil then
+		return nil
+	end
+
+	return game:GetService("ServerStorage")
+end
+
+local function getWorkspace(): any?
+	if game == nil then
+		return nil
+	end
+
+	return game:GetService("Workspace")
+end
+
 local function getMapsFolder(): Folder?
+	local ServerStorage = getServerStorage()
+	if ServerStorage == nil then
+		return nil
+	end
+
 	local maps = ServerStorage:FindFirstChild("Maps")
 	if maps and maps:IsA("Folder") then
 		return maps
@@ -52,6 +72,26 @@ local function addDefaultPlaytestPad(map: Instance)
 	spawn.Parent = map
 end
 
+local function destinationPart(destinationName: string): BasePart?
+	local Workspace = getWorkspace()
+	if Workspace == nil then
+		return nil
+	end
+
+	local map = Workspace:FindFirstChild("Map")
+	local destinations = map and map:FindFirstChild("WorldDestinations")
+	if destinations == nil then
+		return nil
+	end
+
+	local destination = destinations:FindFirstChild(destinationName)
+	if destination and destination:IsA("BasePart") then
+		return destination
+	end
+
+	return nil
+end
+
 function MapService.start()
 	local ok, message = MapService.reload(DEFAULT_MAP_NAME)
 	if not ok then
@@ -66,6 +106,10 @@ function MapService.reload(mapName: string?): (boolean, string)
 	local maps = getMapsFolder()
 	if maps == nil then
 		return false, "ServerStorage.Maps is missing; cannot reload map."
+	end
+	local Workspace = getWorkspace()
+	if Workspace == nil then
+		return false, "Workspace is unavailable; cannot reload map."
 	end
 
 	local template = maps:FindFirstChild(requestedMapName)
@@ -98,6 +142,29 @@ end
 
 function MapService.getReloadVersion(): number
 	return reloadVersion
+end
+
+function MapService.teleportPlayerToDestination(
+	player: any,
+	destinationName: string
+): (boolean, string)
+	local destination = destinationPart(destinationName)
+	if destination == nil then
+		return false, "missing destination " .. destinationName
+	end
+
+	local character = player.Character
+	if character == nil then
+		return false, "character missing"
+	end
+
+	character:PivotTo(destination.CFrame + Vector3.new(0, 5, 0))
+	return true, destinationName
+end
+
+function MapService.teleportPlayerToRound(player: any, round: any): (boolean, string)
+	local destinationName = WorldConfig.destinationName(round.courseId, round.mode, round.holeIndex)
+	return MapService.teleportPlayerToDestination(player, destinationName)
 end
 
 return MapService
