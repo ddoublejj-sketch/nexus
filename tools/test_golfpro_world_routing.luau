@@ -99,6 +99,7 @@ for _, needle in
 	{
 		"WorldHub_UltraPass",
 		"WorldDestinations",
+		"WorldCartSpawns",
 		"DrivingRange_UltraPass",
 		"PracticeHoles_UltraPass",
 		"PinebrookNational_Blockout_Phase4",
@@ -146,6 +147,23 @@ assertContains(
 )
 assertContains(matchService, "teleportPartyToRound(party, {", "scramble start must teleport party")
 
+local mapService = read("src/ServerScriptService/Server/Services/MapService.luau")
+for _, needle in
+	{
+		"terrain:Clear()",
+		"terrain:FillBlock",
+		"Enum.Material.Sand",
+		"Enum.Material.Water",
+		"Enum.Material.LeafyGrass",
+		"VehicleSeat",
+		"WorldCartSpawns",
+		"GolfCarts",
+		"spawnGolfCarts(clone)",
+	}
+do
+	assertContains(mapService, needle, "MapService missing world polish " .. needle)
+end
+
 local shotService = read("src/ServerScriptService/Server/Services/ShotService.luau")
 assertContains(shotService, "courseId = roundContext.courseId", "BallPath must include course")
 assertContains(shotService, "mode = roundContext.mode", "BallPath must include mode")
@@ -165,5 +183,14 @@ assertContains(
 	"updateWorldOrigin(payload)",
 	"ball renderer must update origin by payload"
 )
+assertContains(ballRender, "GolfProBallTrackerGui", "ball renderer must show tracker UI")
+assertContains(ballRender, "BallDirectionMarker", "ball renderer must show ball arrow")
+assertContains(ballRender, "WorldToViewportPoint", "ball tracker must follow ball screen position")
+
+local swing = read("src/StarterPlayer/StarterPlayerScripts/Client/Controllers/SwingController.luau")
+assertContains(swing, "GolfProSwingMeterGui", "swing controller must show swing meter")
+assertContains(swing, "SwingMeter", "swing controller must build meter frame")
+assertContains(swing, "RunService.RenderStepped", "swing meter must animate")
+assertContains(swing, "activeRound == nil", "swing input must ignore no-round clicks")
 
 print("Golf Pro world routing tests passed")

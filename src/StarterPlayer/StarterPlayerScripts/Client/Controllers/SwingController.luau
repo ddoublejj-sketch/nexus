@@ -2,6 +2,7 @@
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 
 local Constants = require(ReplicatedStorage.Shared.GolfPro.Constants)
@@ -11,6 +12,9 @@ local SwingController = {}
 
 local activeRound: any = nil
 local currentClubId = "driver"
+local meterFrame: Frame? = nil
+local meterFill: Frame? = nil
+local meterLabel: TextLabel? = nil
 local state = {
 	phase = "idle",
 	powerStartedAt = 0,
@@ -37,6 +41,85 @@ end
 local function triangle01(elapsed: number, period: number): number
 	local t = (elapsed % period) / period
 	return if t <= 0.5 then t * 2 else (1 - t) * 2
+end
+
+local function ensureSwingMeter()
+	if meterFrame ~= nil then
+		return
+	end
+
+	local playerGui = Players.LocalPlayer:WaitForChild("PlayerGui")
+	local screen = Instance.new("ScreenGui")
+	screen.Name = "GolfProSwingMeterGui"
+	screen.ResetOnSpawn = false
+	screen.IgnoreGuiInset = true
+	screen.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+	screen.Parent = playerGui
+
+	local frame = Instance.new("Frame")
+	frame.Name = "SwingMeter"
+	frame.AnchorPoint = Vector2.new(0.5, 1)
+	frame.BackgroundColor3 = Color3.fromRGB(9, 18, 16)
+	frame.BackgroundTransparency = 0.08
+	frame.BorderSizePixel = 0
+	frame.Position = UDim2.new(0.5, 0, 1, -42)
+	frame.Size = UDim2.fromOffset(360, 42)
+	frame.Visible = false
+	frame.Parent = screen
+
+	local corner = Instance.new("UICorner")
+	corner.CornerRadius = UDim.new(0, 8)
+	corner.Parent = frame
+
+	local label = Instance.new("TextLabel")
+	label.Name = "Phase"
+	label.BackgroundTransparency = 1
+	label.Font = Enum.Font.GothamBold
+	label.Text = "POWER"
+	label.TextColor3 = Color3.fromRGB(244, 248, 240)
+	label.TextSize = 12
+	label.TextXAlignment = Enum.TextXAlignment.Left
+	label.Position = UDim2.fromOffset(12, 5)
+	label.Size = UDim2.fromOffset(120, 14)
+	label.Parent = frame
+
+	local track = Instance.new("Frame")
+	track.Name = "Track"
+	track.BackgroundColor3 = Color3.fromRGB(31, 45, 39)
+	track.BorderSizePixel = 0
+	track.Position = UDim2.fromOffset(12, 24)
+	track.Size = UDim2.new(1, -24, 0, 8)
+	track.Parent = frame
+
+	local fill = Instance.new("Frame")
+	fill.Name = "Fill"
+	fill.BackgroundColor3 = Color3.fromRGB(232, 188, 91)
+	fill.BorderSizePixel = 0
+	fill.Size = UDim2.fromScale(0, 1)
+	fill.Parent = track
+
+	meterFrame = frame
+	meterFill = fill
+	meterLabel = label
+end
+
+local function updateSwingMeter(now: number)
+	ensureSwingMeter()
+	local frame = meterFrame :: Frame
+	local fill = meterFill :: Frame
+	local label = meterLabel :: TextLabel
+	if state.phase == "idle" then
+		frame.Visible = false
+		return
+	end
+
+	local elapsed = if state.phase == "power"
+		then now - state.powerStartedAt
+		else now - state.accuracyStartedAt
+	local period = if state.phase == "power" then 1.6 else 1.1
+	frame.Visible = true
+	label.Text = if state.phase == "power" then "POWER" else "ACCURACY"
+	fill.Size = UDim2.fromScale(triangle01(elapsed, period), 1)
 end
 
 local function shotTypeFor(clubId: string, lie: string): string
@@ -67,6 +150,7 @@ function SwingController.click(now: number): any?
 	if state.phase == "idle" then
 		state.phase = "power"
 		state.powerStartedAt = now
+		updateSwingMeter(now)
 		EquipmentController.playBackswing(0)
 		return nil
 	end
@@ -75,6 +159,7 @@ function SwingController.click(now: number): any?
 		state.phase = "accuracy"
 		state.power01 = triangle01(now - state.powerStartedAt, 1.6)
 		state.accuracyStartedAt = now
+		updateSwingMeter(now)
 		EquipmentController.playBackswing(state.power01)
 		return nil
 	end
@@ -82,6 +167,7 @@ function SwingController.click(now: number): any?
 	if state.phase == "accuracy" then
 		state.phase = "idle"
 		state.accuracy01 = triangle01(now - state.accuracyStartedAt, 1.1)
+		updateSwingMeter(now)
 		EquipmentController.playStrike(state.accuracy01)
 		return {
 			power01 = state.power01,
@@ -122,6 +208,10 @@ function SwingController.start()
 	end
 
 	started = true
+	ensureSwingMeter()
+	RunService.RenderStepped:Connect(function()
+		updateSwingMeter(os.clock())
+	end)
 	UserInputService.InputBegan:Connect(function(input, processed: boolean)
 		if processed then
 			return
@@ -132,6 +222,9 @@ function SwingController.start()
 			or input.KeyCode == Enum.KeyCode.ButtonA
 			or input.KeyCode == Enum.KeyCode.Space
 		if not isSwing then
+			return
+		end
+		if activeRound == nil then
 			return
 		end
 

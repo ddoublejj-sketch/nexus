@@ -67,6 +67,18 @@ assertTrue(
 	childNamed(defaultMap, "PracticeHoles_UltraPass") ~= nil,
 	"Default map must contain separated practice holes"
 )
+local cartSpawns = childNamed(defaultMap, "WorldCartSpawns")
+assertTrue(cartSpawns ~= nil, "Default map must contain cart spawns")
+for _, spawnName in
+	{
+		"ClubhouseCartSpawn",
+		"DrivingRangeCartSpawn",
+		"PinebrookHole01CartSpawn",
+		"PinebrookHole18CartSpawn",
+	}
+do
+	assertTrue(childNamed(cartSpawns, spawnName) ~= nil, "Default map missing " .. spawnName)
+end
 local pinebrookBlockout = childNamed(defaultMap, "PinebrookNational_Blockout_Phase4")
 assertTrue(pinebrookBlockout ~= nil, "Default map must contain Pinebrook championship course")
 assertTrue(
@@ -184,6 +196,11 @@ assertContains(
 	"WorldConfig.destinationName",
 	"MapService must route rounds through WorldConfig destinations"
 )
+assertContains(mapService, "terrain:FillBlock", "MapService must build real Terrain")
+assertContains(mapService, "Enum.Material.Sand", "MapService must build sand terrain")
+assertContains(mapService, "Enum.Material.Water", "MapService must build water terrain")
+assertContains(mapService, "VehicleSeat", "MapService must spawn rideable carts")
+assertContains(mapService, "WorldCartSpawns", "MapService must consume cart spawns")
 assertContains(
 	mapService,
 	'Workspace:FindFirstChild("Map")',
